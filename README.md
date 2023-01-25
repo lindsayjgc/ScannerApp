@@ -4,5 +4,5 @@ An application that scans the barcodes of products at any grocery store and imme
 
 ## Members
 
-Front-end: Sarah Patel, Dylan Tallon<br>
+Front-end: Dylan Tallon, Sarah Patel<br>
 Back-end: Lindsay Goldberg-Custer, Jordan Sheehan<br>
