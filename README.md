@@ -1,6 +1,6 @@
 # Grocery Scanner
 
-An application that scans the barcodes of products at any grocery store and immediately tells a user whether the product contains any ingredients they are allergic to.
+An application that enables users to search common groceries, quickly view ingredients they may be personally allergic to in each product, and add desired items to a convenient shopping list.
 
 ## Members
 
