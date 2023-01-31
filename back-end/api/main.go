@@ -14,6 +14,9 @@ func InitializeRouter() {
 	// Subrouter for handling all requests made to API URL
 	s := r.PathPrefix("/api").Subrouter();
 
+	s.HandleFunc("/login", Login).Methods("POST")
+	s.HandleFunc("/refresh", Refresh)
+
 	// Handle CORS options
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
@@ -28,5 +31,6 @@ func InitializeRouter() {
 }
 
 func main() {
+	InitialUserMigration()
 	InitializeRouter()
 }
