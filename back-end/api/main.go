@@ -15,6 +15,7 @@ func InitializeRouter() {
 	s := r.PathPrefix("/api").Subrouter();
 
 	s.HandleFunc("/login", Login).Methods("POST")
+	s.HandleFunc("/logged-in", IsLoggedIn).Methods("GET")
 
 	// Handle CORS options
 	c := cors.New(cors.Options{

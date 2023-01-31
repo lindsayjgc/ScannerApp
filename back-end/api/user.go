@@ -4,17 +4,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/glebarez/sqlite"
 	"github.com/golang-jwt/jwt"
+	"github.com/joho/godotenv"
 	"gorm.io/gorm"
 )
 
 var DB *gorm.DB
 var err error
 const DB_PATH = "../db/groceryapp.db"
-var jwtKey = []byte("secret_key")
+var jwtKey []byte
 
 type User struct {
 	gorm.Model // Declare this as the schema for GORM
@@ -42,13 +44,21 @@ func InitialUserMigration() {
 		panic("Error connecting to DB.")
 	}
 
+	err := godotenv.Load()
+
+	if err != nil {
+		fmt.Println(err)
+		panic("Error loading .env file.")
+	}
+
+	jwtKey = []byte(os.Getenv("SECRET_KEY"))
+
 	// AutoMigrate checks the DB for a matching existing schema - if it does
 	// not exist, create/update the new schema
 	DB.AutoMigrate(&User{})
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
-
 	// Store credentials sent by client
 	var credentials Credentials
 	err := json.NewDecoder(r.Body).Decode(&credentials)
@@ -101,7 +111,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func Home(w http.ResponseWriter, r *http.Request) {
+func IsLoggedIn(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("token")
 	if err != nil {
 		if err == http.ErrNoCookie {
@@ -135,9 +145,5 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write([]byte(fmt.Sprintf("Hello, %s", claims.Email)))
-}
-
-func Refresh(w http.ResponseWriter, r *http.Request) {
-	
+	w.Write([]byte(fmt.Sprintf("User logged in: %s", claims.Email)))
 }
