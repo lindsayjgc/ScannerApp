@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -26,8 +27,9 @@ func InitializeRouter() {
 	})
 	handler := c.Handler(r)
 
-	log.Println("Listening on port 9000...");
-	log.Fatal(http.ListenAndServe(":9000", handler))
+	listenMsg := "Listening on port " + os.Getenv("PORT") + "..."
+	log.Println(listenMsg);
+	log.Fatal(http.ListenAndServe(":" + os.Getenv("PORT"), handler))
 }
 
 func main() {
