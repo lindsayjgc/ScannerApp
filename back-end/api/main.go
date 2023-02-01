@@ -15,6 +15,7 @@ func InitializeRouter() {
 	// Subrouter for handling all requests made to API URL
 	s := r.PathPrefix("/api").Subrouter();
 
+	s.HandleFunc("/signup", SignUp).Methods("POST")
 	s.HandleFunc("/login", Login).Methods("POST")
 	s.HandleFunc("/logged-in", IsLoggedIn).Methods("GET")
 

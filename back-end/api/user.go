@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"reflect"
 	"time"
 
 	"github.com/glebarez/sqlite"
@@ -56,6 +57,40 @@ func InitialUserMigration() {
 	// AutoMigrate checks the DB for a matching existing schema - if it does
 	// not exist, create/update the new schema
 	DB.AutoMigrate(&User{})
+}
+
+func SignUp(w http.ResponseWriter, r *http.Request) {
+	var user User
+	err := json.NewDecoder(r.Body).Decode(&user)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// Ensure all fields are not empty
+	v := reflect.ValueOf(user)
+	for i := 0; i < v.NumField(); i++ {
+		if v.Field(i).Interface() == "" {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Error: All fields are required."))
+			return
+		}
+	}
+
+	// Check if email already exists
+	var checkEmail User
+	result := DB.First(&checkEmail, "email = ?", user.Email)
+
+	if result.RowsAffected != 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Error: Email is already registered to an account."))
+		return
+	}
+
+	DB.Create(&user)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(user)
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
