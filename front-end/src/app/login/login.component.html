@@ -1,25 +1,27 @@
-<mat-card class="login-container">
-  <mat-card-header>
-    <mat-card-title>Log in</mat-card-title>
-  </mat-card-header>
-  <form class="login-form">
-    <mat-card-content>
-      <mat-form-field class="form-field">
-        <mat-label>Username</mat-label>
-        <input matInput>
-      </mat-form-field>
-    </mat-card-content>
-    <mat-card-content>
-      <mat-form-field class="form-field">
-        <mat-label>Password</mat-label>
-        <input matInput>
-      </mat-form-field>
-    </mat-card-content>
-    <mat-card-content>
-      <button mat-raised-button color="primary" class="login-button">Log in</button>
-    </mat-card-content>
-    <mat-card-content>
-      <a class="register-link">New user? Click here to register</a>
-    </mat-card-content>
-  </form>
-</mat-card>
+<div class="login-container">
+  <mat-card class="login-card">
+    <mat-card-header class="login-title">
+      <mat-card-title>Log In</mat-card-title>
+    </mat-card-header>
+    <form class="login-form">
+      <mat-card-content>
+        <mat-form-field class="form-field">
+          <mat-label>Username</mat-label>
+          <input matInput>
+        </mat-form-field>
+      </mat-card-content>
+      <mat-card-content>
+        <mat-form-field class="form-field">
+          <mat-label>Password</mat-label>
+          <input matInput>
+        </mat-form-field>
+      </mat-card-content>
+      <mat-card-content>
+        <button mat-raised-button color="primary" class="login-button">Log in</button>
+      </mat-card-content>
+      <mat-card-content class="register-link">
+        <a mat-button routerLink="/register">New user? Click here to register</a>
+      </mat-card-content>
+    </form>
+  </mat-card>
+</div>
