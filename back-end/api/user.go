@@ -39,6 +39,10 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
+type Email struct {
+	Email string `json:"email"`
+}
+
 func InitialUserMigration() {
 	DB, err = gorm.Open(sqlite.Open(DB_PATH), &gorm.Config{})
 
