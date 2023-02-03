@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/glebarez/sqlite"
@@ -35,4 +37,39 @@ func InitialInfoMigration() {
 	// AutoMigrate checks the DB for a matching existing schema - if it does
 	// not exist, create/update the new schema
 	DB.AutoMigrate(&Info{})
+}
+
+func UserInfo(w http.ResponseWriter, r *http.Request) {
+	var email Email
+	err := json.NewDecoder(r.Body).Decode(&email)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		res := make(map[string]string)
+		res["msg"] = "Email Not Found"
+		json.NewEncoder(w).Encode(res)
+		return
+	}
+
+	var user User
+	result := DB.First(&user, "email = ?", email.Email)
+	if result.Error != nil {
+		w.WriteHeader(http.StatusNotFound)
+		res := make(map[string]string)
+		res["msg"] = "User Not Found"
+		json.NewEncoder(w).Encode(res)
+		return
+	}
+
+	var info Info
+	result = DB.First(&info, "email = ?", email.Email)
+	if result.Error != nil {
+		w.WriteHeader(http.StatusNotFound)
+		res := make(map[string]string)
+		res["msg"] = "User Info Not Found"
+		json.NewEncoder(w).Encode(res)
+		return
+	}
+
+	json.NewEncoder(w).Encode(user)
+	json.NewEncoder(w).Encode(info)
 }
