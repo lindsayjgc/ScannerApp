@@ -188,12 +188,3 @@ func IsLoggedIn(w http.ResponseWriter, r *http.Request) {
 
 	w.Write([]byte(fmt.Sprintf("User logged in: %s", claims.Email)))
 }
-
-func UserInfo(w http.ResponseWriter, r *http.Request) {
-	var user User
-	err := DB.Where("first_name = ?", "last_name = ?").Find(&user)
-	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("User Not Found"))
-	}
-}
