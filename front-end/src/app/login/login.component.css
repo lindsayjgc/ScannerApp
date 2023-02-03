@@ -1,0 +1,25 @@
+.login-card {
+  text-align: center;
+  width: 35%;
+}
+
+.form-field {
+  width: 100%;
+}
+
+.register-link {
+  padding-top: 10px;
+}
+
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+@media (max-width: 700px) {
+  .login-card {
+    width: 70%;
+  }
+}
