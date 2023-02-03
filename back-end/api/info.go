@@ -17,6 +17,14 @@ type Info struct {
 	Allergies string `json:"allergies"`
 }
 
+type AllUserInfo struct {
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	Allergies string `json:"allergies"`
+}
+
 func InitialInfoMigration() {
 	DB, err = gorm.Open(sqlite.Open(DB_PATH), &gorm.Config{})
 
@@ -70,6 +78,13 @@ func UserInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(user)
-	json.NewEncoder(w).Encode(info)
+	// all important user info combined into one struct for easier use by frontend
+	var allInfo AllUserInfo
+	allInfo.FirstName = user.FirstName
+	allInfo.LastName = user.LastName
+	allInfo.Email = email.Email
+	allInfo.Password = user.Password
+	allInfo.Allergies = info.Allergies
+
+	json.NewEncoder(w).Encode(allInfo)
 }
