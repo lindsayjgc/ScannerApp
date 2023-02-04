@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/glebarez/sqlite"
 	"github.com/joho/godotenv"
@@ -23,6 +24,10 @@ type AllUserInfo struct {
 	Email     string `json:"email"`
 	Password  string `json:"password"`
 	Allergies string `json:"allergies"`
+}
+
+type Email struct {
+	Email string `json:"email"`
 }
 
 func InitialInfoMigration() {
@@ -87,4 +92,39 @@ func UserInfo(w http.ResponseWriter, r *http.Request) {
 	allInfo.Allergies = info.Allergies
 
 	json.NewEncoder(w).Encode(allInfo)
+}
+
+func AddAllergy(w http.ResponseWriter, r *http.Request) {
+	var info Info
+
+	err := json.NewDecoder(r.Body).Decode(&info)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		res := make(map[string]string)
+		res["msg"] = "Cannot decode user info"
+		json.NewEncoder(w).Encode(res)
+		return
+	}
+
+	var userInfo Info
+	result := DB.First(&userInfo, "email = ?", info.Email)
+	// if info is not found, create an entry for the user
+	if result.Error != nil {
+		DB.Create(&info)
+		return
+	}
+
+	// check if user already has allergy logged, if not, add it
+	allergies := userInfo.Allergies
+	allergyList := strings.Split(allergies, ",")
+	for i := 0; i < len(allergyList); i++ {
+		if info.Allergies == allergyList[i] {
+			res := make(map[string]string)
+			res["msg"] = "Allergy already added"
+			json.NewEncoder(w).Encode(res)
+			return
+		}
+	}
+	userInfo.Allergies += "," + info.Allergies
+	DB.Save(&userInfo)
 }

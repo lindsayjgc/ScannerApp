@@ -19,6 +19,7 @@ func InitializeRouter() {
 	s.HandleFunc("/login", Login).Methods("POST")
 	s.HandleFunc("/logged-in", IsLoggedIn).Methods("GET")
 	s.HandleFunc("/user-info", UserInfo).Methods("GET")
+	s.HandleFunc("/update-allergies", AddAllergy).Methods("PUT")
 
 	// Handle CORS options
 	c := cors.New(cors.Options{
