@@ -1,12 +1,28 @@
 # Scanner App API Documentation
 
+### Running the Frontend Locally
+
+---
+
+**NOTE:** Always run the frontend using <code>$ npm start</code> instead of alternatives like <code>$ ng serve</code>. <code>$ npm start</code> is configured to include the proxy configuration that allows for API requests to be made to the same port that the frontend runs on.
+
 ### Running the Backend Locally
 
 ---
 
 1. Navigate into back-end/api
-2. Run <code>$ go build</code> to create an executable (you must build this locally because the file is large and all .exe are included in .gitignore)
-3. Run <code>$ ./ScannerApp</code> to start up the back-end
+2. <details>
+   <summary>Create/update your local .env file - be sure to include all listed variables:</summary>
+
+    > | name         | value (do not wrap these in quotes)  |
+    > | ------------ | ------------------------------------ |
+    > | `SECRET_KEY` | use key generator to create your own |
+    > | `PORT`       | 9000                                 |
+
+       </details>
+
+3. Run <code>$ go build</code> to create an executable (you must build this locally because the file is large and all .exe are included in .gitignore)
+4. Run <code>$ ./ScannerApp</code> to start up the back-end
 
 **NOTE:** Running this will output a message that the back-end is listening on port 9000. However, the proxy configuration of our frontend means that all requests to the API made from the Angular client should be made to the same URL the frontend is running on (e.g. <code>http://localhost:4200/api/signup</code>). Requests should only be made to port 9000 when making requests from Postman or similar applications.
 
@@ -77,47 +93,3 @@
 > | `500`     | `application/json` | `{"message":"Error decoding JSON body"}` |
 
 </details>
-
-<details>
-    <summary><code>GET</code> <code><b>/api/user-info</b></code> <code>Retrieves specific user's information from database</code></summary>
-
-##### Parameters
-
-> | name       | type     | data type | description |
-> | ---------- | -------- | --------- | ----------- |
-> | `email`    | required | string    | N/A         |
-
-##### Responses
-
-> | http code | content-type       | response                        |
-> | --------- | ------------------ | ------------------------------- |
-> | `200`     | `application/json` | `{"firstname":"*user's first name*"`<br>  `"lastname":"*user's last name*"`<br>  `"email":"*user's email*"`<br>  `"password":"*user's password*"`<br>  `"allergies":"*comma delimited or NONE*"}`         |
-> | `404`     | `application/json` | `{"message":"User Not Found"}`  |
-> | `500`     | `application/json` | `{"message":"Email Not Found"}` |
-
-</details>
-
-### Allergies
-
----
-
-<details>
-    <summary><code>PUT</code> <code><b>/api/update-allergies</b></code> <code>Adds allergy to user's database information</code></summary>
-
-##### Parameters
-
-> | name        | type     | data type | description                    |
-> | ----------- | -------- | --------- | ------------------------------ |
-> | `email`     | required | string    | N/A                            |
-> | `allergies` | required | string    | Allergy to be added to profile |
-
-##### Responses
-
-> | http code | content-type       | response                                  |
-> | --------- | ------------------ | ----------------------------------------- |
-> | `200`     | `application/json` | `{"message":"Allergy successfully added"}`|
-> | `200`     | `application/json` | `{"message":"Allergy already added"}`     |
-> | `500`     | `application/json` | `{"message":"Cannot decode user info"}`   |
-
-</details>
-
