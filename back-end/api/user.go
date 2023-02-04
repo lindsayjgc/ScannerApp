@@ -11,6 +11,7 @@ import (
 	"github.com/glebarez/sqlite"
 	"github.com/golang-jwt/jwt"
 	"github.com/joho/godotenv"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -91,6 +92,16 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// If email does not exist, encrypt password for storage
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 0)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(generateResponse("Could not generate password hash"))
+		return
+	}
+
+	user.Password = string(passwordHash)
+
 	DB.Create(&user)
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(generateResponse("User successfully created"))
@@ -120,7 +131,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if credentials.Password != user.Password {
+	// Compare password credentials to stored hashed password
+	bycrptErr := bcrypt.CompareHashAndPassword(
+		[]byte(user.Password),
+		[]byte(credentials.Password))
+
+	if bycrptErr != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(generateResponse("Incorrect password"))
 		return
@@ -147,9 +163,15 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	&http.Cookie{
 		Name: "token",
 		Value: tokenString,
+		Path: "/",
 		Expires: expirationTime,
+		SameSite: http.SameSiteLaxMode,
+		// Secure: true,
 		HttpOnly: true,
 	})
+
+	w.WriteHeader(http.StatusAccepted);
+	json.NewEncoder(w).Encode(generateResponse("User successfully logged in"))
 }
 
 func IsLoggedIn(w http.ResponseWriter, r *http.Request) {
