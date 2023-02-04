@@ -11,6 +11,7 @@ import (
 	"github.com/glebarez/sqlite"
 	"github.com/golang-jwt/jwt"
 	"github.com/joho/godotenv"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -62,11 +63,14 @@ func InitialUserMigration() {
 }
 
 func SignUp(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
 	var user User
-	err := json.NewDecoder(r.Body).Decode(&user)
+	err = json.NewDecoder(r.Body).Decode(&user)
 
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(generateResponse("Error decoding JSON body"))
 		return
 	}
 
@@ -75,7 +79,7 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 	for i := 0; i < v.NumField(); i++ {
 		if v.Field(i).Interface() == "" {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("Error: All fields are required."))
+			json.NewEncoder(w).Encode(generateResponse("All fields are required."))
 			return
 		}
 	}
@@ -86,22 +90,35 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 
 	if result.RowsAffected != 0 {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Error: Email is already registered to an account."))
+		json.NewEncoder(w).Encode(generateResponse("Email is already registered to an account"))
 		return
 	}
 
+	// If email does not exist, encrypt password for storage
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 0)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(generateResponse("Could not generate password hash"))
+		return
+	}
+
+	user.Password = string(passwordHash)
+
 	DB.Create(&user)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(user)
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(generateResponse("User successfully created"))
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
 	// Store credentials sent by client
 	var credentials Credentials
-	err := json.NewDecoder(r.Body).Decode(&credentials)
+	err = json.NewDecoder(r.Body).Decode(&credentials)
 
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(generateResponse("Error decoding JSON body"))
 		return
 	}
 
@@ -112,13 +129,18 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	// Handle email not connected to any user in DB
 	if result.Error != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Error: Email not registered to any account."))
+		json.NewEncoder(w).Encode(generateResponse("Email not registered to any account"))
 		return
 	}
 
-	if credentials.Password != user.Password {
+	// Compare password credentials to stored hashed password
+	bycrptErr := bcrypt.CompareHashAndPassword(
+		[]byte(user.Password),
+		[]byte(credentials.Password))
+
+	if bycrptErr != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte("Error: Incorect password."))
+		json.NewEncoder(w).Encode(generateResponse("Incorrect password"))
 		return
 	}
 
@@ -135,24 +157,33 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Error creating JWT."))
+		json.NewEncoder(w).Encode(generateResponse("Error creating JWT"))
 		return
 	}
 
-	http.SetCookie(w,
-		&http.Cookie{
-			Name:     "token",
-			Value:    tokenString,
-			Expires:  expirationTime,
-			HttpOnly: true,
-		})
+	http.SetCookie(w, 
+	&http.Cookie{
+		Name: "token",
+		Value: tokenString,
+		Path: "/",
+		Expires: expirationTime,
+		SameSite: http.SameSiteLaxMode,
+		// Secure: true,
+		HttpOnly: true,
+	})
+
+	w.WriteHeader(http.StatusAccepted);
+	json.NewEncoder(w).Encode(generateResponse("User successfully logged in"))
 }
 
 func IsLoggedIn(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
 	cookie, err := r.Cookie("token")
 	if err != nil {
 		if err == http.ErrNoCookie {
 			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode(generateResponse("No user logged in"))
 			return
 		}
 		w.WriteHeader(http.StatusBadRequest)
@@ -170,7 +201,8 @@ func IsLoggedIn(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		if err == jwt.ErrSignatureInvalid {
-			w.WriteHeader(http.StatusUnauthorized)
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(generateResponse("Error parsing JWT"))
 			return
 		}
 		w.WriteHeader(http.StatusBadRequest)
@@ -179,8 +211,18 @@ func IsLoggedIn(w http.ResponseWriter, r *http.Request) {
 
 	if !tkn.Valid {
 		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(generateResponse("JWT is no longer valid"))
 		return
 	}
 
-	w.Write([]byte(fmt.Sprintf("User logged in: %s", claims.Email)))
+	w.WriteHeader(http.StatusOK);
+	res := make(map[string]string)
+	res["email"] = claims.Email
+	json.NewEncoder(w).Encode(res)
+}
+
+func generateResponse(message string) map[string]string {
+	res := make(map[string]string)
+	res["message"] = message
+	return res
 }
