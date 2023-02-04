@@ -111,6 +111,9 @@ func AddAllergy(w http.ResponseWriter, r *http.Request) {
 	// if info is not found, create an entry for the user
 	if result.Error != nil {
 		DB.Create(&info)
+		res := make(map[string]string)
+		res["msg"] = "Allergy successfully added"
+		json.NewEncoder(w).Encode(res)
 		return
 	}
 
@@ -127,4 +130,7 @@ func AddAllergy(w http.ResponseWriter, r *http.Request) {
 	}
 	userInfo.Allergies += "," + info.Allergies
 	DB.Save(&userInfo)
+	res := make(map[string]string)
+	res["msg"] = "Allergy successfully added"
+	json.NewEncoder(w).Encode(res)
 }
