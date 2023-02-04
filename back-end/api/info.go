@@ -74,13 +74,10 @@ func UserInfo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var info Info
+	var allergies = true
 	result = DB.First(&info, "email = ?", email.Email)
 	if result.Error != nil {
-		w.WriteHeader(http.StatusNotFound)
-		res := make(map[string]string)
-		res["msg"] = "User Info Not Found"
-		json.NewEncoder(w).Encode(res)
-		return
+		allergies = false
 	}
 
 	// all important user info combined into one struct for easier use by frontend
@@ -89,7 +86,11 @@ func UserInfo(w http.ResponseWriter, r *http.Request) {
 	allInfo.LastName = user.LastName
 	allInfo.Email = email.Email
 	allInfo.Password = user.Password
-	allInfo.Allergies = info.Allergies
+	if allergies == true {
+		allInfo.Allergies = info.Allergies
+	} else {
+		allInfo.Allergies = "NONE"
+	}
 
 	json.NewEncoder(w).Encode(allInfo)
 }
