@@ -17,19 +17,21 @@ import (
 
 var DB *gorm.DB
 var err error
+
 const DB_PATH = "../db/groceryapp.db"
+
 var jwtKey []byte
 
 type User struct {
-	gorm.Model // Declare this as the schema for GORM
-	FirstName string `json:"firstname"`
-	LastName string `json:"lastname"`
-	Email string `json:"email"`
-	Password string `json:"password"`
+	gorm.Model        // Declare this as the schema for GORM
+	FirstName  string `json:"firstname"`
+	LastName   string `json:"lastname"`
+	Email      string `json:"email"`
+	Password   string `json:"password"`
 }
 
 type Credentials struct {
-	Email string `json:"email"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
@@ -143,9 +145,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	expirationTime := time.Now().Add(time.Hour * 24) // JWT lasts 1 day
-	claims := &Claims {
+	claims := &Claims{
 		Email: credentials.Email,
-		StandardClaims: jwt.StandardClaims {
+		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
 	}
