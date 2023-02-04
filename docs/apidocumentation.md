@@ -77,3 +77,47 @@
 > | `500`     | `application/json` | `{"message":"Error decoding JSON body"}` |
 
 </details>
+
+<details>
+    <summary><code>GET</code> <code><b>/api/user-info</b></code> <code>Retrieves specific user's information from database</code></summary>
+
+##### Parameters
+
+> | name       | type     | data type | description |
+> | ---------- | -------- | --------- | ----------- |
+> | `email`    | required | string    | N/A         |
+
+##### Responses
+
+> | http code | content-type       | response                        |
+> | --------- | ------------------ | ------------------------------- |
+> | `200`     | `application/json` | `{"firstname":"*user's first name*"`<br>  `"lastname":"*user's last name*"`<br>  `"email":"*user's email*"`<br>  `"password":"*user's password*"`<br>  `"allergies":"*comma delimited or NONE*"}`         |
+> | `404`     | `application/json` | `{"message":"User Not Found"}`  |
+> | `500`     | `application/json` | `{"message":"Email Not Found"}` |
+
+</details>
+
+### Allergies
+
+---
+
+<details>
+    <summary><code>PUT</code> <code><b>/api/update-allergies</b></code> <code>Adds allergy to user's database information</code></summary>
+
+##### Parameters
+
+> | name        | type     | data type | description                    |
+> | ----------- | -------- | --------- | ------------------------------ |
+> | `email`     | required | string    | N/A                            |
+> | `allergies` | required | string    | Allergy to be added to profile |
+
+##### Responses
+
+> | http code | content-type       | response                                  |
+> | --------- | ------------------ | ----------------------------------------- |
+> | `200`     | `application/json` | `{"message":"Allergy successfully added"}`|
+> | `200`     | `application/json` | `{"message":"Allergy already added"}`     |
+> | `500`     | `application/json` | `{"message":"Cannot decode user info"}`   |
+
+</details>
+
