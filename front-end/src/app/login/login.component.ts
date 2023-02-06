@@ -24,12 +24,16 @@ export class LoginComponent {
       .pipe(catchError((error: any, caught: Observable<any>): Observable<any> => {
         this.loginMessage.open(`Error: ${error.error.message}`, '', {
           duration: 5000,
+          panelClass: ['login-message-fail'],
         });
         return of();
       }
       ))
       .subscribe(response => {
-        console.log(response.body);
+        this.loginMessage.open('Login successful!', '', {
+          duration: 5000,
+          panelClass: ['login-message-success'],
+        });
       })
   }
 }
