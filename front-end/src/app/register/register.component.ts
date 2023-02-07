@@ -32,6 +32,7 @@ export class RegisterComponent {
       }),
       tap((response) => {
         console.log(response.body);
+        this.router.navigate(['/setup']);
       })
      )
      .subscribe();
