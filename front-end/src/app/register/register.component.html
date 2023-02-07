@@ -3,34 +3,38 @@
       <mat-card-header class="signup-title">
         <mat-card-title>Sign Up</mat-card-title>
       </mat-card-header>
-      <form class="signup-form">
+
+      <form [formGroup]="signupForm" (ngSubmit)="signupUser()">
         <mat-card-content>
           <mat-form-field class="form-group">
             <mat-label>Email</mat-label>
-            <input matInput>
+            <input matInput type = "email" formControlName = "email">
           </mat-form-field>
         </mat-card-content>
         <mat-card-content>
           <mat-form-field class="form-name">
             <mat-label>First Name</mat-label>
-            <input matInput>
+            <input matInput type = "text" formControlName = "firstName">
           </mat-form-field>
         </mat-card-content>
         <mat-card-content>
           <mat-form-field class="form-name">
             <mat-label>Last Name</mat-label>
-            <input matInput>
+            <input matInput type = "text" formControlName = "lastName">
           </mat-form-field>
         </mat-card-content>
         <mat-card-content>
           <mat-form-field class="form-group">
             <mat-label>Password</mat-label>
-            <input matInput>
+            <input matInput type = "password" formControlName = "password">
           </mat-form-field>
         </mat-card-content>
         <mat-card-content>
-          <button mat-raised-button color="primary" class="signup-button">Sign Up</button>
+          <button mat-raised-button color="primary" [disabled]="!signupForm.valid" type="submit">Sign Up</button>
         </mat-card-content>
       </form>
+      <mat-card-content class="login-link">
+        <a mat-button routerLink="/login">Already registered? Click here to login</a>
+      </mat-card-content>
     </mat-card>
   </div>

@@ -10,4 +10,9 @@ export class UsersService {
   loginUser(email: string, password: string) {
     return this.http.post<any>('http://localhost:4200/api/login', { email, password }, { observe: 'response' });
   }
+
+  signupUser(email: string, firstName: string, lastName: string, password: string) {
+    return this.http.post<any>('http://localhost:4200/api/signup', {email, firstName, lastName, password}, {observe: 'response'});
+  }
 }
+
