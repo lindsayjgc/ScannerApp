@@ -18,5 +18,6 @@
 - [ ] Setting up accounts for users (including authentication and authorization of accounts)
 - [ ] Storing allergen and dietary preference information about users
 ## Accomplished
-
+We were able to accomplish most of what we planned to do. We were successful in setting up account creation for users, as well as the ability to login to the website. (finish)
 ## Didn't Work
+(finish)
