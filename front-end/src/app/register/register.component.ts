@@ -24,8 +24,8 @@ export class RegisterComponent {
   signupUser() {
     const { email, firstName, lastName, password } = this.signupForm.value;
     this.usersService.signupUser(email!, firstName!, lastName!, password!)
-      .pipe(catchError((error: any, caught: Observable<any>): Observable<any> => {
-        this.signupMessage.open(`Error: ${error.error.message}`, '', {
+      .pipe(catchError(err => {
+        this.signupMessage.open(`Error: ${err.error.message}`, '', {
           duration: 5000,
           panelClass: ['login-message-fail'],
         });

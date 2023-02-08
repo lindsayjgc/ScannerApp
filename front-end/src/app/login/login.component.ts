@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { catchError, Observable, of } from 'rxjs';
+import { catchError, Observable, of, tap } from 'rxjs';
 
 import { UsersService } from '../services/users.service';
 
@@ -21,19 +21,20 @@ export class LoginComponent {
 
   loginUser() {
     this.usersService.loginUser(this.loginForm.value.email!, this.loginForm.value.password!)
-      .pipe(catchError((error: any, caught: Observable<any>): Observable<any> => {
-        this.loginMessage.open(`Error: ${error.error.message}`, '', {
+      .pipe(catchError(err => {
+        this.loginMessage.open(`Error: ${err.error.message}`, '', {
           duration: 5000,
           panelClass: ['login-message-fail'],
         });
         return of();
-      }
-      ))
-      .subscribe(response => {
-        this.loginMessage.open('Login successful!', '', {
-          duration: 5000,
-          panelClass: ['login-message-success'],
-        });
-      })
+      }),
+        tap((response) => {
+          this.loginMessage.open('Login successful!', '', {
+            duration: 5000,
+            panelClass: ['login-message-success'],
+          });
+        })
+      )
+      .subscribe();
   }
 }
