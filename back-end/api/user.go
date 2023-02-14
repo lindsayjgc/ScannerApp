@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -179,45 +180,39 @@ func Login(w http.ResponseWriter, r *http.Request) {
 func IsLoggedIn(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	cookie, err := r.Cookie("token")
-	if err != nil {
-		if err == http.ErrNoCookie {
-			w.WriteHeader(http.StatusUnauthorized)
-			json.NewEncoder(w).Encode(generateResponse("No user logged in"))
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	tokenStr := cookie.Value
-
-	claims := &Claims{}
-
-	tkn, err := jwt.ParseWithClaims(tokenStr, claims,
-		func(t *jwt.Token) (interface{}, error) {
-			return jwtKey, nil
-		})
+	claims, err, resStatus := CheckCookie(w, r)
 
 	if err != nil {
-		if err == jwt.ErrSignatureInvalid {
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(generateResponse("Error parsing JWT"))
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	if !tkn.Valid {
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(generateResponse("JWT is no longer valid"))
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(generateResponse(err.Error()))
 		return
 	}
 
 	w.WriteHeader(http.StatusOK);
 	res := make(map[string]string)
+	res["message"] = "User is currently logged in"
 	res["email"] = claims.Email
+	json.NewEncoder(w).Encode(res)
+}
+
+func Logout(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	claims, err, resStatus := CheckCookie(w, r)
+
+	if err != nil {
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(generateResponse(err.Error()))
+		return
+	}
+
+	// Otherwise, delete the cookie and respond
+	deleteCookie(w)
+
+	w.WriteHeader(http.StatusOK);
+	res := make(map[string]string)
+	res["message"] = "User successfully logged out"
+	res["email"] = claims.Email;
 	json.NewEncoder(w).Encode(res)
 }
 
@@ -225,4 +220,53 @@ func generateResponse(message string) map[string]string {
 	res := make(map[string]string)
 	res["message"] = message
 	return res
+}
+
+func CheckCookie(w http.ResponseWriter, r *http.Request) (*Claims, error, int) {
+	// Declare claims so that it can be returned as an empty object if there is an error
+	claims := &Claims{}
+
+	cookie, err := r.Cookie("token")
+	if err != nil {
+		if err == http.ErrNoCookie {
+			return claims, errors.New("No user logged in"), http.StatusBadRequest
+		}
+		return claims, errors.New("Other cookie-related error"), http.StatusBadRequest
+	}
+
+	tokenStr := cookie.Value
+	tkn, err := jwt.ParseWithClaims(tokenStr, claims,
+		func(t *jwt.Token) (interface{}, error) {
+			return jwtKey, nil
+		})
+
+	// This error block should never hit, the HTTP cookie is set to expire at
+	// the same time as the JWT, so the JWT parse should not return an
+	// error for the JWT being expired
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			return claims, errors.New("Error parsing JWT"), http.StatusInternalServerError
+		}
+
+		return claims, errors.New("Other JWT-related error"), http.StatusInternalServerError
+	}
+
+	if !tkn.Valid {
+		// Since JWT is now invalid, delete the cookie
+		deleteCookie(w)
+
+		return claims, errors.New("Login session expired"), http.StatusOK
+	}
+
+	return claims, nil, http.StatusOK
+}
+
+func deleteCookie(w http.ResponseWriter) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "token",
+		Value:    "",
+		Path:     "/",
+		MaxAge:   -1, // Signifies delete this cookie now
+		HttpOnly: true,
+	})
 }

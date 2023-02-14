@@ -17,6 +17,7 @@ func InitializeRouter() {
 	
 	s.HandleFunc("/signup", SignUp).Methods("POST")
 	s.HandleFunc("/login", Login).Methods("POST")
+	s.HandleFunc("/logout", Logout).Methods("POST")
 	s.HandleFunc("/logged-in", IsLoggedIn).Methods("GET")
 	s.HandleFunc("/user-info", UserInfo).Methods("GET")
 	s.HandleFunc("/update-allergies", AddAllergy).Methods("PUT")
