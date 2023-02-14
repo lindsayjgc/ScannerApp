@@ -12,6 +12,8 @@ import (
 	"gorm.io/gorm"
 )
 
+var InfoDB *gorm.DB
+
 type Info struct {
 	gorm.Model
 	Email     string `json:"email"`
@@ -31,7 +33,7 @@ type Email struct {
 }
 
 func InitialInfoMigration() {
-	DB, err = gorm.Open(sqlite.Open(DB_PATH), &gorm.Config{})
+	InfoDB, err = gorm.Open(sqlite.Open(DB_PATH), &gorm.Config{})
 
 	if err != nil {
 		fmt.Println(err)
@@ -49,7 +51,7 @@ func InitialInfoMigration() {
 
 	// AutoMigrate checks the DB for a matching existing schema - if it does
 	// not exist, create/update the new schema
-	DB.AutoMigrate(&Info{})
+	InfoDB.AutoMigrate(&Info{})
 }
 
 func UserInfo(w http.ResponseWriter, r *http.Request) {
@@ -64,7 +66,7 @@ func UserInfo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var user User
-	result := DB.First(&user, "email = ?", email.Email)
+	result := InfoDB.First(&user, "email = ?", email.Email)
 	if result.Error != nil {
 		w.WriteHeader(http.StatusNotFound)
 		res := make(map[string]string)
@@ -75,7 +77,7 @@ func UserInfo(w http.ResponseWriter, r *http.Request) {
 
 	var info Info
 	var allergies = true
-	result = DB.First(&info, "email = ?", email.Email)
+	result = InfoDB.First(&info, "email = ?", email.Email)
 	if result.Error != nil {
 		allergies = false
 	}
@@ -108,10 +110,10 @@ func AddAllergy(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var userInfo Info
-	result := DB.First(&userInfo, "email = ?", info.Email)
+	result := InfoDB.First(&userInfo, "email = ?", info.Email)
 	// if info is not found, create an entry for the user
 	if result.Error != nil {
-		DB.Create(&info)
+		InfoDB.Create(&info)
 		res := make(map[string]string)
 		res["msg"] = "Allergy successfully added"
 		json.NewEncoder(w).Encode(res)
@@ -130,7 +132,7 @@ func AddAllergy(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	userInfo.Allergies += "," + info.Allergies
-	DB.Save(&userInfo)
+	InfoDB.Save(&userInfo)
 	res := make(map[string]string)
 	res["msg"] = "Allergy successfully added"
 	json.NewEncoder(w).Encode(res)

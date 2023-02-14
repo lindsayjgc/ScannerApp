@@ -16,12 +16,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
-var err error
-
-const DB_PATH = "../db/groceryapp.db"
-
-var jwtKey []byte
+var UserDB *gorm.DB
 
 type User struct {
 	gorm.Model        // Declare this as the schema for GORM
@@ -42,11 +37,11 @@ type Claims struct {
 }
 
 func InitialUserMigration() {
-	DB, err = gorm.Open(sqlite.Open(DB_PATH), &gorm.Config{})
+	UserDB, err = gorm.Open(sqlite.Open(DB_PATH), &gorm.Config{})
 
 	if err != nil {
 		fmt.Println(err)
-		panic("Error connecting to DB.")
+		panic("Error connecting to UserDB.")
 	}
 
 	err := godotenv.Load()
@@ -60,7 +55,7 @@ func InitialUserMigration() {
 
 	// AutoMigrate checks the DB for a matching existing schema - if it does
 	// not exist, create/update the new schema
-	DB.AutoMigrate(&User{})
+	UserDB.AutoMigrate(&User{})
 }
 
 func SignUp(w http.ResponseWriter, r *http.Request) {
@@ -87,7 +82,7 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 
 	// Check if email already exists
 	var checkEmail User
-	result := DB.First(&checkEmail, "email = ?", user.Email)
+	result := UserDB.First(&checkEmail, "email = ?", user.Email)
 
 	if result.RowsAffected != 0 {
 		w.WriteHeader(http.StatusBadRequest)
@@ -105,7 +100,7 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 
 	user.Password = string(passwordHash)
 
-	DB.Create(&user)
+	UserDB.Create(&user)
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(generateResponse("User successfully created"))
 }
@@ -125,7 +120,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	// Fetch the user record with email matching the email passed in
 	var user User
-	result := DB.First(&user, "email = ?", credentials.Email)
+	result := UserDB.First(&user, "email = ?", credentials.Email)
 
 	// Handle email not connected to any user in DB
 	if result.Error != nil {
@@ -212,6 +207,27 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK);
 	res := make(map[string]string)
 	res["message"] = "User successfully logged out"
+	res["email"] = claims.Email;
+	json.NewEncoder(w).Encode(res)
+}
+
+func DeleteUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	claims, err, resStatus := CheckCookie(w, r)
+
+	if err != nil {
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(generateResponse(err.Error()))
+		return
+	}
+
+	UserDB.Where("email LIKE ?", claims.Email).Delete(&User{})
+	InfoDB.Where("email LIKE ?", claims.Email).Delete(&Info{})
+
+	w.WriteHeader(http.StatusAccepted)
+	res := make(map[string]string)
+	res["message"] = "User successfully deleted"
 	res["email"] = claims.Email;
 	json.NewEncoder(w).Encode(res)
 }
