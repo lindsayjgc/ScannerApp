@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -33,9 +34,22 @@ func StartServer() {
 	})
 	handler := c.Handler(r)
 
+	// create a logging middleware that wraps the router
+	loggingMiddleware := func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			startTime := time.Now()
+			next.ServeHTTP(w, r)
+			duration := time.Now().Sub(startTime)
+			log.Printf("[%s] %s %s (%s)", r.Method, r.URL.Path, r.RemoteAddr, duration)
+		})
+	}
+
+	// register handler to logger
+	loggedRouter := loggingMiddleware(handler)
+
 	listenMsg := "Listening on port " + os.Getenv("PORT") + "..."
 	log.Println(listenMsg)
-	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), handler))
+	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), loggedRouter))
 }
 
 func main() {
