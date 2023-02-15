@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, Observable, of, tap } from 'rxjs';
@@ -12,7 +12,7 @@ import { UsersService } from '../services/users.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  constructor(private usersService: UsersService, private loginMessage: MatSnackBar) { }
+  constructor(private usersService: UsersService, private loginMessage: MatSnackBar, private router: Router) { }
 
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required]),
@@ -29,10 +29,7 @@ export class LoginComponent {
         return of();
       }),
         tap((response) => {
-          this.loginMessage.open('Login successful!', '', {
-            duration: 5000,
-            panelClass: ['login-message-success'],
-          });
+          this.router.navigate(['/home']);
         })
       )
       .subscribe();
