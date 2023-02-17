@@ -65,7 +65,7 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(generateResponse("Error decoding JSON body"))
+		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON body"))
 		return
 	}
 
@@ -74,7 +74,7 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 	for i := 0; i < v.NumField(); i++ {
 		if v.Field(i).Interface() == "" {
 			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(generateResponse("All fields are required."))
+			json.NewEncoder(w).Encode(GenerateResponse("All fields are required."))
 			return
 		}
 	}
@@ -85,7 +85,7 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 
 	if result.RowsAffected != 0 {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(generateResponse("Email is already registered to an account"))
+		json.NewEncoder(w).Encode(GenerateResponse("Email is already registered to an account"))
 		return
 	}
 
@@ -93,7 +93,7 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 0)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(generateResponse("Could not generate password hash"))
+		json.NewEncoder(w).Encode(GenerateResponse("Could not generate password hash"))
 		return
 	}
 
@@ -101,7 +101,7 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 
 	UserDB.Create(&user)
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(generateResponse("User successfully created"))
+	json.NewEncoder(w).Encode(GenerateResponse("User successfully created"))
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -113,7 +113,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(generateResponse("Error decoding JSON body"))
+		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON body"))
 		return
 	}
 
@@ -124,7 +124,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	// Handle email not connected to any user in DB
 	if result.Error != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(generateResponse("Email not registered to any account"))
+		json.NewEncoder(w).Encode(GenerateResponse("Email not registered to any account"))
 		return
 	}
 
@@ -135,7 +135,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	if bycrptErr != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(generateResponse("Incorrect password"))
+		json.NewEncoder(w).Encode(GenerateResponse("Incorrect password"))
 		return
 	}
 
@@ -152,7 +152,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(generateResponse("Error creating JWT"))
+		json.NewEncoder(w).Encode(GenerateResponse("Error creating JWT"))
 		return
 	}
 
@@ -168,7 +168,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	})
 
 	w.WriteHeader(http.StatusAccepted);
-	json.NewEncoder(w).Encode(generateResponse("User successfully logged in"))
+	json.NewEncoder(w).Encode(GenerateResponse("User successfully logged in"))
 }
 
 func IsLoggedIn(w http.ResponseWriter, r *http.Request) {
@@ -178,7 +178,7 @@ func IsLoggedIn(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.WriteHeader(resStatus)
-		json.NewEncoder(w).Encode(generateResponse(err.Error()))
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
 		return
 	}
 
@@ -196,12 +196,12 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.WriteHeader(resStatus)
-		json.NewEncoder(w).Encode(generateResponse(err.Error()))
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
 		return
 	}
 
 	// Otherwise, delete the cookie and respond
-	deleteCookie(w)
+	DeleteCookie(w)
 
 	w.WriteHeader(http.StatusOK);
 	res := make(map[string]string)
@@ -217,14 +217,14 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.WriteHeader(resStatus)
-		json.NewEncoder(w).Encode(generateResponse(err.Error()))
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
 		return
 	}
 
 	UserDB.Where("email LIKE ?", claims.Email).Delete(&User{})
 	InfoDB.Where("email LIKE ?", claims.Email).Delete(&Info{})
 
-	w.WriteHeader(http.StatusAccepted)
+	w.WriteHeader(http.StatusOK)
 	res := make(map[string]string)
 	res["message"] = "User successfully deleted"
 	res["email"] = claims.Email;

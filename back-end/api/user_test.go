@@ -3,10 +3,8 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	// "fmt"
 	"net/http"
 	"net/http/httptest"
-	// "reflect"
 	"strings"
 	"testing"
 )
@@ -52,26 +50,20 @@ func TestSignUpEndpoint(t *testing.T) {
 }
 
 func TestLoginEndpoint(t *testing.T) {
-	// Initialize router and connect to DB for this test instance
 	InitialUserMigration()
 	InitialInfoMigration()
 	InitializeRouter()
 
-	// Create a user to be added
 	creds := Credentials{
 		Email: "unit@test.com",
 		Password: "unittest",
 	}
 
-	// Create a mock request 
 	payload, _ := json.Marshal(creds);
 	req, _ := http.NewRequest("POST", "/api/login", bytes.NewBuffer(payload));
 	req.Header.Set("Content-Type", "application/json")
 
-	// Create a mock request recorder
 	rr := httptest.NewRecorder()
-
-	// Send the request and recorder
 	r.ServeHTTP(rr,req)
 
 	if status := rr.Code; status != http.StatusAccepted {
@@ -79,8 +71,6 @@ func TestLoginEndpoint(t *testing.T) {
 	}
 
 	expected := `{"message":"User successfully logged in"}`
-
-	// Remove any linebreaks from the response writer body
 	body := strings.Replace(rr.Body.String(), "\n", "", -1);
 	body = strings.Replace(body, "\r", "", -1);
 

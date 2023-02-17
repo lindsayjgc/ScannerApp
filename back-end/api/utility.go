@@ -7,7 +7,7 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-func generateResponse(message string) map[string]string {
+func GenerateResponse(message string) map[string]string {
 	res := make(map[string]string)
 	res["message"] = message
 	return res
@@ -44,7 +44,7 @@ func CheckCookie(w http.ResponseWriter, r *http.Request) (*Claims, error, int) {
 
 	if !tkn.Valid {
 		// Since JWT is now invalid, delete the cookie
-		deleteCookie(w)
+		DeleteCookie(w)
 
 		return claims, errors.New("Login session expired"), http.StatusOK
 	}
@@ -52,7 +52,7 @@ func CheckCookie(w http.ResponseWriter, r *http.Request) (*Claims, error, int) {
 	return claims, nil, http.StatusOK
 }
 
-func deleteCookie(w http.ResponseWriter) {
+func DeleteCookie(w http.ResponseWriter) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "token",
 		Value:    "",
