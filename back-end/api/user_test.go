@@ -7,6 +7,9 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
+
+	"github.com/golang-jwt/jwt"
 )
 
 func TestSignUpEndpoint(t *testing.T) {
@@ -77,4 +80,30 @@ func TestLoginEndpoint(t *testing.T) {
 	if body != expected {
 		t.Errorf("Handler returned unexpected body: got %v, expected %v", rr.Body.String(), expected);
 	}
+}
+
+func createCookie(req *http.Request, t *testing.T) {
+	// Create a new token string
+	expirationTime := time.Now().Add(time.Minute)
+	claims := &Claims{
+		Email: "unit@test.com",
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(jwtKey)
+	if (err != nil) {
+		t.Fatal(err)
+	}
+
+
+	cookie := &http.Cookie{
+		Name: "token",
+		Value: tokenString,
+		Path: "/",
+		Expires: expirationTime,
+	}
+	req.AddCookie(cookie)
 }
