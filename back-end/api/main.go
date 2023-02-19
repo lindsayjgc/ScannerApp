@@ -9,17 +9,18 @@ import (
 	"github.com/rs/cors"
 )
 
-var r = mux.NewRouter();
+var r = mux.NewRouter()
 
 func InitializeRouter() {
 	// Subrouter for handling all requests made to API URL
 	s := r.PathPrefix("/api").Subrouter()
-	
+
 	s.HandleFunc("/signup", SignUp).Methods("POST")
 	s.HandleFunc("/login", Login).Methods("POST")
 	s.HandleFunc("/logged-in", IsLoggedIn).Methods("GET")
 	s.HandleFunc("/user-info", UserInfo).Methods("GET")
 	s.HandleFunc("/update-allergies", AddAllergy).Methods("PUT")
+	s.HandleFunc("/delete-allergy", DeleteAllergy).Methods("DELETE")
 }
 
 func StartServer() {

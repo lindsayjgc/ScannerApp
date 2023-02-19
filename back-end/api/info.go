@@ -123,6 +123,7 @@ func AddAllergy(w http.ResponseWriter, r *http.Request) {
 	allergyList := strings.Split(allergies, ",")
 	for i := 0; i < len(allergyList); i++ {
 		if info.Allergies == allergyList[i] {
+			w.WriteHeader(http.StatusAlreadyReported)
 			res := make(map[string]string)
 			res["msg"] = "Allergy already added"
 			json.NewEncoder(w).Encode(res)
@@ -134,4 +135,49 @@ func AddAllergy(w http.ResponseWriter, r *http.Request) {
 	res := make(map[string]string)
 	res["msg"] = "Allergy successfully added"
 	json.NewEncoder(w).Encode(res)
+}
+
+func DeleteAllergy(w http.ResponseWriter, r *http.Request) {
+	var info Info
+
+	err := json.NewDecoder(r.Body).Decode(&info)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		res := make(map[string]string)
+		res["msg"] = "Cannot decode user info"
+		json.NewEncoder(w).Encode(res)
+		return
+	}
+
+	var userInfo Info
+	result := DB.First(&userInfo, "email = ?", info.Email)
+	// if current user has no info, just ignore request
+	if result.Error != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		res := make(map[string]string)
+		res["msg"] = "Allergy not present for deletion"
+		json.NewEncoder(w).Encode(res)
+		return
+	}
+
+	allergies := userInfo.Allergies
+	allergyList := strings.Split(allergies, ",")
+	for i := 0; i < len(allergyList); i++ {
+		if info.Allergies == allergyList[i] {
+			allergyList = append(allergyList[:i], allergyList[i+1:]...)
+			allergies = strings.Join(allergyList, ",")
+			userInfo.Allergies = allergies
+			DB.Save(&userInfo)
+			res := make(map[string]string)
+			res["msg"] = "Allergy successfully deleted"
+			json.NewEncoder(w).Encode(res)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusInternalServerError)
+	res := make(map[string]string)
+	res["msg"] = "Allergy not present for deletion"
+	json.NewEncoder(w).Encode(res)
+
 }
