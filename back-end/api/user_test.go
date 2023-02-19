@@ -82,6 +82,36 @@ func TestLoginEndpoint(t *testing.T) {
 	}
 }
 
+func TestLoggedInEndpoint(t *testing.T) {
+	InitialUserMigration()
+	InitialInfoMigration()
+	InitializeRouter()
+
+	// Make a mock request
+	req, _ := http.NewRequest("GET", "/api/logged-in", nil);
+	req.Header.Set("Content-Type", "application/json")
+
+	// Add a new cookie to the req for testing the endpoint
+	createCookie(req, t)
+
+	// Create a new recorder and serve
+	rr := httptest.NewRecorder()
+	r.ServeHTTP(rr,req)
+
+	// Process response
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("Handler returned the wrong status: got %v, expected %v", status, http.StatusCreated);
+	}
+
+	expected := `{"email":"unit@test.com","message":"User is currently logged in"}`
+	body := strings.Replace(rr.Body.String(), "\n", "", -1);
+	body = strings.Replace(body, "\r", "", -1);
+
+	if body != expected {
+		t.Errorf("Handler returned unexpected body: got %v, expected %v", rr.Body.String(), expected);
+	}
+}
+
 func createCookie(req *http.Request, t *testing.T) {
 	// Create a new token string
 	expirationTime := time.Now().Add(time.Minute)
