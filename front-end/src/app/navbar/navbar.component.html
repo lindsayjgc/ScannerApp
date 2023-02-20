@@ -6,7 +6,7 @@
     </button>
     <mat-menu #menu="matMenu">
       <div *ngIf="loggedIn; else notLoggedIn">
-        <button mat-menu-item>
+        <button mat-menu-item routerLink="/profile">
           <span>Profile</span>
         </button>
         <button mat-menu-item (click)="logout()">

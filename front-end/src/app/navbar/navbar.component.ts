@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatToolbar } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
-import { catchError, Observable, of, tap } from 'rxjs';
+import { catchError, of, tap } from 'rxjs';
 
 import { UsersService } from '../services/users.service';
 
