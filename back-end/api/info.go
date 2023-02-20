@@ -57,16 +57,17 @@ func InitialInfoMigration() {
 func UserInfo(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var email Email
-	err := json.NewDecoder(r.Body).Decode(&email)
+	// Check for logged in user and get their email
+	claims, err, resStatus := CheckCookie(w, r)
+
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON"))
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
 		return
 	}
 
 	var user User
-	result := InfoDB.First(&user, "email = ?", email.Email)
+	result := UserDB.First(&user, "email = ?", claims.Email)
 	if result.Error != nil {
 		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(GenerateResponse("User not found"))
@@ -75,7 +76,7 @@ func UserInfo(w http.ResponseWriter, r *http.Request) {
 
 	var info Info
 	var allergies = true
-	result = InfoDB.First(&info, "email = ?", email.Email)
+	result = InfoDB.First(&info, "email = ?", claims.Email)
 	if result.Error != nil {
 		allergies = false
 	}
