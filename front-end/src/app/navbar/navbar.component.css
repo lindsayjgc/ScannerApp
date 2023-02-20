@@ -1,0 +1,11 @@
+.toolbarContainer {
+  align-items: center;
+  display: flex;
+  width: 100vw;
+  justify-content: space-between;
+}
+
+.toolbarHeader {
+  color: white;
+  text-decoration: none;
+}
