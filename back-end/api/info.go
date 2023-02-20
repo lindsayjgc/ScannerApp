@@ -55,13 +55,13 @@ func InitialInfoMigration() {
 }
 
 func UserInfo(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
 	var email Email
 	err := json.NewDecoder(r.Body).Decode(&email)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		res := make(map[string]string)
-		res["msg"] = "Email Not Found"
-		json.NewEncoder(w).Encode(res)
+		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON"))
 		return
 	}
 
@@ -69,9 +69,7 @@ func UserInfo(w http.ResponseWriter, r *http.Request) {
 	result := InfoDB.First(&user, "email = ?", email.Email)
 	if result.Error != nil {
 		w.WriteHeader(http.StatusNotFound)
-		res := make(map[string]string)
-		res["msg"] = "User Not Found"
-		json.NewEncoder(w).Encode(res)
+		json.NewEncoder(w).Encode(GenerateResponse("User not found"))
 		return
 	}
 
@@ -94,18 +92,19 @@ func UserInfo(w http.ResponseWriter, r *http.Request) {
 		allInfo.Allergies = "NONE"
 	}
 
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(allInfo)
 }
 
 func AddAllergy(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
 	var info Info
 
 	err := json.NewDecoder(r.Body).Decode(&info)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		res := make(map[string]string)
-		res["msg"] = "Cannot decode user info"
-		json.NewEncoder(w).Encode(res)
+		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON"))
 		return
 	}
 
@@ -114,9 +113,7 @@ func AddAllergy(w http.ResponseWriter, r *http.Request) {
 	// if info is not found, create an entry for the user
 	if result.Error != nil {
 		InfoDB.Create(&info)
-		res := make(map[string]string)
-		res["msg"] = "Allergy successfully added"
-		json.NewEncoder(w).Encode(res)
+		json.NewEncoder(w).Encode(GenerateResponse("Allergy successfully added"))
 		return
 	}
 
@@ -125,15 +122,11 @@ func AddAllergy(w http.ResponseWriter, r *http.Request) {
 	allergyList := strings.Split(allergies, ",")
 	for i := 0; i < len(allergyList); i++ {
 		if info.Allergies == allergyList[i] {
-			res := make(map[string]string)
-			res["msg"] = "Allergy already added"
-			json.NewEncoder(w).Encode(res)
+			json.NewEncoder(w).Encode(GenerateResponse("Allergy already exists"))
 			return
 		}
 	}
 	userInfo.Allergies += "," + info.Allergies
 	InfoDB.Save(&userInfo)
-	res := make(map[string]string)
-	res["msg"] = "Allergy successfully added"
-	json.NewEncoder(w).Encode(res)
+	json.NewEncoder(w).Encode(GenerateResponse("Allergy successfully added"))
 }
