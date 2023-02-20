@@ -24,7 +24,7 @@ type AllUserInfo struct {
 	FirstName string `json:"firstname"`
 	LastName  string `json:"lastname"`
 	Email     string `json:"email"`
-	Password  string `json:"password"`
+	// Password  string `json:"password"`
 	Allergies string `json:"allergies"`
 }
 
@@ -85,8 +85,8 @@ func UserInfo(w http.ResponseWriter, r *http.Request) {
 	var allInfo AllUserInfo
 	allInfo.FirstName = user.FirstName
 	allInfo.LastName = user.LastName
-	allInfo.Email = email.Email
-	allInfo.Password = user.Password
+	allInfo.Email = user.Email
+	// allInfo.Password = user.Password
 	if allergies == true {
 		allInfo.Allergies = info.Allergies
 	} else {
