@@ -12,12 +12,12 @@ import (
 	"gorm.io/gorm"
 )
 
-var InfoDB *gorm.DB
+var AllergyDB *gorm.DB
 
-type Info struct {
+type Allergy struct {
 	gorm.Model
-	Email     string `json:"email"`
-	Allergies string `json:"allergies"`
+	Email string `json:"email"`
+	Allergy string `json:"allergy"`
 }
 
 type AllUserInfo struct {
@@ -32,8 +32,8 @@ type Email struct {
 	Email string `json:"email"`
 }
 
-func InitialInfoMigration() {
-	InfoDB, err = gorm.Open(sqlite.Open(DB_PATH), &gorm.Config{})
+func InitialAllergyMigration() {
+	AllergyDB, err = gorm.Open(sqlite.Open(DB_PATH), &gorm.Config{})
 
 	if err != nil {
 		fmt.Println(err)
@@ -51,7 +51,7 @@ func InitialInfoMigration() {
 
 	// AutoMigrate checks the DB for a matching existing schema - if it does
 	// not exist, create/update the new schema
-	InfoDB.AutoMigrate(&Info{})
+	AllergyDB.AutoMigrate(&Allergy{})
 }
 
 func UserInfo(w http.ResponseWriter, r *http.Request) {
@@ -76,7 +76,7 @@ func UserInfo(w http.ResponseWriter, r *http.Request) {
 
 	// Retrieve user allergies as a slice 
 	var userAllergiesSlice []string
-	result = InfoDB.Model(Info{}).Where("email = ?", claims.Email).Select("allergies").Find(&userAllergiesSlice)
+	result = AllergyDB.Model(Info{}).Where("email = ?", claims.Email).Select("allergies").Find(&userAllergiesSlice)
 
 	// all important user info combined into one struct for easier use by frontend
 	var allInfo AllUserInfo
@@ -98,7 +98,6 @@ func AddAllergy(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var info Info
-
 	err := json.NewDecoder(r.Body).Decode(&info)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -107,10 +106,10 @@ func AddAllergy(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var userInfo Info
-	result := InfoDB.First(&userInfo, "email = ?", info.Email)
+	result := AllergyDB.First(&userInfo, "email = ?", info.Email)
 	// if info is not found, create an entry for the user
 	if result.Error != nil {
-		InfoDB.Create(&info)
+		AllergyDB.Create(&info)
 		json.NewEncoder(w).Encode(GenerateResponse("Allergy successfully added"))
 		return
 	}
@@ -125,6 +124,6 @@ func AddAllergy(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	userInfo.Allergies += "," + info.Allergies
-	InfoDB.Save(&userInfo)
+	AllergyDB.Save(&userInfo)
 	json.NewEncoder(w).Encode(GenerateResponse("Allergy successfully added"))
 }

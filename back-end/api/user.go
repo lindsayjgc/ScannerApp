@@ -222,7 +222,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	UserDB.Where("email LIKE ?", claims.Email).Delete(&User{})
-	InfoDB.Where("email LIKE ?", claims.Email).Delete(&Info{})
+	AllergyDB.Where("email LIKE ?", claims.Email).Delete(&Allergy{})
 
 	w.WriteHeader(http.StatusOK)
 	res := make(map[string]string)
