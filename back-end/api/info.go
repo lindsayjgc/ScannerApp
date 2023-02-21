@@ -20,6 +20,10 @@ type Allergy struct {
 	Allergy string `json:"allergy"`
 }
 
+type RawNewAllergies struct {
+	Allergies string `json:"allergies"`
+}
+
 type AllUserInfo struct {
 	FirstName string `json:"firstname"`
 	LastName  string `json:"lastname"`
@@ -76,7 +80,7 @@ func UserInfo(w http.ResponseWriter, r *http.Request) {
 
 	// Retrieve user allergies as a slice 
 	var userAllergiesSlice []string
-	result = AllergyDB.Model(Info{}).Where("email = ?", claims.Email).Select("allergies").Find(&userAllergiesSlice)
+	result = AllergyDB.Model(Allergy{}).Where("email = ?", claims.Email).Select("allergies").Find(&userAllergiesSlice)
 
 	// all important user info combined into one struct for easier use by frontend
 	var allInfo AllUserInfo
@@ -97,33 +101,55 @@ func UserInfo(w http.ResponseWriter, r *http.Request) {
 func AddAllergy(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var info Info
-	err := json.NewDecoder(r.Body).Decode(&info)
+	// Check for logged in user and get their email
+	claims, err, resStatus := CheckCookie(w, r)
+
+	if err != nil {
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
+		return
+	}
+
+	// Decode allergies to be added and split into slice
+	var rawNewAllergies RawNewAllergies
+	err = json.NewDecoder(r.Body).Decode(&rawNewAllergies)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON"))
 		return
 	}
+	newAllergies := strings.Split(string(rawNewAllergies.Allergies), ",")
 
-	var userInfo Info
-	result := AllergyDB.First(&userInfo, "email = ?", info.Email)
-	// if info is not found, create an entry for the user
-	if result.Error != nil {
-		AllergyDB.Create(&info)
-		json.NewEncoder(w).Encode(GenerateResponse("Allergy successfully added"))
-		return
+	fmt.Println(newAllergies)
+
+	// Retrieve existing allergies as a slice
+	var existingAllergiesSlice []string
+	AllergyDB.Model(Allergy{}).Where("email = ?", claims.Email).Select("allergy").Find(&existingAllergiesSlice)
+
+	// Convert the slice of allergies into a map for efficiency later
+	existingAllergies := make(map[string]bool)
+	for _, v := range existingAllergiesSlice {
+		existingAllergies[string(v)] = true
 	}
 
-	// check if user already has allergy logged, if not, add it
-	allergies := userInfo.Allergies
-	allergyList := strings.Split(allergies, ",")
-	for i := 0; i < len(allergyList); i++ {
-		if info.Allergies == allergyList[i] {
-			json.NewEncoder(w).Encode(GenerateResponse("Allergy already exists"))
-			return
+	// Check for existing allergies and add them to DB if not
+	var addedAllergies []string
+	var notAddedAllergies []string
+	for _, v := range newAllergies {
+		// If this new allergy does not already exist
+		if !existingAllergies[v] {
+			allergy := Allergy{Email: claims.Email, Allergy: v}
+			addedAllergies = append(addedAllergies, v)
+			AllergyDB.Create(&allergy)
+		} else {
+			notAddedAllergies = append(notAddedAllergies, v)
 		}
 	}
-	userInfo.Allergies += "," + info.Allergies
-	AllergyDB.Save(&userInfo)
-	json.NewEncoder(w).Encode(GenerateResponse("Allergy successfully added"))
+
+	res := make(map[string]string)
+	res["addedAllergies"] = strings.Join(addedAllergies, ",")
+	res["existingAllergies"] = strings.Join(notAddedAllergies, ",")
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(res)
 }

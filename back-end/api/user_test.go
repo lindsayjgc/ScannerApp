@@ -15,7 +15,7 @@ import (
 func TestSignUpEndpoint(t *testing.T) {
 	// Initialize router and connect to DB for this test instance
 	InitialUserMigration()
-	InitialInfoMigration()
+	InitialAllergyMigration()
 	InitializeRouter()
 
 	// Create a user to be added
@@ -54,7 +54,7 @@ func TestSignUpEndpoint(t *testing.T) {
 
 func TestLoginEndpoint(t *testing.T) {
 	InitialUserMigration()
-	InitialInfoMigration()
+	InitialAllergyMigration()
 	InitializeRouter()
 
 	creds := Credentials{
@@ -84,7 +84,7 @@ func TestLoginEndpoint(t *testing.T) {
 
 func TestLoggedInEndpoint(t *testing.T) {
 	InitialUserMigration()
-	InitialInfoMigration()
+	InitialAllergyMigration()
 	InitializeRouter()
 
 	// Make a mock request
@@ -114,7 +114,7 @@ func TestLoggedInEndpoint(t *testing.T) {
 
 func TestDeleteEndpoint(t *testing.T) {
 	InitialUserMigration()
-	InitialInfoMigration()
+	InitialAllergyMigration()
 	InitializeRouter()
 
 	req, _ := http.NewRequest("DELETE", "/api/delete-user", nil);
@@ -140,7 +140,7 @@ func TestDeleteEndpoint(t *testing.T) {
 
 func TestLogoutEndpoint(t *testing.T) {
 	InitialUserMigration()
-	InitialInfoMigration()
+	InitialAllergyMigration()
 	InitializeRouter()
 
 	req, _ := http.NewRequest("POST", "/api/logout", nil);
