@@ -46,7 +46,7 @@ func CheckCookie(w http.ResponseWriter, r *http.Request) (*Claims, error, int) {
 		// Since JWT is now invalid, delete the cookie
 		DeleteCookie(w)
 
-		return claims, errors.New("Login session expired"), http.StatusOK
+		return claims, errors.New("Other JWT-related error"), http.StatusInternalServerError
 	}
 
 	return claims, nil, http.StatusOK

@@ -120,8 +120,6 @@ func AddAllergy(w http.ResponseWriter, r *http.Request) {
 	}
 	newAllergies := strings.Split(string(rawNewAllergies.Allergies), ",")
 
-	fmt.Println(newAllergies)
-
 	// Retrieve existing allergies as a slice
 	var existingAllergiesSlice []string
 	AllergyDB.Model(Allergy{}).Where("email = ?", claims.Email).Select("allergy").Find(&existingAllergiesSlice)
