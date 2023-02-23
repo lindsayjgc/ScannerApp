@@ -6,27 +6,31 @@
 
 **NOTE:** Always run the frontend using <code>$ npm start</code> instead of alternatives like <code>$ ng serve</code>. <code>$ npm start</code> is configured to include the proxy configuration that allows for API requests to be made to the same port that the frontend runs on.
 
+<br/>
+
 ### Running the Backend Locally
 
 ---
 
-1. Navigate into back-end/api
-2. <details>
-   <summary>Create/update your local .env file - be sure to include all listed variables:</summary>
+1.  Navigate into back-end/api
+2.  <details>
+    <summary>Create/update your local .env file - be sure to include all listed variables:</summary>
 
     > | name         | value (do not wrap these in quotes)  |
     > | ------------ | ------------------------------------ |
     > | `SECRET_KEY` | use key generator to create your own |
     > | `PORT`       | 9000                                 |
 
-       </details>
+        </details>
 
-3. Run <code>$ go build</code> to create an executable (you must build this locally because the file is large and all .exe are included in .gitignore)
-4. Run <code>$ ./ScannerApp</code> to start up the back-end
+3.  Run <code>$ go build</code> to create an executable (you must build this locally because the file is large and all .exe are included in .gitignore)
+4.  Run <code>$ ./ScannerApp</code> to start up the back-end
 
 **NOTE:** Running this will output a message that the back-end is listening on port 9000. However, the proxy configuration of our frontend means that all requests to the API made from the Angular client should be made to the same URL the frontend is running on (e.g. <code>http://localhost:4200/api/signup</code>). Requests should only be made to port 9000 when making requests from Postman or similar applications.
 
-### User Signup/Login
+<br/>
+
+### User Auth/Creation/Deletion
 
 ---
 
@@ -77,6 +81,25 @@
 </details>
 
 <details>
+    <summary><code>POST</code> <code><b>/api/logout</b></code> <code>Deletes cookie storing the logged in user's email, effectively logging user out</code></summary>
+
+##### Parameters
+
+> `none (the user currently logged in will be logged out)`
+
+##### Responses
+
+> | http code | content-type       | response                                                                             |
+> | --------- | ------------------ | ------------------------------------------------------------------------------------ |
+> | `200`     | `application/json` | `{"email": "*email that was logged out*", "message":"User successfully logged out"}` |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`                                                    |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                                           |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                                    |
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"}`                                              |
+
+</details>
+
+<details>
     <summary><code>GET</code> <code><b>/api/logged-in</b></code> <code>Checks whether any user is logged in and returns email if so</code></summary>
 
 ##### Parameters
@@ -85,11 +108,30 @@
 
 ##### Responses
 
-> | http code | content-type       | response                                 |
-> | --------- | ------------------ | ---------------------------------------- |
-> | `200`     | `application/json` | `{"email":"*current email logged in*"}`  |
-> | `401`     | `application/json` | `{"message":"No user logged in"}`        |
-> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`        |
-> | `500`     | `application/json` | `{"message":"Error decoding JSON body"}` |
+> | http code | content-type       | response                                                                         |
+> | --------- | ------------------ | -------------------------------------------------------------------------------- |
+> | `200`     | `application/json` | `{"email":"*current email logged in*", "message":"User is currently logged in"}` |
+> | `401`     | `application/json` | `{"message":"No user logged in"}`                                                |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                                |
+> | `500`     | `application/json` | `{"message":"Error decoding JSON body"}`                                         |
+
+</details>
+
+<details>
+    <summary><code>DELETE</code> <code><b>/api/delete-user</b></code> <code>Deletes all records of the logged in user</code></summary>
+
+##### Parameters
+
+> `none (the user currently logged in will be logged out)`
+
+##### Responses
+
+> | http code | content-type       | response                                                                               |
+> | --------- | ------------------ | -------------------------------------------------------------------------------------- |
+> | `200`     | `application/json` | `{"email": "*email of user that was deleted*", "message":"User successfully deleted"}` |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`                                                      |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                                             |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                                      |
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"}`                                                |
 
 </details>
