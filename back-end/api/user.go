@@ -174,6 +174,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 func IsLoggedIn(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
+	// Check for an existing cookie and handle possible errors
 	claims, err, resStatus := CheckCookie(w, r)
 
 	if err != nil {
@@ -200,7 +201,7 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Otherwise, delete the cookie and respond
+	// If cookie is obtained without errors, delete it and respond
 	DeleteCookie(w)
 
 	w.WriteHeader(http.StatusOK);
@@ -223,6 +224,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	UserDB.Where("email LIKE ?", claims.Email).Delete(&User{})
 	AllergyDB.Where("email LIKE ?", claims.Email).Delete(&Allergy{})
+	DeleteCookie(w)
 
 	w.WriteHeader(http.StatusOK)
 	res := make(map[string]string)
