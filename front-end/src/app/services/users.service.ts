@@ -10,6 +10,8 @@ import { LoggedInUser } from './loggedInUser';
 export class UsersService {
   constructor(private http: HttpClient) { }
 
+  isLoggedIn: boolean = false;
+
   loginUser(email: string, password: string) {
     return this.http.post<Message>('http://localhost:4200/api/login', { email, password }, { observe: 'response' });
   }
@@ -20,6 +22,14 @@ export class UsersService {
 
   loggedIn() {
     return this.http.get<LoggedInUser>('http://localhost:4200/api/logged-in');
+  }
+
+  logoutUser() {
+    return this.http.post<LoggedInUser>('http://localhost:4200/api/logout', {});
+  }
+
+  deleteUser() {
+    return this.http.delete<LoggedInUser>('http://localhost:4200/api/delete-user');
   }
 }
 

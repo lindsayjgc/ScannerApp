@@ -29,6 +29,7 @@ export class LoginComponent {
         return of();
       }),
         tap((response) => {
+          this.usersService.isLoggedIn = true;
           this.router.navigate(['/home']);
         })
       )
