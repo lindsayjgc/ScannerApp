@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"reflect"
-	"time"
 
 	"github.com/glebarez/sqlite"
 	"github.com/golang-jwt/jwt"
@@ -139,21 +138,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	expirationTime := time.Now().Add(time.Hour * 24) // JWT lasts 1 day
-	claims := &Claims{
-		Email: credentials.Email,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: expirationTime.Unix(),
-		},
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(jwtKey)
+	// Process for creating a cookie to store logged in user email
+	tokenString, expirationTime, err, statusCode := CreateCookie(credentials)
 
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(GenerateResponse("Error creating JWT"))
-		return
+		w.WriteHeader(statusCode)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
 	}
 
 	http.SetCookie(w, 
@@ -167,7 +157,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 	})
 
-	w.WriteHeader(http.StatusAccepted);
+	w.WriteHeader(http.StatusOK);
 	json.NewEncoder(w).Encode(GenerateResponse("User successfully logged in"))
 }
 
