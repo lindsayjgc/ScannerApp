@@ -26,6 +26,7 @@ func InitializeRouter() {
 	s.HandleFunc("/logged-in", IsLoggedIn).Methods("GET")
 	s.HandleFunc("/user-info", UserInfo).Methods("GET")
 	s.HandleFunc("/update-allergies", AddAllergy).Methods("PUT")
+	s.HandleFunc("/check-allergies", CheckAllergies).Methods("POST")
 }
 
 func StartServer() {
