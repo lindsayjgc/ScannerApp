@@ -34,7 +34,7 @@ func StartServer() {
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowCredentials: true,
-		AllowedMethods:   []string{"GET", "POST", "PUT", "HEAD", "OPTIONS"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Accept-Language", "Content-Type", "Content-Language", "Origin"},
 	})
 	handler := c.Handler(r)
