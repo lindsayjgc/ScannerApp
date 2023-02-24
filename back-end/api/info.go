@@ -124,7 +124,7 @@ func AddAllergy(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON"))
 		return
 	}
-	newAllergies := strings.Split(string(rawNewAllergies.Allergies), ",")
+	newAllergies := strings.Split(strings.ToLower(string(rawNewAllergies.Allergies)), ",")
 
 	// Retrieve existing allergies as a slice
 	var existingAllergiesSlice []string
@@ -183,7 +183,7 @@ func CheckAllergies(w http.ResponseWriter, r *http.Request) {
 	// Convert the slice of allergies into a map for efficiency later
 	userAllergies := make(map[string]bool)
 	for _, v := range userAllergiesSlice {
-		userAllergies[string(v)] = true
+		userAllergies[v] = true
 	}
 
 	// Get the product allergies sent by frontend
@@ -194,7 +194,9 @@ func CheckAllergies(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON body"))
 		return
 	}
-	productIngredients := strings.Split(rawProductIngredients.Ingredients, ",")
+	// Convert passed in string to lowercase because all alleriges are 
+	// stored in DB this way
+	productIngredients := strings.Split(strings.ToLower(rawProductIngredients.Ingredients), ",")
 
 	
 	var foundAllergies []string
@@ -205,9 +207,11 @@ func CheckAllergies(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if (len(foundAllergies) == 0) {
+	if (len(foundAllergies) == 0) { // If this ingredient is in the map of allergies
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(GenerateResponse("No allergies present in product ingredients"))
+		res := make(map[string]string)
+		res["allergiesPresent"] = "false"
+		json.NewEncoder(w).Encode(res)
 	} else {
 		w.WriteHeader(http.StatusOK)
 		res := make(map[string]string)
