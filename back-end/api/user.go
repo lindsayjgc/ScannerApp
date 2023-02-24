@@ -95,7 +95,6 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(GenerateResponse("Could not generate password hash"))
 		return
 	}
-
 	user.Password = string(passwordHash)
 
 	UserDB.Create(&user)
@@ -139,23 +138,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Process for creating a cookie to store logged in user email
-	tokenString, expirationTime, err, statusCode := CreateCookie(credentials)
+	err, statusCode := CreateCookie(w, credentials)
 
 	if err != nil {
 		w.WriteHeader(statusCode)
 		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
 	}
-
-	http.SetCookie(w, 
-	&http.Cookie{
-		Name: "token",
-		Value: tokenString,
-		Path: "/",
-		Expires: expirationTime,
-		SameSite: http.SameSiteLaxMode,
-		// Secure: true,
-		HttpOnly: true,
-	})
 
 	w.WriteHeader(http.StatusOK);
 	json.NewEncoder(w).Encode(GenerateResponse("User successfully logged in"))

@@ -15,7 +15,7 @@ func GenerateResponse(message string) map[string]string {
 }
 
 // Return tokenString, expirationTime, error, and error statu scode
-func CreateCookie(credentials Credentials) (string, time.Time, error, int) {
+func CreateCookie(w http.ResponseWriter, credentials Credentials) (error, int) {
 	expirationTime := time.Now().Add(time.Hour * 24) // JWT lasts 1 day
 	claims := &Claims{
 		Email: credentials.Email,
@@ -28,10 +28,22 @@ func CreateCookie(credentials Credentials) (string, time.Time, error, int) {
 	tokenString, err := token.SignedString(jwtKey)
 
 	if err != nil {
-		return tokenString, expirationTime, errors.New("Error creating JWT"), http.StatusInternalServerError
+		return errors.New("Error creating JWT"), http.StatusInternalServerError
 	}
 
-	return tokenString, expirationTime, nil, 200
+	http.SetCookie(w, 
+		&http.Cookie{
+			Name: "token",
+			Value: tokenString,
+			Path: "/",
+			Expires: expirationTime,
+			SameSite: http.SameSiteLaxMode,
+			// Secure: true,
+			HttpOnly: true,
+		},
+	)
+
+	return nil, http.StatusOK
 }
 
 func CheckCookie(w http.ResponseWriter, r *http.Request) (*Claims, error, int) {
