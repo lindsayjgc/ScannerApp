@@ -27,19 +27,21 @@ export class ProfileComponent implements OnInit {
   openDeleteDialog() {
     const dialogRef = this.dialog1.open(DeleteDialogComponent);
 
-    dialogRef.afterClosed().subscribe(() => {
-      this.usersService.deleteUser()
-        .pipe(catchError(err => {
-          this.errorMessage.open(`Error: ${err.error.message}`, '', {
-            duration: 5000,
-            panelClass: ['login-message-fail'],
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.usersService.deleteUser()
+          .pipe(catchError(err => {
+            this.errorMessage.open(`Error: ${err.error.message}`, '', {
+              duration: 5000,
+              panelClass: ['login-message-fail'],
+            });
+            return of();
+          }))
+          .subscribe(() => {
+            this.usersService.isLoggedIn = false;
+            this.router.navigate(['/login']);
           });
-          return of();
-        }))
-        .subscribe(() => {
-          this.usersService.isLoggedIn = false;
-          this.router.navigate(['/login']);
-        });
+      }
     });
   }
 

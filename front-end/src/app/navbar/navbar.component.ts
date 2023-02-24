@@ -16,11 +16,11 @@ export class NavbarComponent implements OnInit {
   ngOnInit() {
     this.usersService.loggedIn()
       .pipe(catchError(err => {
-        this.usersService.isLoggedIn = false;
         return of();
       }))
       .subscribe((response) => {
         this.usersService.isLoggedIn = true;
+        this.usersService.loggedInEmail = response.email;
       });
   }
 
@@ -35,6 +35,7 @@ export class NavbarComponent implements OnInit {
       }))
       .subscribe((response) => {
         this.usersService.isLoggedIn = false;
+        this.usersService.loggedInEmail = '';
         this.router.navigate(['/login']);
       });
   }

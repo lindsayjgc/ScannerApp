@@ -29,8 +29,10 @@ export class LoginComponent {
         return of();
       }),
         tap((response) => {
-          this.usersService.isLoggedIn = true;
-          this.router.navigate(['/home']);
+          this.router.navigate(['/home'])
+            .then(() => {
+              window.location.reload();
+            });
         })
       )
       .subscribe();

@@ -32,8 +32,10 @@ export class RegisterComponent {
         return of();
       }),
         tap((response) => {
-          console.log(response.body);
-          this.router.navigate(['/setup']);
+          this.router.navigate(['/setup'])
+            .then(() => {
+              window.location.reload();
+            });
         })
       )
       .subscribe();

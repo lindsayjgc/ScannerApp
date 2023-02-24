@@ -11,7 +11,7 @@ body {
 }
 
 .login-message-fail {
-  --mdc-snackbar-container-color: rgb(220, 0, 0);
+  --mdc-snackbar-container-color: #f44336;
 }
 
 .login-message-success {
