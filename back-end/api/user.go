@@ -95,9 +95,20 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(GenerateResponse("Could not generate password hash"))
 		return
 	}
+	// Create credentials for use later in creating cokoie
+	credentials := Credentials{Email: user.Email, Password: user.Password}
+	
 	user.Password = string(passwordHash)
-
 	UserDB.Create(&user)
+
+	// Now that user is created, log them in
+	err, statusCode := CreateCookie(w, credentials)
+
+	if err != nil {
+		w.WriteHeader(statusCode)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
+	}
+
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(GenerateResponse("User successfully created"))
 }
