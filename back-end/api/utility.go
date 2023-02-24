@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/golang-jwt/jwt"
 )
@@ -11,6 +12,38 @@ func GenerateResponse(message string) map[string]string {
 	res := make(map[string]string)
 	res["message"] = message
 	return res
+}
+
+// Return tokenString, expirationTime, error, and error statu scode
+func CreateCookie(w http.ResponseWriter, credentials Credentials) (error, int) {
+	expirationTime := time.Now().Add(time.Hour * 24) // JWT lasts 1 day
+	claims := &Claims{
+		Email: credentials.Email,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(jwtKey)
+
+	if err != nil {
+		return errors.New("Error creating JWT"), http.StatusInternalServerError
+	}
+
+	http.SetCookie(w, 
+		&http.Cookie{
+			Name: "token",
+			Value: tokenString,
+			Path: "/",
+			Expires: expirationTime,
+			SameSite: http.SameSiteLaxMode,
+			// Secure: true,
+			HttpOnly: true,
+		},
+	)
+
+	return nil, http.StatusOK
 }
 
 func CheckCookie(w http.ResponseWriter, r *http.Request) (*Claims, error, int) {

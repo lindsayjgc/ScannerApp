@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"reflect"
-	"time"
 
 	"github.com/glebarez/sqlite"
 	"github.com/golang-jwt/jwt"
@@ -96,10 +95,20 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(GenerateResponse("Could not generate password hash"))
 		return
 	}
-
+	// Create credentials for use later in creating cokoie
+	credentials := Credentials{Email: user.Email, Password: user.Password}
+	
 	user.Password = string(passwordHash)
-
 	UserDB.Create(&user)
+
+	// Now that user is created, log them in
+	err, statusCode := CreateCookie(w, credentials)
+
+	if err != nil {
+		w.WriteHeader(statusCode)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
+	}
+
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(GenerateResponse("User successfully created"))
 }
@@ -139,35 +148,15 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	expirationTime := time.Now().Add(time.Hour * 24) // JWT lasts 1 day
-	claims := &Claims{
-		Email: credentials.Email,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: expirationTime.Unix(),
-		},
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(jwtKey)
+	// Process for creating a cookie to store logged in user email
+	err, statusCode := CreateCookie(w, credentials)
 
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(GenerateResponse("Error creating JWT"))
-		return
+		w.WriteHeader(statusCode)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
 	}
 
-	http.SetCookie(w, 
-	&http.Cookie{
-		Name: "token",
-		Value: tokenString,
-		Path: "/",
-		Expires: expirationTime,
-		SameSite: http.SameSiteLaxMode,
-		// Secure: true,
-		HttpOnly: true,
-	})
-
-	w.WriteHeader(http.StatusAccepted);
+	w.WriteHeader(http.StatusOK);
 	json.NewEncoder(w).Encode(GenerateResponse("User successfully logged in"))
 }
 
