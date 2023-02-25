@@ -21,7 +21,7 @@
     > | `SECRET_KEY` | use key generator to create your own |
     > | `PORT`       | 9000                                 |
 
-        </details>
+    </details>
 
 3.  Run <code>$ go build</code> to create an executable (you must build this locally because the file is large and all .exe are included in .gitignore)
 4.  Run <code>$ ./ScannerApp</code> to start up the back-end
