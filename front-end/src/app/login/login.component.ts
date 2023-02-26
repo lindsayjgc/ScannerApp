@@ -29,7 +29,10 @@ export class LoginComponent {
         return of();
       }),
         tap((response) => {
-          this.router.navigate(['/home']);
+          this.router.navigate(['/home'])
+            .then(() => {
+              window.location.reload();
+            });
         })
       )
       .subscribe();

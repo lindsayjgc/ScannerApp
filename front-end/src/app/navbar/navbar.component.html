@@ -5,7 +5,7 @@
       <mat-icon>account_circle</mat-icon>
     </button>
     <mat-menu #menu="matMenu">
-      <div *ngIf="loggedIn; else notLoggedIn">
+      <div *ngIf="this.usersService.isLoggedIn; else notLoggedIn">
         <button mat-menu-item routerLink="/profile">
           <span>Profile</span>
         </button>
