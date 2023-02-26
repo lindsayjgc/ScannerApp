@@ -23,7 +23,7 @@ func TestSignUpEndpoint(t *testing.T) {
 		FirstName: "testfirstname",
 		LastName: "testlastname",
 		Email: "unit@test.com",
-		Password: "unittest",
+		Password: "ut",
 	}
 
 	// Create a mock request 
@@ -59,7 +59,7 @@ func TestLoginEndpoint(t *testing.T) {
 
 	creds := Credentials{
 		Email: "unit@test.com",
-		Password: "unittest",
+		Password: "ut",
 	}
 
 	payload, _ := json.Marshal(creds);
@@ -92,7 +92,7 @@ func TestLoggedInEndpoint(t *testing.T) {
 	req.Header.Set("Content-Type", "application/json")
 
 	// Add a new cookie to the req for testing the endpoint
-	createCookie(req, t)
+	createTestCookie(req, t)
 
 	// Create a new recorder and serve
 	rr := httptest.NewRecorder()
@@ -112,32 +112,6 @@ func TestLoggedInEndpoint(t *testing.T) {
 	}
 }
 
-func TestDeleteEndpoint(t *testing.T) {
-	InitialUserMigration()
-	InitialAllergyMigration()
-	InitializeRouter()
-
-	req, _ := http.NewRequest("DELETE", "/api/delete-user", nil);
-	req.Header.Set("Content-Type", "application/json")
-	createCookie(req, t)
-
-	rr := httptest.NewRecorder()
-	r.ServeHTTP(rr,req)
-
-	// Process response
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("Handler returned the wrong status: got %v, expected %v", status, http.StatusCreated);
-	}
-
-	expected := `{"email":"unit@test.com","message":"User successfully deleted"}`
-	body := strings.Replace(rr.Body.String(), "\n", "", -1);
-	body = strings.Replace(body, "\r", "", -1);
-
-	if body != expected {
-		t.Errorf("Handler returned unexpected body: got %v, expected %v", rr.Body.String(), expected);
-	}
-}
-
 func TestLogoutEndpoint(t *testing.T) {
 	InitialUserMigration()
 	InitialAllergyMigration()
@@ -145,7 +119,7 @@ func TestLogoutEndpoint(t *testing.T) {
 
 	req, _ := http.NewRequest("POST", "/api/logout", nil);
 	req.Header.Set("Content-Type", "application/json")
-	createCookie(req, t)
+	createTestCookie(req, t)
 
 	rr := httptest.NewRecorder()
 	r.ServeHTTP(rr,req)
@@ -164,7 +138,33 @@ func TestLogoutEndpoint(t *testing.T) {
 	}
 }
 
-func createCookie(req *http.Request, t *testing.T) {
+func TestDeleteEndpoint(t *testing.T) {
+	InitialUserMigration()
+	InitialAllergyMigration()
+	InitializeRouter()
+
+	req, _ := http.NewRequest("DELETE", "/api/delete-user", nil);
+	req.Header.Set("Content-Type", "application/json")
+	createTestCookie(req, t)
+
+	rr := httptest.NewRecorder()
+	r.ServeHTTP(rr,req)
+
+	// Process response
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("Handler returned the wrong status: got %v, expected %v", status, http.StatusCreated);
+	}
+
+	expected := `{"email":"unit@test.com","message":"User successfully deleted"}`
+	body := strings.Replace(rr.Body.String(), "\n", "", -1);
+	body = strings.Replace(body, "\r", "", -1);
+
+	if body != expected {
+		t.Errorf("Handler returned unexpected body: got %v, expected %v", rr.Body.String(), expected);
+	}
+}
+
+func createTestCookie(req *http.Request, t *testing.T) {
 	// Create a new token string
 	expirationTime := time.Now().Add(time.Minute)
 	claims := &Claims{
