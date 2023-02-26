@@ -24,18 +24,6 @@ type RawAllergies struct {
 	Allergies string `json:"allergies"`
 }
 
-type AllUserInfo struct {
-	FirstName string `json:"firstname"`
-	LastName  string `json:"lastname"`
-	Email     string `json:"email"`
-	// Password  string `json:"password"`
-	Allergies string `json:"allergies"`
-}
-
-type Email struct {
-	Email string `json:"email"`
-}
-
 func InitialAllergyMigration() {
 	AllergyDB, err = gorm.Open(sqlite.Open(DB_PATH), &gorm.Config{})
 
@@ -56,46 +44,6 @@ func InitialAllergyMigration() {
 	// AutoMigrate checks the DB for a matching existing schema - if it does
 	// not exist, create/update the new schema
 	AllergyDB.AutoMigrate(&Allergy{})
-}
-
-func UserInfo(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	// Check for logged in user and get their email
-	claims, err, resStatus := CheckCookie(w, r)
-
-	if err != nil {
-		w.WriteHeader(resStatus)
-		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
-		return
-	}
-
-	var user User
-	result := UserDB.First(&user, "email = ?", claims.Email)
-	if result.Error != nil {
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(GenerateResponse("User not found"))
-		return
-	}
-
-	// Retrieve user allergies as a slice
-	var userAllergiesSlice []string
-	result = AllergyDB.Model(Allergy{}).Where("email = ?", claims.Email).Select("allergies").Find(&userAllergiesSlice)
-
-	// all important user info combined into one struct for easier use by frontend
-	var allInfo AllUserInfo
-	allInfo.FirstName = user.FirstName
-	allInfo.LastName = user.LastName
-	allInfo.Email = user.Email
-	// allInfo.Password = user.Password
-	if len(userAllergiesSlice) == 0 {
-		allInfo.Allergies = "NONE"
-	} else {
-		allInfo.Allergies = strings.Join(userAllergiesSlice, ",")
-	}
-
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(allInfo)
 }
 
 func AddAllergy(w http.ResponseWriter, r *http.Request) {
@@ -182,7 +130,6 @@ func DeleteAllergy(w http.ResponseWriter, r *http.Request) {
 	for _, v := range existingAllergiesSlice {
 		existingAllergies[string(v)] = true
 	}
-	fmt.Println(existingAllergies)
 
 	var deletedAllergies []string
 	var notDeletedAllergies []string
