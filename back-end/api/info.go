@@ -16,7 +16,7 @@ var AllergyDB *gorm.DB
 
 type Allergy struct {
 	gorm.Model
-	Email string `json:"email"`
+	Email   string `json:"email"`
 	Allergy string `json:"allergy"`
 }
 
@@ -78,7 +78,7 @@ func UserInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Retrieve user allergies as a slice 
+	// Retrieve user allergies as a slice
 	var userAllergiesSlice []string
 	result = AllergyDB.Model(Allergy{}).Where("email = ?", claims.Email).Select("allergies").Find(&userAllergiesSlice)
 
@@ -91,7 +91,7 @@ func UserInfo(w http.ResponseWriter, r *http.Request) {
 	if len(userAllergiesSlice) == 0 {
 		allInfo.Allergies = "NONE"
 	} else {
-		allInfo.Allergies =  strings.Join(userAllergiesSlice, ",")
+		allInfo.Allergies = strings.Join(userAllergiesSlice, ",")
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -150,4 +150,49 @@ func AddAllergy(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(res)
+}
+
+func DeleteAllergy(w http.ResponseWriter, r *http.Request) {
+	// var info Info
+
+	// err := json.NewDecoder(r.Body).Decode(&info)
+	// if err != nil {
+	// 	w.WriteHeader(http.StatusInternalServerError)
+	// 	res := make(map[string]string)
+	// 	res["msg"] = "Cannot decode user info"
+	// 	json.NewEncoder(w).Encode(res)
+	// 	return
+	// }
+
+	// var userInfo Info
+	// result := DB.First(&userInfo, "email = ?", info.Email)
+	// // if current user has no info, just ignore request
+	// if result.Error != nil {
+	// 	w.WriteHeader(http.StatusInternalServerError)
+	// 	res := make(map[string]string)
+	// 	res["msg"] = "Allergy not present for deletion"
+	// 	json.NewEncoder(w).Encode(res)
+	// 	return
+	// }
+
+	// allergies := userInfo.Allergies
+	// allergyList := strings.Split(allergies, ",")
+	// for i := 0; i < len(allergyList); i++ {
+	// 	if info.Allergies == allergyList[i] {
+	// 		allergyList = append(allergyList[:i], allergyList[i+1:]...)
+	// 		allergies = strings.Join(allergyList, ",")
+	// 		userInfo.Allergies = allergies
+	// 		DB.Save(&userInfo)
+	// 		res := make(map[string]string)
+	// 		res["msg"] = "Allergy successfully deleted"
+	// 		json.NewEncoder(w).Encode(res)
+	// 		return
+	// 	}
+	// }
+
+	// w.WriteHeader(http.StatusInternalServerError)
+	// res := make(map[string]string)
+	// res["msg"] = "Allergy not present for deletion"
+	// json.NewEncoder(w).Encode(res)
+
 }
