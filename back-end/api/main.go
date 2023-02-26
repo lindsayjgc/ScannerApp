@@ -27,8 +27,8 @@ func InitializeRouter() {
 	s.HandleFunc("/delete-user", DeleteUser).Methods("DELETE")
 	s.HandleFunc("/logged-in", IsLoggedIn).Methods("GET")
 	s.HandleFunc("/user-info", UserInfo).Methods("GET")
-	s.HandleFunc("/update-allergies", AddAllergy).Methods("PUT")
-	s.HandleFunc("/delete-allergy", DeleteAllergy).Methods("DELETE")
+	s.HandleFunc("/add-allergies", AddAllergy).Methods("PUT")
+	s.HandleFunc("/delete-allergies", DeleteAllergy).Methods("DELETE")
 }
 
 func StartServer() {
