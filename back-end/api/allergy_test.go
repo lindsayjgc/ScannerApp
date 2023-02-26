@@ -14,7 +14,7 @@ func TestUserInfo(t *testing.T) {
 	InitialAllergyMigration()
 	InitializeRouter()
 
-	email := Email{
+	email := Claims{
 		Email: "fl@gmail.com",
 	}
 
