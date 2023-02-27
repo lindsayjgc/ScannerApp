@@ -2,19 +2,17 @@ package main
 
 import (
 	"bytes"
-	"fmt"
-	"io/ioutil"
-
-	// "strings"
 	"encoding/json"
-	// "fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
 func TestAddAllergy(t *testing.T) {
-	TestSignUpEndpoint(t)
+	InitialUserMigration()
+	InitialAllergyMigration()
+	InitializeRouter()
 
 	testAllergy := RawAllergies{
 		Allergies: "testAllergy",
@@ -44,8 +42,6 @@ func TestAddAllergy(t *testing.T) {
 	resMap := make(map[string]string)
 	json.Unmarshal(body, &resMap)
 
-	fmt.Println(resMap["addedAllergies"])
-
 	expectedMsg := "testAllergy"
 	if resMap["addedAllergies"] != expectedMsg || resMap["existingAllergies"] != "" {
 		t.Errorf("Expected %s; got %s \n", expectedMsg, resMap["addedAllergies"])
@@ -54,6 +50,47 @@ func TestAddAllergy(t *testing.T) {
 	// clean up testAllergy
 	allergy := Allergy{Email: "unit@test.com", Allergy: "testAllergy"}
 	AllergyDB.Where("email = ? AND allergy = ?", allergy.Email, allergy.Allergy).Delete(&allergy)
+}
 
-	TestDeleteEndpoint(t)
+func TestDeleteAllergy(t *testing.T) {
+	InitialUserMigration()
+	InitialAllergyMigration()
+	InitializeRouter()
+
+	// create allergy to delete
+	allergy := Allergy{Email: "unit@test.com", Allergy: "testAllergy"}
+	AllergyDB.Create(&allergy)
+
+	testAllergy := RawAllergies{
+		Allergies: "testAllergy",
+	}
+
+	payload, _ := json.Marshal(testAllergy)
+	req, _ := http.NewRequest("DELETE", "/delete-allergies", bytes.NewBuffer(payload))
+	req.Header.Set("Content-Type", "application/json")
+
+	createCookie(req, t)
+
+	// create ResponseRecorder
+	rr := httptest.NewRecorder()
+
+	// invoke the target function
+	DeleteAllergy(rr, req)
+
+	// get the response
+	response := rr.Result()
+	body, _ := ioutil.ReadAll(response.Body)
+
+	// assertion
+	if http.StatusOK != response.StatusCode {
+		t.Errorf("Expected %v; got %v\n", http.StatusOK, response.StatusCode)
+	}
+
+	resMap := make(map[string]string)
+	json.Unmarshal(body, &resMap)
+
+	expectedMsg := "testAllergy"
+	if resMap["deletedAllergies"] != expectedMsg || resMap["notDeletedAllergies"] != "" {
+		t.Errorf("Expected %s; got %s \n", expectedMsg, resMap["deletedAllergies"])
+	}
 }
