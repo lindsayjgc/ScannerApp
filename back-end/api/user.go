@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"reflect"
+	"strings"
 
 	"github.com/glebarez/sqlite"
 	"github.com/golang-jwt/jwt"
@@ -22,6 +23,13 @@ type User struct {
 	LastName   string `json:"lastname"`
 	Email      string `json:"email"`
 	Password   string `json:"password"`
+}
+
+type AllUserInfo struct {
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
+	Email     string `json:"email"`
+	Allergies string `json:"allergies"`
 }
 
 type Credentials struct {
@@ -97,7 +105,7 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 	}
 	// Create credentials for use later in creating cokoie
 	credentials := Credentials{Email: user.Email, Password: user.Password}
-	
+
 	user.Password = string(passwordHash)
 	UserDB.Create(&user)
 
@@ -156,7 +164,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
 	}
 
-	w.WriteHeader(http.StatusOK);
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(GenerateResponse("User successfully logged in"))
 }
 
@@ -172,7 +180,7 @@ func IsLoggedIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK);
+	w.WriteHeader(http.StatusOK)
 	res := make(map[string]string)
 	res["message"] = "User is currently logged in"
 	res["email"] = claims.Email
@@ -193,10 +201,10 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	// If cookie is obtained without errors, delete it and respond
 	DeleteCookie(w)
 
-	w.WriteHeader(http.StatusOK);
+	w.WriteHeader(http.StatusOK)
 	res := make(map[string]string)
 	res["message"] = "User successfully logged out"
-	res["email"] = claims.Email;
+	res["email"] = claims.Email
 	json.NewEncoder(w).Encode(res)
 }
 
@@ -218,6 +226,46 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	res := make(map[string]string)
 	res["message"] = "User successfully deleted"
-	res["email"] = claims.Email;
+	res["email"] = claims.Email
 	json.NewEncoder(w).Encode(res)
+}
+
+func UserInfo(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// Check for logged in user and get their email
+	claims, err, resStatus := CheckCookie(w, r)
+
+	if err != nil {
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
+		return
+	}
+
+	var user User
+	result := UserDB.First(&user, "email = ?", claims.Email)
+	if result.Error != nil {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(GenerateResponse("User not found"))
+		return
+	}
+
+	// Retrieve user allergies as a slice
+	var userAllergiesSlice []string
+	result = AllergyDB.Model(Allergy{}).Where("email = ?", claims.Email).Select("allergy").Find(&userAllergiesSlice)
+
+	// all important user info combined into one struct for easier use by frontend
+	var allInfo AllUserInfo
+	allInfo.FirstName = user.FirstName
+	allInfo.LastName = user.LastName
+	allInfo.Email = user.Email
+	// allInfo.Password = user.Password
+	if len(userAllergiesSlice) == 0 {
+		allInfo.Allergies = "NONE"
+	} else {
+		allInfo.Allergies = strings.Join(userAllergiesSlice, ",")
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(allInfo)
 }

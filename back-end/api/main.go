@@ -12,20 +12,23 @@ import (
 
 var r = mux.NewRouter()
 var err error
+
 const DB_PATH = "../db/groceryapp.db"
+
 var jwtKey []byte
 
 func InitializeRouter() {
 	// Subrouter for handling all requests made to API URL
 	s := r.PathPrefix("/api").Subrouter()
-	
+
 	s.HandleFunc("/signup", SignUp).Methods("POST")
 	s.HandleFunc("/login", Login).Methods("POST")
 	s.HandleFunc("/logout", Logout).Methods("POST")
 	s.HandleFunc("/delete-user", DeleteUser).Methods("DELETE")
 	s.HandleFunc("/logged-in", IsLoggedIn).Methods("GET")
 	s.HandleFunc("/user-info", UserInfo).Methods("GET")
-	s.HandleFunc("/update-allergies", AddAllergy).Methods("PUT")
+	s.HandleFunc("/add-allergies", AddAllergy).Methods("PUT")
+	s.HandleFunc("/delete-allergies", DeleteAllergy).Methods("DELETE")
 }
 
 func StartServer() {
