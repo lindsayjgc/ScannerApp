@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 
 	// "strings"
@@ -13,23 +14,17 @@ import (
 )
 
 func TestAddAllergy(t *testing.T) {
-	// Initialize router and connect to DB for this test instance
-	InitialUserMigration()
-	InitialAllergyMigration()
-	InitializeRouter()
+	TestSignUpEndpoint(t)
 
-	info := Allergy{
-		Email:   "js@gmail.com",
-		Allergy: "testAllergy",
+	testAllergy := RawAllergies{
+		Allergies: "testAllergy",
 	}
 
-	payload, _ := json.Marshal(info)
-	req, err := http.NewRequest("PUT", "/update-allergies", bytes.NewBuffer(payload))
-
+	payload, _ := json.Marshal(testAllergy)
+	req, _ := http.NewRequest("PUT", "/add-allergies", bytes.NewBuffer(payload))
 	req.Header.Set("Content-Type", "application/json")
-	if err != nil {
-		t.Fatal(err)
-	}
+
+	createCookie(req, t)
 
 	// create ResponseRecorder
 	rr := httptest.NewRecorder()
@@ -40,22 +35,25 @@ func TestAddAllergy(t *testing.T) {
 	// get the response
 	response := rr.Result()
 	body, _ := ioutil.ReadAll(response.Body)
-	defer response.Body.Close()
 
 	// assertion
 	if http.StatusOK != response.StatusCode {
 		t.Errorf("Expected %v; got %v\n", http.StatusOK, response.StatusCode)
 	}
 
-	var resp map[string]interface{}
-	if err := json.Unmarshal(body, &resp); err != nil {
-		t.Errorf("Error unmarshalling response: %s \n", err)
+	resMap := make(map[string]string)
+	json.Unmarshal(body, &resMap)
+
+	fmt.Println(resMap["addedAllergies"])
+
+	expectedMsg := "testAllergy"
+	if resMap["addedAllergies"] != expectedMsg || resMap["existingAllergies"] != "" {
+		t.Errorf("Expected %s; got %s \n", expectedMsg, resMap["addedAllergies"])
 	}
 
-	expectedErrMsg := "Allergy successfully added"
-	if resp["msg"] != expectedErrMsg {
-		t.Errorf("Expected %s; got %s \n", expectedErrMsg, resp["msg"])
-	}
+	// clean up testAllergy
+	allergy := Allergy{Email: "unit@test.com", Allergy: "testAllergy"}
+	AllergyDB.Where("email = ? AND allergy = ?", allergy.Email, allergy.Allergy).Delete(&allergy)
 
-	// TODO: clean up testAllergy
+	TestDeleteEndpoint(t)
 }
