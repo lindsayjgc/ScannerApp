@@ -62,6 +62,7 @@ func StartServer() {
 func main() {
 	InitialUserMigration()
 	InitialAllergyMigration()
+	InitialListMigration()
 	InitializeRouter()
 	StartServer()
 }
