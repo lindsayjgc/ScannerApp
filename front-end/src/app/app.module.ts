@@ -16,6 +16,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { CommonModule } from '@angular/common';
 
 
 import { LoginComponent } from './login/login.component';
@@ -25,6 +27,7 @@ import { SetupComponent } from './setup/setup.component';
 import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
 import { DeleteDialogComponent } from './dialogs/delete-dialog/delete-dialog.component';
+import { DeleteAllergyComponent } from './dialogs/delete-allergy/delete-allergy.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +38,8 @@ import { DeleteDialogComponent } from './dialogs/delete-dialog/delete-dialog.com
     SetupComponent,
     HomeComponent,
     ProfileComponent,
-    DeleteDialogComponent
+    DeleteDialogComponent,
+    DeleteAllergyComponent
   ],
   imports: [
     BrowserModule,
@@ -53,7 +57,9 @@ import { DeleteDialogComponent } from './dialogs/delete-dialog/delete-dialog.com
     MatIconModule,
     MatMenuModule,
     MatDialogModule,
-    MatChipsModule
+    MatChipsModule,
+    MatCheckboxModule,
+    CommonModule
   ],
   providers: [],
   bootstrap: [AppComponent]
