@@ -1,9 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { AllergensService, DialogData } from 'src/app/services/allergens.service';
-import { ProfileComponent } from 'src/app/profile/profile.component';
-import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-delete-allergy',
@@ -11,92 +8,6 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./delete-allergy.component.css']
 })
 export class DeleteAllergyComponent {
-  // selectedAllergies: string[] = [];
-
-  // constructor(
-  //   public dialogRef: MatDialogRef<DeleteAllergyComponent>,
-  //   @Inject(MAT_DIALOG_DATA) public data: { allergies: string[] }
-  // ) {
-  //   // Copy the initial data into the selectedAllergies array
-  //   this.selectedAllergies = [...data.allergies];
-  // }
-
-  // toggleAllergySelection(allergy: string): void {
-  //   if (this.selectedAllergies.includes(allergy)) {
-  //     this.selectedAllergies = this.selectedAllergies.filter(
-  //       (a) => a !== allergy
-  //     );
-  //   } else {
-  //     this.selectedAllergies.push(allergy);
-  //   }
-  // }
-
-  // cancel(): void {
-  //   this.dialogRef.close();
-  // }
-
-  // removeSelected(): void {
-  //   this.dialogRef.close(this.selectedAllergies);
-  // }
-
-  // selectedAllergies: string[] = [];
-  // inputAllergies: string = '';
-  // allergiesToDelete: any;
-
-  // constructor(private http: HttpClient,
-  //   public dialogRef: MatDialogRef<DeleteAllergyComponent>,
-  //   @Inject(MAT_DIALOG_DATA) public data: DialogData
-  // ) {}
-
-  // toggleAllergySelection(allergy: string) {
-  //   if (this.selectedAllergies.includes(allergy)) {
-  //     this.selectedAllergies = this.selectedAllergies.filter((a) => a !== allergy);
-  //   } else {
-  //     this.selectedAllergies.push(allergy);
-  //   }
-  // }
-
-  // removeAllergy(allergiesToDelete: string) {
-  //   // const url = `https://your-backend-api.com/allergies/${allergy}`;
-  //   // return this.http.delete(url);
-
-  //   // Send a DELETE request to the backend API
-  //   this.http.delete('http://your-backend-api-url/delete-allergy', {
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify({ allergies: this.allergiesToDelete })
-  //   }).subscribe(response => {
-  //     // Handle the response from the backend API
-  //     console.log(response);
-  //     alert('Allergies deleted successfully');
-  //   }, error => {
-  //     // Handle errors
-  //     console.log(error);
-  //     alert('Error deleting allergies');
-  //   });
-
-    
-  // }
-  
-
-  // removeSelected() {
-  //   let allergiesToRemove = this.selectedAllergies;
-  
-  //   if (this.inputAllergies && this.inputAllergies.trim() !== '') {
-  //     const inputAllergiesArray = this.inputAllergies.split(',').map((s) => s.trim());
-  //     allergiesToRemove = [...allergiesToRemove, ...inputAllergiesArray];
-  //   }
-  
-  //   allergiesToRemove.forEach((allergy) => {
-  //     this.removeAllergy(allergy)
-  //   });
-  
-  //   this.dialogRef.close(allergiesToRemove);
-  // }
-  
-
-  // cancel() {
-  //   this.dialogRef.close();
-  // }
 
   selectedAllergies: string[] = [];
   allergens: Allergen[] = [];

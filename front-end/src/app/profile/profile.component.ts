@@ -60,70 +60,6 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  // updateUserProfile(profile: { allergies: string }): Observable<any> {
-  //   return this.usersService.updateUserProfile(profile).pipe(
-  //     tap(() => {
-  //       // Update the allergies in the component's state
-  //       this.allergies = profile.allergies.split(',');
-  //     }),
-  //     catchError((error) => {
-  //       this.errorMessage.open(`Error: ${error.message}`, '', {
-  //         duration: 5000,
-  //         panelClass: ['login-message-fail'],
-  //       });
-  //       return of();
-  //     })
-  //   );
-  // }
-
-  // remove(allergy: string) {
-  //   this.allergensService.deleteAllergy({ allergies: this.allergies.join(',') })
-  //     .subscribe();
-  // }
-
-  // removeAllergy() {
-  //   // this.http.delete(`http://localhost:4200/api/delete-allergies/${this.allergyToRemove}`).subscribe(
-  //   //   () => console.log(`Successfully removed ${allergy} allergy`),
-  //   //   error => console.error(`Error removing ${allergy} allergy: ${error}`)
-  //   // );
-  //   if (this.allergyToRemove) {
-  //     this.http.delete(`http://localhost:4200/api/delete-allergies/${this.allergyToRemove}`).subscribe(
-  //       () => console.log(`Successfully removed ${this.allergyToRemove} allergy`),
-  //       error => console.error(`Error removing ${this.allergyToRemove} allergy: ${error}`)
-  //     );
-  //   }
-  // }
-
-  // openDialog(): void {
-  //   const dialogRef = this.dialog2.open(DeleteAllergyComponent, {
-  //     width: '250px',
-  //     data: { allergies: [] },
-  //   });
-
-  //   dialogRef.afterClosed().subscribe((result) => {
-  //     if (result && result.length) {
-  //       this.removeSelectedAllergies(result);
-  //     }
-  //   });
-  // }
-
-  // removeSelectedAllergies(selectedAllergies: string[]): void {
-  //   selectedAllergies.forEach((allergy) => {
-  //     const url = `http://localhost:4200/api/delete-allergies/${allergy}`;
-  //     this.http.delete(url).subscribe();
-  //   });
-
-  // }
-
-  // ngOnInit() {
-  //   this.getAllergies();
-  // }
-
-  // getAllergies() {
-  //   this.allergensService.getAllergies().subscribe((allergies: string[]) => {
-  //     this.allergies = allergies;
-  //   });
-  // }
 
   getAllergies() {
     this.http.get<any>('http://localhost:4200/api/user-info').subscribe((data) => {
@@ -151,25 +87,6 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  // allergiesToDelete: string = '';
 
-  // deleteAllergies() {
-  //   // Prompt the user to enter the allergies to delete
-  //   this.allergiesToDelete = prompt("Enter the allergies to delete, separated by commas:");
-
-  //   // Send a DELETE request to the backend API
-  //   this.http.delete('http://your-backend-api-url/delete-allergy', {
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify({ allergies: this.allergiesToDelete })
-  //   }).subscribe(response => {
-  //     // Handle the response from the backend API
-  //     console.log(response);
-  //     alert('Allergies deleted successfully');
-  //   }, error => {
-  //     // Handle errors
-  //     console.log(error);
-  //     alert('Error deleting allergies');
-  //   });
-  // }
 
 }
