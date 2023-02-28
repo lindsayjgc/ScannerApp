@@ -22,7 +22,7 @@ type Allergy struct {
 }
 
 // Following structs are for decoding JSON from frontend
-type RawNewAllergies struct {
+type RawAllergies struct {
 	Allergies string `json:"allergies"`
 }
 
@@ -117,7 +117,7 @@ func AddAllergy(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Decode allergies to be added and split into slice
-	var rawNewAllergies RawNewAllergies
+	var rawNewAllergies RawAllergies
 	err = json.NewDecoder(r.Body).Decode(&rawNewAllergies)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
