@@ -30,7 +30,7 @@
 
 <br/>
 
-### User Auth/Creation/Deletion
+### User Auth/Creation/Deletion/Info
 
 ---
 
@@ -133,6 +133,26 @@
 > | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                                             |
 > | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                                      |
 > | `500`     | `application/json` | `{"message":"Other JWT-related error"}`                                                |
+
+</details>
+
+<details>
+    <summary><code>GET</code> <code><b>/api/user-info</b></code> <code>Retrieves specific user's information from database</code></summary>
+
+##### Parameters
+
+> `none`    
+    
+##### Responses
+
+> | http code | content-type       | response                                                                                         |
+> | --------- | ------------------ | ------------------------------------------------------------------------------------------------ |
+> | `200`     | `application/json` | `{"firstname":"*user's first name*"`<br>`"lastname":"*user's last name*"`<br>  `"email":"*user's email*"`<br>  `"password":"*user's password*"`<br>  `"allergies":"*comma delimited or NONE*"}`                                        |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`                                                                |       
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                                                       |
+> | `404`     | `application/json` | `{"message":"User Not Found"}`                                                                   |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                                                |       
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"}`                                                          |
 
 </details>
 
