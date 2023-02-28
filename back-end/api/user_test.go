@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func TestSignUpEndpoint(t *testing.T) {
@@ -50,12 +51,25 @@ func TestSignUpEndpoint(t *testing.T) {
 	if body != expected {
 		t.Errorf("Handler returned unexpected body: got %v, expected %v", rr.Body.String(), expected)
 	}
+
+	// Delete the user that was created for the test
+	UserDB.Where("email = ?", "unit@test.com").Delete(&user)
 }
 
 func TestLoginEndpoint(t *testing.T) {
 	InitialUserMigration()
 	InitialAllergyMigration()
 	InitializeRouter()
+
+	// Create a temporary user to be logged in
+	passwordHash, _ := bcrypt.GenerateFromPassword([]byte("ut"), 0)
+	user := User{
+		FirstName: "testfirstname",
+		LastName: "testlastname",
+		Email: "unit@test.com",
+		Password: string(passwordHash),
+	}
+	UserDB.Create(&user)
 
 	creds := Credentials{
 		Email: "unit@test.com",
@@ -80,6 +94,9 @@ func TestLoginEndpoint(t *testing.T) {
 	if body != expected {
 		t.Errorf("Handler returned unexpected body: got %v, expected %v", rr.Body.String(), expected)
 	}
+
+	// Delete the user that was created for the test
+	UserDB.Where("email = ?", "unit@test.com").Delete(&user)
 }
 
 func TestLoggedInEndpoint(t *testing.T) {
@@ -117,6 +134,15 @@ func TestUserInfo(t *testing.T) {
 	InitialAllergyMigration()
 	InitializeRouter()
 
+	// Create a temporary user to be logged in
+	user := User{
+		FirstName: "testfirstname",
+		LastName: "testlastname",
+		Email: "unit@test.com",
+		Password: "ut",
+	}
+	UserDB.Create(&user)
+
 	req, _ := http.NewRequest("GET", "/api/user-info", nil)
 	resp := httptest.NewRecorder()
 	req.Header.Set("Content-Type", "application/json")
@@ -150,7 +176,8 @@ func TestUserInfo(t *testing.T) {
 		t.Errorf("Error: expected %v, got %v", userInfo, decodedUser)
 	}
 
-	// TestDeleteEndpoint(t)
+	// Delete the user that was created for the test
+	UserDB.Where("email = ?", "unit@test.com").Delete(&user)
 }
 
 func TestLogoutEndpoint(t *testing.T) {
@@ -183,6 +210,15 @@ func TestDeleteEndpoint(t *testing.T) {
 	InitialUserMigration()
 	InitialAllergyMigration()
 	InitializeRouter()
+
+	// Create a temporary user to be logged in
+	user := User{
+		FirstName: "testfirstname",
+		LastName: "testlastname",
+		Email: "unit@test.com",
+		Password: "ut",
+	}
+	UserDB.Create(&user)
 
 	req, _ := http.NewRequest("DELETE", "/api/delete-user", nil);
 	req.Header.Set("Content-Type", "application/json")
