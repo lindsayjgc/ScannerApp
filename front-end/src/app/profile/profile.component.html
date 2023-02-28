@@ -1,4 +1,16 @@
-<p>view profile information here</p>
+<div>
+  <h1>{{ name }}'s Profile</h1>
+  <p>Allergies:</p>
+  <ul>
+    <li *ngFor="let allergy of allergies">
+      {{ allergy }}
+    </li>
+  </ul>
+  <div>
+    <button mat-raised-button color="primary" (click)="openDialog()">Remove Allergies</button>
+  </div>      
+</div>
+
 <button mat-raised-button color="warn" (click)="openDeleteDialog()">
   Delete account
 </button>

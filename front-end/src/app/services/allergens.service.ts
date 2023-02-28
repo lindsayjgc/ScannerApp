@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { allergenparams } from './allergenparams.service';
 
 @Injectable({
   providedIn: 'root'
@@ -7,10 +8,24 @@ import { HttpClient } from '@angular/common/http';
 export class AllergensService {
 
   private apiUrl = 'http://localhost:4200/api/add-allergies';
+  allergiesToDelete: any;
 
   constructor(private http: HttpClient) { }
 
   addAllergy(allergyString: string) {
     return this.http.put(this.apiUrl, { allergies: allergyString });
   }
+
+  private apiUrl2 = 'http://localhost:4200/api/delete-allergies';
+
+  deleteAllergy(allergyString: string) {
+    const allergyData = { allergies: allergyString };
+    return this.http.delete<allergenparams>(this.apiUrl2, { body: allergyData });
+  }
+  
+  
 }
+export interface DialogData {
+  allergies: string;
+}
+
