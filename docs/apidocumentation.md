@@ -135,3 +135,50 @@
 > | `500`     | `application/json` | `{"message":"Other JWT-related error"}`                                                |
 
 </details>
+
+### Allergies
+
+---
+
+<details>
+    <summary><code>PUT</code> <code><b>/api/add-allergies</b></code> <code>Adds allergies to user's database information</code></summary>
+
+##### Parameters
+    
+> | name        | type     | data type | description                                    |
+> | ----------- | -------- | --------- | ---------------------------------------------- |
+> | `allergies` | required | string    | allergies that are to be added to the database |
+
+##### Responses
+
+> | http code | content-type       | response                                                                             |
+> | --------- | ------------------ | ------------------------------------------------------------------------------------ |
+> | `200`     | `application/json` | `{"addedAllergies":"*new allergies*", "existingAllergies":"*preexisting allergies*"}`|
+> | `400`     | `application/json` | `{"message":"No user logged in"}`                                                    |       
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                                           |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                                    |       
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"}`                                              |
+    
+</details>
+
+<details>
+    <summary><code>DELETE</code> <code><b>/api/delete-allergies</b></code> <code>Deletes allergies from user's database information</code></summary>
+
+##### Parameters
+    
+> | name        | type     | data type | description                                        |
+> | ----------- | -------- | --------- | -------------------------------------------------- |
+> | `allergies` | required | string    | allergies that are to be deleted from the database |
+
+##### Responses
+
+> | http code | content-type       | response                                                                                 |
+> | --------- | ------------------ | ---------------------------------------------------------------------------------------- |
+> | `200`     | `application/json` | `{"deletedAllergies":"*new allergies*", "notDeletedAllergies":"*preexisting allergies*"}`|
+> | `400`     | `application/json` | `{"message":"No user logged in"}`                                                        |       
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                                               |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                                        |       
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"}`                                                  |
+    
+</details>
+
