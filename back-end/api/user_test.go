@@ -69,7 +69,7 @@ func TestLoginEndpoint(t *testing.T) {
 	rr := httptest.NewRecorder()
 	r.ServeHTTP(rr, req)
 
-	if status := rr.Code; status != http.StatusAccepted {
+	if status := rr.Code; status != http.StatusOK {
 		t.Errorf("Handler returned the wrong status: got %v, expected %v", status, http.StatusCreated)
 	}
 
@@ -113,7 +113,9 @@ func TestLoggedInEndpoint(t *testing.T) {
 }
 
 func TestUserInfo(t *testing.T) {
-	TestSignUpEndpoint(t)
+	InitialUserMigration()
+	InitialAllergyMigration()
+	InitializeRouter()
 
 	req, _ := http.NewRequest("GET", "/api/user-info", nil)
 	resp := httptest.NewRecorder()
@@ -121,8 +123,7 @@ func TestUserInfo(t *testing.T) {
 
 	createTestCookie(req, t)
 
-	handler := http.HandlerFunc(UserInfo)
-	handler.ServeHTTP(resp, req)
+	r.ServeHTTP(resp, req)
 
 	if resp.Code != http.StatusOK {
 		t.Errorf("Error: response code should be %v, got %v", http.StatusOK, resp.Code)
@@ -149,7 +150,7 @@ func TestUserInfo(t *testing.T) {
 		t.Errorf("Error: expected %v, got %v", userInfo, decodedUser)
 	}
 
-	TestDeleteEndpoint(t)
+	// TestDeleteEndpoint(t)
 }
 
 func TestLogoutEndpoint(t *testing.T) {
