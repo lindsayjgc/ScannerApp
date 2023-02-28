@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 	"reflect"
-	"time"
+	"strings"
 
 	"github.com/glebarez/sqlite"
 	"github.com/golang-jwt/jwt"
@@ -15,12 +15,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
-var err error
-
-const DB_PATH = "../db/groceryapp.db"
-
-var jwtKey []byte
+var UserDB *gorm.DB
 
 type User struct {
 	gorm.Model        // Declare this as the schema for GORM
@@ -28,6 +23,13 @@ type User struct {
 	LastName   string `json:"lastname"`
 	Email      string `json:"email"`
 	Password   string `json:"password"`
+}
+
+type AllUserInfo struct {
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
+	Email     string `json:"email"`
+	Allergies string `json:"allergies"`
 }
 
 type Credentials struct {
@@ -41,11 +43,11 @@ type Claims struct {
 }
 
 func InitialUserMigration() {
-	DB, err = gorm.Open(sqlite.Open(DB_PATH), &gorm.Config{})
+	UserDB, err = gorm.Open(sqlite.Open(DB_PATH), &gorm.Config{})
 
 	if err != nil {
 		fmt.Println(err)
-		panic("Error connecting to DB.")
+		panic("Error connecting to UserDB.")
 	}
 
 	err := godotenv.Load()
@@ -59,7 +61,7 @@ func InitialUserMigration() {
 
 	// AutoMigrate checks the DB for a matching existing schema - if it does
 	// not exist, create/update the new schema
-	DB.AutoMigrate(&User{})
+	UserDB.AutoMigrate(&User{})
 }
 
 func SignUp(w http.ResponseWriter, r *http.Request) {
@@ -70,7 +72,7 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(generateResponse("Error decoding JSON body"))
+		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON body"))
 		return
 	}
 
@@ -79,18 +81,18 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 	for i := 0; i < v.NumField(); i++ {
 		if v.Field(i).Interface() == "" {
 			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(generateResponse("All fields are required."))
+			json.NewEncoder(w).Encode(GenerateResponse("All fields are required."))
 			return
 		}
 	}
 
 	// Check if email already exists
 	var checkEmail User
-	result := DB.First(&checkEmail, "email = ?", user.Email)
+	result := UserDB.First(&checkEmail, "email = ?", user.Email)
 
 	if result.RowsAffected != 0 {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(generateResponse("Email is already registered to an account"))
+		json.NewEncoder(w).Encode(GenerateResponse("Email is already registered to an account"))
 		return
 	}
 
@@ -98,15 +100,25 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 0)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(generateResponse("Could not generate password hash"))
+		json.NewEncoder(w).Encode(GenerateResponse("Could not generate password hash"))
 		return
 	}
+	// Create credentials for use later in creating cokoie
+	credentials := Credentials{Email: user.Email, Password: user.Password}
 
 	user.Password = string(passwordHash)
+	UserDB.Create(&user)
 
-	DB.Create(&user)
+	// Now that user is created, log them in
+	err, statusCode := CreateCookie(w, credentials)
+
+	if err != nil {
+		w.WriteHeader(statusCode)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
+	}
+
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(generateResponse("User successfully created"))
+	json.NewEncoder(w).Encode(GenerateResponse("User successfully created"))
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -118,18 +130,18 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(generateResponse("Error decoding JSON body"))
+		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON body"))
 		return
 	}
 
 	// Fetch the user record with email matching the email passed in
 	var user User
-	result := DB.First(&user, "email = ?", credentials.Email)
+	result := UserDB.First(&user, "email = ?", credentials.Email)
 
 	// Handle email not connected to any user in DB
 	if result.Error != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(generateResponse("Email not registered to any account"))
+		json.NewEncoder(w).Encode(GenerateResponse("Email not registered to any account"))
 		return
 	}
 
@@ -140,89 +152,120 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	if bycrptErr != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(generateResponse("Incorrect password"))
+		json.NewEncoder(w).Encode(GenerateResponse("Incorrect password"))
 		return
 	}
 
-	expirationTime := time.Now().Add(time.Hour * 24) // JWT lasts 1 day
-	claims := &Claims{
-		Email: credentials.Email,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: expirationTime.Unix(),
-		},
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(jwtKey)
+	// Process for creating a cookie to store logged in user email
+	err, statusCode := CreateCookie(w, credentials)
 
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(generateResponse("Error creating JWT"))
-		return
+		w.WriteHeader(statusCode)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
 	}
 
-	http.SetCookie(w, 
-	&http.Cookie{
-		Name: "token",
-		Value: tokenString,
-		Path: "/",
-		Expires: expirationTime,
-		SameSite: http.SameSiteLaxMode,
-		// Secure: true,
-		HttpOnly: true,
-	})
-
-	w.WriteHeader(http.StatusAccepted);
-	json.NewEncoder(w).Encode(generateResponse("User successfully logged in"))
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(GenerateResponse("User successfully logged in"))
 }
 
 func IsLoggedIn(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	cookie, err := r.Cookie("token")
-	if err != nil {
-		if err == http.ErrNoCookie {
-			w.WriteHeader(http.StatusUnauthorized)
-			json.NewEncoder(w).Encode(generateResponse("No user logged in"))
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	tokenStr := cookie.Value
-
-	claims := &Claims{}
-
-	tkn, err := jwt.ParseWithClaims(tokenStr, claims,
-		func(t *jwt.Token) (interface{}, error) {
-			return jwtKey, nil
-		})
+	// Check for an existing cookie and handle possible errors
+	claims, err, resStatus := CheckCookie(w, r)
 
 	if err != nil {
-		if err == jwt.ErrSignatureInvalid {
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(generateResponse("Error parsing JWT"))
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
 		return
 	}
 
-	if !tkn.Valid {
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(generateResponse("JWT is no longer valid"))
-		return
-	}
-
-	w.WriteHeader(http.StatusOK);
+	w.WriteHeader(http.StatusOK)
 	res := make(map[string]string)
+	res["message"] = "User is currently logged in"
 	res["email"] = claims.Email
 	json.NewEncoder(w).Encode(res)
 }
 
-func generateResponse(message string) map[string]string {
+func Logout(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	claims, err, resStatus := CheckCookie(w, r)
+
+	if err != nil {
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
+		return
+	}
+
+	// If cookie is obtained without errors, delete it and respond
+	DeleteCookie(w)
+
+	w.WriteHeader(http.StatusOK)
 	res := make(map[string]string)
-	res["message"] = message
-	return res
+	res["message"] = "User successfully logged out"
+	res["email"] = claims.Email
+	json.NewEncoder(w).Encode(res)
+}
+
+func DeleteUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	claims, err, resStatus := CheckCookie(w, r)
+
+	if err != nil {
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
+		return
+	}
+
+	UserDB.Where("email LIKE ?", claims.Email).Delete(&User{})
+	AllergyDB.Where("email LIKE ?", claims.Email).Delete(&Allergy{})
+	DeleteCookie(w)
+
+	w.WriteHeader(http.StatusOK)
+	res := make(map[string]string)
+	res["message"] = "User successfully deleted"
+	res["email"] = claims.Email
+	json.NewEncoder(w).Encode(res)
+}
+
+func UserInfo(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// Check for logged in user and get their email
+	claims, err, resStatus := CheckCookie(w, r)
+
+	if err != nil {
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
+		return
+	}
+
+	var user User
+	result := UserDB.First(&user, "email = ?", claims.Email)
+	if result.Error != nil {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(GenerateResponse("User not found"))
+		return
+	}
+
+	// Retrieve user allergies as a slice
+	var userAllergiesSlice []string
+	result = AllergyDB.Model(Allergy{}).Where("email = ?", claims.Email).Select("allergy").Find(&userAllergiesSlice)
+
+	// all important user info combined into one struct for easier use by frontend
+	var allInfo AllUserInfo
+	allInfo.FirstName = user.FirstName
+	allInfo.LastName = user.LastName
+	allInfo.Email = user.Email
+	// allInfo.Password = user.Password
+	if len(userAllergiesSlice) == 0 {
+		allInfo.Allergies = "NONE"
+	} else {
+		allInfo.Allergies = strings.Join(userAllergiesSlice, ",")
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(allInfo)
 }

@@ -4,22 +4,31 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 )
 
-var r = mux.NewRouter();
+var r = mux.NewRouter()
+var err error
+
+const DB_PATH = "../db/groceryapp.db"
+
+var jwtKey []byte
 
 func InitializeRouter() {
 	// Subrouter for handling all requests made to API URL
 	s := r.PathPrefix("/api").Subrouter()
-	
+
 	s.HandleFunc("/signup", SignUp).Methods("POST")
 	s.HandleFunc("/login", Login).Methods("POST")
+	s.HandleFunc("/logout", Logout).Methods("POST")
+	s.HandleFunc("/delete-user", DeleteUser).Methods("DELETE")
 	s.HandleFunc("/logged-in", IsLoggedIn).Methods("GET")
 	s.HandleFunc("/user-info", UserInfo).Methods("GET")
-	s.HandleFunc("/update-allergies", AddAllergy).Methods("PUT")
+	s.HandleFunc("/add-allergies", AddAllergy).Methods("PUT")
+	s.HandleFunc("/delete-allergies", DeleteAllergy).Methods("DELETE")
 }
 
 func StartServer() {
@@ -32,14 +41,27 @@ func StartServer() {
 	})
 	handler := c.Handler(r)
 
+	// create a logging middleware that wraps the router
+	loggingMiddleware := func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			startTime := time.Now()
+			next.ServeHTTP(w, r)
+			duration := time.Now().Sub(startTime)
+			log.Printf("[%s] %s %s (%s)", r.Method, r.URL.Path, r.RemoteAddr, duration)
+		})
+	}
+
+	// register handler to logger
+	loggedRouter := loggingMiddleware(handler)
+
 	listenMsg := "Listening on port " + os.Getenv("PORT") + "..."
 	log.Println(listenMsg)
-	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), handler))
+	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), loggedRouter))
 }
 
 func main() {
 	InitialUserMigration()
-	InitialInfoMigration()
+	InitialAllergyMigration()
 	InitializeRouter()
 	StartServer()
 }

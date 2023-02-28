@@ -11,12 +11,18 @@ import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatToolbarModule } from '@angular/material/toolbar'
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDialogModule } from '@angular/material/dialog';
 
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { SetupComponent } from './setup/setup.component';
+import { HomeComponent } from './home/home.component';
+import { ProfileComponent } from './profile/profile.component';
+import { DeleteDialogComponent } from './dialogs/delete-dialog/delete-dialog.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +30,10 @@ import { SetupComponent } from './setup/setup.component';
     LoginComponent,
     RegisterComponent,
     NavbarComponent,
-    SetupComponent
+    SetupComponent,
+    HomeComponent,
+    ProfileComponent,
+    DeleteDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -38,7 +47,10 @@ import { SetupComponent } from './setup/setup.component';
     MatCardModule,
     MatButtonModule,
     MatSnackBarModule,
-    MatToolbarModule
+    MatToolbarModule,
+    MatIconModule,
+    MatMenuModule,
+    MatDialogModule
   ],
   providers: [],
   bootstrap: [AppComponent]
