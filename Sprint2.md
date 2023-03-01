@@ -2,6 +2,14 @@
 
 **Frontend**
 
+-   [ ] Added the ability to log out
+-   [ ] Added navigation menu on the navigation bar
+-   [ ] Created setup page to add allergens after signing up
+-   [ ] Created profile page for viewing/editing profile information
+-   [ ] Can add/remove allergens on profile page
+-   [ ] Can delete account on profile page
+-   [ ] Created unit tests and end to end tests using Cypress
+
 **Backend**
 
 -   [ ] Created utility functions for cookies for cleaner code in handlers.
@@ -16,7 +24,23 @@
 
 <br/>
 
-## Frontend Unit Tests
+## Frontend Tests
+
+### Unit (Component) Tests
+
+-   [ ] login.component.spec.ts
+-   [ ] navbar.component.spec.ts
+-   [ ] add the rest
+
+### Cypress (End to End) Tests
+
+-   [ ] addAllergies.cy.ts
+-   [ ] addUser.cy.ts
+-   [ ] deleteAccount.cy.ts
+-   [ ] deleteAllergies.cy.ts
+-   [ ] loginLogout.cy.ts
+-   [ ] navigation.cy.ts
+-   [ ] setup.cy.ts
 
 <br/>
 
