@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AllergensService } from '../services/allergens.service';
 import { Router } from '@angular/router';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-add-allergies',
