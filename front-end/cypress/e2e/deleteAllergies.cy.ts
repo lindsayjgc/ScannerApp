@@ -1,4 +1,4 @@
-describe('Allergies', () => {
+describe('Remove Allergies', () => {
 
   it('Can add and remove allergies', () => {
 
