@@ -17,9 +17,11 @@ import { DeleteAllergyComponent } from '../dialogs/delete-allergy/delete-allergy
 })
 export class ProfileComponent implements OnInit {
   name: string = '';
+  email: string = '';
+  password: string = '';
   allergies: string[] = [];
   allergyToRemove: string = '';
-  constructor(private usersService: UsersService, private router: Router, public dialog1: MatDialog, private errorMessage: MatSnackBar, private http: HttpClient, private allergensService: AllergensService, public dialog2: MatDialog, private allergyService: AllergensService, public dialog: MatDialog) { }
+  constructor(private usersService: UsersService, private router: Router, public dialog1: MatDialog, private errorMessage: MatSnackBar, private allergensService: AllergensService, public dialog2: MatDialog, public dialog: MatDialog) { }
 
   ngOnInit() {
     this.usersService.loggedIn()
@@ -29,7 +31,12 @@ export class ProfileComponent implements OnInit {
       }))
       .subscribe();
 
-      this.getUserData();
+    this.usersService.getUserData().subscribe((data) => {
+      this.name = `${data.firstname} ${data.lastname}`;
+      this.allergies = data.allergies.split(',');
+      this.email = `${data.email}`;
+      this.password = `${data.password}`;
+    })
   }
 
   openDeleteDialog() {
@@ -53,40 +60,31 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  getUserData() {
-    this.http.get<any>('http://localhost:4200/api/user-info').subscribe((data) => {
-      this.name = `${data.firstname} ${data.lastname}`;
-      this.allergies = data.allergies.split(',');
-    });
-  }
 
+  // getAllergies() {
+  //   this.http.get<any>('http://localhost:4200/api/user-info').subscribe((data) => {
+  //     this.allergies = data.allergies.split(',');
+  //   });
+  // }
 
-  getAllergies() {
-    this.http.get<any>('http://localhost:4200/api/user-info').subscribe((data) => {
-      this.allergies = data.allergies.split(',');
-    });
-  }
+  // removeSelectedAllergies(selectedAllergies: string[]) {
+  //   selectedAllergies.forEach((allergy) => {
+  //     this.allergyService.deleteAllergy(allergy).subscribe(() => {
+  //       this.getAllergies();
+  //     });
+  //   });
+  // }
 
-  removeSelectedAllergies(selectedAllergies: string[]) {
-    selectedAllergies.forEach((allergy) => {
-      this.allergyService.deleteAllergy(allergy).subscribe(() => {
-        this.getAllergies();
-      });
-    });
-  }
+  // openDialog() {
+  //   const dialogRef = this.dialog.open(DeleteAllergyComponent, {
+  //     data: { allergies: this.allergies },
+  //   });
 
-  openDialog() {
-    const dialogRef = this.dialog.open(DeleteAllergyComponent, {
-      data: { allergies: this.allergies },
-    });
-
-    dialogRef.afterClosed().subscribe((result: string[]) => {
-      if (result) {
-        this.removeSelectedAllergies(result);
-      }
-    });
-  }
-
-
+  //   dialogRef.afterClosed().subscribe((result: string[]) => {
+  //     if (result) {
+  //       this.removeSelectedAllergies(result);
+  //     }
+  //   });
+  // }
 
 }

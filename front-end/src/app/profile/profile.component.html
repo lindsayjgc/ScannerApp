@@ -1,4 +1,4 @@
-<div>
+<!-- <div>
   <h1>{{ name }}'s Profile</h1>
   <p>Allergies:</p>
   <ul>
@@ -6,11 +6,45 @@
       {{ allergy }}
     </li>
   </ul>
-  <div>
-    <button mat-raised-button color="primary" (click)="openDialog()">Remove Allergies</button>
+  <div> -->
+<!-- <button mat-raised-button color="primary" (click)="openDialog()">Remove Allergies</button> -->
+<!-- <button mat-raised-button color="primary" routerLink="/addallergies">
+      Add Allergies
+    </button>
+    <button mat-raised-button color="primary" routerLink="/removeallergies">
+      Remove Allergies
+    </button>
   </div>      
 </div>
 
 <button mat-raised-button color="warn" (click)="openDeleteDialog()">
   Delete account
-</button>
+</button> -->
+
+<div style="display: flex; justify-content: center; align-items: center; height: 90vh;">
+  <mat-card style="max-width: 600px; text-align: center;">
+    <mat-card-title>{{ name }}'s Profile</mat-card-title>
+    <mat-card-content>
+      <p style="text-align: left;">Email: {{ email }}</p>
+      <p style="text-align: left;">Allergies:</p>
+      <ul style="text-align: left;">
+        <li *ngFor="let allergy of allergies">
+          {{ allergy }}
+        </li>
+      </ul>
+      <div>
+        <button mat-raised-button color="primary" routerLink="/addallergies">
+          Add Allergies
+        </button>
+        <button mat-raised-button color="primary" routerLink="/removeallergies">
+          Remove Allergies
+        </button>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="warn" (click)="openDeleteDialog()">
+        Delete account
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>
