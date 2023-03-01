@@ -21,7 +21,7 @@ export class ProfileComponent implements OnInit {
   password: string = '';
   allergies: string[] = [];
   allergyToRemove: string = '';
-  constructor(private usersService: UsersService, private router: Router, public dialog1: MatDialog, private errorMessage: MatSnackBar, private http: HttpClient, private allergensService: AllergensService, public dialog2: MatDialog, private allergyService: AllergensService, public dialog: MatDialog) { }
+  constructor(private usersService: UsersService, private router: Router, public dialog1: MatDialog, private errorMessage: MatSnackBar, private allergensService: AllergensService, public dialog2: MatDialog, public dialog: MatDialog) { }
 
   ngOnInit() {
     this.usersService.loggedIn()
@@ -31,7 +31,12 @@ export class ProfileComponent implements OnInit {
       }))
       .subscribe();
 
-      this.getUserData();
+    this.usersService.getUserData().subscribe((data) => {
+      this.name = `${data.firstname} ${data.lastname}`;
+      this.allergies = data.allergies.split(',');
+      this.email = `${data.email}`;
+      this.password = `${data.password}`;
+    })
   }
 
   openDeleteDialog() {
@@ -52,15 +57,6 @@ export class ProfileComponent implements OnInit {
             this.router.navigate(['/login']);
           });
       }
-    });
-  }
-
-  getUserData() {
-    this.http.get<any>('http://localhost:4200/api/user-info').subscribe((data) => {
-      this.name = `${data.firstname} ${data.lastname}`;
-      this.allergies = data.allergies.split(',');
-      this.email = `${data.email}`;
-      this.password = `${data.password}`;
     });
   }
 
@@ -90,7 +86,5 @@ export class ProfileComponent implements OnInit {
   //     }
   //   });
   // }
-
-
 
 }

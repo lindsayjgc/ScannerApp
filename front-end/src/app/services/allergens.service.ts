@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { allergenparams } from './allergenparams.service';
+import { allergenparams } from './allergenparams';
 import { Allergen } from '../add-allergies/add-allergies.component';
 import { Observable } from 'rxjs';
 
@@ -27,9 +27,7 @@ export class AllergensService {
   getAllergens(): Observable<Allergen[]> {
     return this.http.get<Allergen[]>(this.apiUrl);
   }
-  
-  
-  
+
 }
 export interface DialogData {
   allergies: string;

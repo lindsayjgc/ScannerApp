@@ -33,6 +33,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 // Augment the Cypress namespace to include type definitions for
 // your custom command.
@@ -47,6 +49,9 @@ declare global {
 }
 
 const imports = [
+  BrowserAnimationsModule,
+  FormsModule,
+  ReactiveFormsModule,
   HttpClientModule,
   MatFormFieldModule,
   MatInputModule,
@@ -57,9 +62,8 @@ const imports = [
   MatIconModule,
   MatMenuModule,
   MatDialogModule,
-  BrowserAnimationsModule,
-  FormsModule,
-  ReactiveFormsModule
+  MatChipsModule,
+  MatCheckboxModule
 ]
 
 function customMount<T>(component: string | Type<T>, config?: MountConfig<T>) {

@@ -32,5 +32,9 @@ export class UsersService {
   deleteUser() {
     return this.http.delete<LoggedInUser>('http://localhost:4200/api/delete-user');
   }
+
+  getUserData() {
+    return this.http.get<any>('http://localhost:4200/api/user-info');
+  }
 }
 

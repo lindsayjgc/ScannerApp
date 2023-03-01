@@ -45,11 +45,9 @@ describe('Remove Allergies', () => {
 
     cy.visit("http://localhost:4200/profile")
 
-  cy.get('button[routerlink="/removeallergies"]')
-  .click()
+    cy.get('button[routerlink="/removeallergies"]')
+      .click()
 
-
-  
     cy.get('mat-form-field.allergen-group input').type('Peanuts{enter}');
     // cy.get('.mat-chip-grid').contains('Peanuts').find('button').click();
 

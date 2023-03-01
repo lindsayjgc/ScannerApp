@@ -45,11 +45,9 @@ describe('Add Allergies', () => {
 
     cy.visit("http://localhost:4200/profile")
 
-  cy.get('button[routerlink="/addallergies"]')
-  .click()
+    cy.get('button[routerlink="/addallergies"]')
+      .click()
 
-
-  
     cy.get('mat-form-field.allergen-group input').type('Treenuts{enter}');
     // cy.get('.mat-chip-grid').contains('Peanuts').find('button').click();
 
@@ -63,8 +61,8 @@ describe('Add Allergies', () => {
     cy.url().should('eq', 'http://localhost:4200/profile');
 
     cy.get('ul').should('contain', 'lactose');
-  cy.get('ul').should('contain', 'treenuts');
-  cy.get('ul').should('contain', 'lettuce');
-  
+    cy.get('ul').should('contain', 'treenuts');
+    cy.get('ul').should('contain', 'lettuce');
+
   });
 });
