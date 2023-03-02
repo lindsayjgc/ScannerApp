@@ -21,6 +21,12 @@
 -   [ ] Created unit tests for all handlers.
 -   [ ] Refactored old Sprint 1 unit tests to be self-sufficient.
 -   [ ] Created documentation for all API routes.
+-   [ ] Refactored function for adding allergies to the database.
+-   [ ] Created a function for deleting allergies from the database. 
+-   [ ] Refactored Sprint 1 tests to match new allergy structure.
+-   [ ] Built test for deleting allergies.
+-   [ ] Setup database support for grocery lists.
+-   [ ] Designed function for creating grocery lists.
 
 <br/>
 
