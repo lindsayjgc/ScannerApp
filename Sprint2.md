@@ -36,7 +36,9 @@
 
 -   [ ] login.component.spec.ts
 -   [ ] navbar.component.spec.ts
--   [ ] add the rest
+-   [ ] register.component.spec.ts
+-   [ ] add-allergies.component.spec.ts
+-   [ ] remove-allergies.component.spec.ts
 
 ### Cypress (End to End) Tests
 
