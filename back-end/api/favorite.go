@@ -22,10 +22,19 @@ type Favorite struct {
 	Image string `json:"image"`
 }
 
+// Used for receiving a new favorite from frontend
 type NewFavorite struct {
 	Favorite string `json:"favorite"`
 	Code string `json:"code"`
 	Image string `json:"image"`
+}
+
+
+// Used for receiving a product code and checking
+// whether the product is already a favorite
+// or to delete the product
+type Code struct {
+	Code string `json:"code"`
 }
 
 func InitialFavoriteMigration() {
@@ -90,4 +99,37 @@ func AddFavorite(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(GenerateResponse("Product successfully favorited"))
+}
+
+func DeleteFavorite(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// Check for logged in user and get their email
+	claims, err, resStatus := CheckCookie(w, r)
+
+	if err != nil {
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
+		return
+	}
+
+	var code Code
+	err = json.NewDecoder(r.Body).Decode(&code)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON body"))
+		return
+	}
+
+	var deletedFavorite Favorite
+	result := FavoriteDB.Where("code = ?", code.Code).Where("email = ?", claims.Email).Delete(&deletedFavorite)
+
+	if result.RowsAffected == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(GenerateResponse("Product not found in user favorites"))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(GenerateResponse("Favorite sucessfully deleted"))
 }
