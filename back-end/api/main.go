@@ -30,7 +30,7 @@ func InitializeRouter() {
 	s.HandleFunc("/add-allergies", AddAllergy).Methods("PUT")
 	s.HandleFunc("/delete-allergies", DeleteAllergy).Methods("DELETE")
 	s.HandleFunc("/check-allergies", CheckAllergies).Methods("POST")
-	s.HandleFunc("/favorite", AddAllergy).Methods("POST")
+	s.HandleFunc("/favorite", AddFavorite).Methods("POST")
 }
 
 func StartServer() {
@@ -64,6 +64,7 @@ func StartServer() {
 func main() {
 	InitialUserMigration()
 	InitialAllergyMigration()
+	InitialFavoriteMigration()
 	InitializeRouter()
 	StartServer()
 }
