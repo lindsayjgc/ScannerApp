@@ -18,11 +18,13 @@ type Favorite struct {
 	gorm.Model
 	Email   string `json:"email"`
 	Favorite string `json:"favorite"`
+	Code string `json:"code"`
 	Image string `json:"image"`
 }
 
 type NewFavorite struct {
 	Favorite string `json:"favorite"`
+	Code string `json:"code"`
 	Image string `json:"image"`
 }
 
@@ -70,7 +72,7 @@ func AddFavorite(w http.ResponseWriter, r *http.Request) {
 
 	// Check if product already exists
 	var checkFavorite Favorite
-	result := FavoriteDB.Where("email = ?", claims.Email).Where("favorite = ?", newFavorite.Favorite).First(&checkFavorite)
+	result := FavoriteDB.Where("email = ?", claims.Email).Where("code = ?", newFavorite.Code).First(&checkFavorite)
 
 	if result.RowsAffected != 0 {
 		w.WriteHeader(http.StatusBadRequest)
@@ -81,6 +83,7 @@ func AddFavorite(w http.ResponseWriter, r *http.Request) {
 	favorite := Favorite{
 		Email: claims.Email,
 		Favorite: newFavorite.Favorite,
+		Code: newFavorite.Code,
 		Image: newFavorite.Image,
 	}
 	FavoriteDB.Create(&favorite)
