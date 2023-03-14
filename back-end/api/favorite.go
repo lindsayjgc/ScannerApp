@@ -20,7 +20,7 @@ type Favorite struct {
 }
 
 func InitialFavoriteMigration() {
-	AllergyDB, err = gorm.Open(sqlite.Open(DB_PATH), &gorm.Config{})
+	FavoriteDB, err = gorm.Open(sqlite.Open(DB_PATH), &gorm.Config{})
 
 	if err != nil {
 		fmt.Println(err)
@@ -38,5 +38,6 @@ func InitialFavoriteMigration() {
 
 	// AutoMigrate checks the DB for a matching existing schema - if it does
 	// not exist, create/update the new schema
-	FavoriteDB.AutoMigrate(&Allergy{})
+	FavoriteDB.AutoMigrate(&Favorite{})
 }
+
