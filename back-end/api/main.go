@@ -29,6 +29,7 @@ func InitializeRouter() {
 	s.HandleFunc("/user-info", UserInfo).Methods("GET")
 	s.HandleFunc("/add-allergies", AddAllergy).Methods("PUT")
 	s.HandleFunc("/delete-allergies", DeleteAllergy).Methods("DELETE")
+	s.HandleFunc("/check-allergies", CheckAllergies).Methods("POST")
 	s.HandleFunc("/create-list", CreateList).Methods("POST")
 
 }
@@ -38,7 +39,7 @@ func StartServer() {
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowCredentials: true,
-		AllowedMethods:   []string{"GET", "POST", "PUT", "HEAD", "OPTIONS"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Accept-Language", "Content-Type", "Content-Language", "Origin"},
 	})
 	handler := c.Handler(r)

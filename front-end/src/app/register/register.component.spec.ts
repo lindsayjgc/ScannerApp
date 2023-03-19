@@ -1,23 +1,11 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RegisterComponent } from "./register.component"
 
-import { RegisterComponent } from './register.component';
-
-describe('RegisterComponent', () => {
-  let component: RegisterComponent;
-  let fixture: ComponentFixture<RegisterComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ RegisterComponent ]
-    })
-    .compileComponents();
-
-    fixture = TestBed.createComponent(RegisterComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+describe('register.component.spec.ts', () => {
+  it('signs up user', () => {
+    cy.mount(RegisterComponent)
+      cy.get('input[formControlName="email"]').type("email@gmail.com");
+      cy.contains("First Name").click().type("John");
+      cy.contains("Last Name").click().type("Doe");
+      cy.get('input[formControlName="password"]').type("password123");
+  })
+})

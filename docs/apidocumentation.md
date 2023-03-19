@@ -30,7 +30,7 @@
 
 <br/>
 
-### User Auth/Creation/Deletion
+### User Auth/Creation/Deletion/Info
 
 ---
 
@@ -133,5 +133,95 @@
 > | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                                             |
 > | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                                      |
 > | `500`     | `application/json` | `{"message":"Other JWT-related error"}`                                                |
+
+</details>
+
+<details>
+    <summary><code>GET</code> <code><b>/api/user-info</b></code> <code>Retrieves specific user's information from database</code></summary>
+
+##### Parameters
+
+> `none`
+
+##### Responses
+
+> | http code | content-type       | response                                                                                                                                                                                     |
+> | --------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | `200`     | `application/json` | `{"firstname":"*user's first name*"`<br>`"lastname":"*user's last name*"`<br> `"email":"*user's email*"`<br> `"password":"*user's password*"`<br> `"allergies":"*comma delimited or NONE*"}` |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`                                                                                                                                                            |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                                                                                                                                                   |
+> | `404`     | `application/json` | `{"message":"User Not Found"}`                                                                                                                                                               |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                                                                                                                                            |
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"}`                                                                                                                                                      |
+
+</details>
+
+### Allergies
+
+---
+
+<details>
+    <summary><code>PUT</code> <code><b>/api/add-allergies</b></code> <code>Adds allergies to user's database information</code></summary>
+
+##### Parameters
+
+> | name        | type     | data type | description                                    |
+> | ----------- | -------- | --------- | ---------------------------------------------- |
+> | `allergies` | required | string    | allergies that are to be added to the database |
+
+##### Responses
+
+> | http code | content-type       | response                                                                              |
+> | --------- | ------------------ | ------------------------------------------------------------------------------------- |
+> | `200`     | `application/json` | `{"addedAllergies":"*new allergies*", "existingAllergies":"*preexisting allergies*"}` |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`                                                     |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                                            |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                                     |
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"}`                                               |
+
+</details>
+
+<details>
+    <summary><code>DELETE</code> <code><b>/api/delete-allergies</b></code> <code>Deletes allergies from user's database information</code></summary>
+
+##### Parameters
+
+> | name        | type     | data type | description                                        |
+> | ----------- | -------- | --------- | -------------------------------------------------- |
+> | `allergies` | required | string    | allergies that are to be deleted from the database |
+
+##### Responses
+
+> | http code | content-type       | response                                                                                  |
+> | --------- | ------------------ | ----------------------------------------------------------------------------------------- |
+> | `200`     | `application/json` | `{"deletedAllergies":"*new allergies*", "notDeletedAllergies":"*preexisting allergies*"}` |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`                                                         |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                                                |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                                         |
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"}`                                                   |
+
+</details>
+
+<details>
+    <summary><code>POST</code> <code><b>/api/check-allergies</b></code> <code>Check for user allergies present in product ingredients</code></summary>
+
+##### Parameters
+
+> | name          | type     | data type | description                                                                |
+> | ------------- | -------- | --------- | -------------------------------------------------------------------------- |
+> | `ingredients` | required | string    | product ingredients, comma-delimited without spaces (e.g. "milk,eggs,soy") |
+
+##### Responses
+
+> | http code | content-type       | response                                                                    |
+> | --------- | ------------------ | --------------------------------------------------------------------------- |
+> | `200`     | `application/json` | `{"allergies":"*allergies found in ingredients","allergiesPresent":"true"}` |
+> | `200`     | `application/json` | `{"allergiesPresent":"false"}`                                              |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`                                           |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                                  |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                           |
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"}`                                     |
+> | `500`     | `application/json` | `{"message":"Error searching for user allergies"}`                          |
+> | `500`     | `application/json` | `{"message":"Error decoding JSON body"}`                                    |
 
 </details>

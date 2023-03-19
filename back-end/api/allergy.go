@@ -14,14 +14,24 @@ import (
 
 var AllergyDB *gorm.DB
 
+// Used for storing and retrieving allergies in DB with GORM
 type Allergy struct {
 	gorm.Model
 	Email   string `json:"email"`
 	Allergy string `json:"allergy"`
 }
 
+// Following structs are for decoding JSON from frontend
 type RawAllergies struct {
 	Allergies string `json:"allergies"`
+}
+
+type RawProductIngredients struct {
+	Ingredients string `json:"ingredients"`
+}
+
+type Email struct {
+	Email string `json:"email"`
 }
 
 func InitialAllergyMigration() {
@@ -66,7 +76,7 @@ func AddAllergy(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON"))
 		return
 	}
-	newAllergies := strings.Split(string(rawNewAllergies.Allergies), ",")
+	newAllergies := strings.Split(strings.ToLower(string(rawNewAllergies.Allergies)), ",")
 
 	// Retrieve existing allergies as a slice
 	var existingAllergiesSlice []string
@@ -82,12 +92,11 @@ func AddAllergy(w http.ResponseWriter, r *http.Request) {
 	var addedAllergies []string
 	var notAddedAllergies []string
 	for _, v := range newAllergies {
-		// If this new allergy does not already exist
-		if !existingAllergies[v] {
+		if !existingAllergies[v] { // If this new allergy does not already exist
 			allergy := Allergy{Email: claims.Email, Allergy: v}
 			addedAllergies = append(addedAllergies, v)
 			AllergyDB.Create(&allergy)
-		} else {
+		} else { // Otherwise, add to a list of already existing allergies
 			notAddedAllergies = append(notAddedAllergies, v)
 		}
 	}
@@ -149,4 +158,68 @@ func DeleteAllergy(w http.ResponseWriter, r *http.Request) {
 	res["notDeletedAllergies"] = strings.Join(notDeletedAllergies, ",")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(res)
+}
+
+func CheckAllergies(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// Check for logged in user and get their email
+	claims, err, resStatus := CheckCookie(w, r)
+
+	if err != nil {
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
+		return
+	}
+
+	// Retrieve user's allergies as a slice 
+	// type allergy string
+	var userAllergiesSlice []string
+	result := AllergyDB.Model(Allergy{}).Where("email = ?", claims.Email).Select("allergy").Find(&userAllergiesSlice)
+
+	// Handle possible errors, this does not include if no allergies were found
+	if result.Error != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(GenerateResponse("Error searching for user allergies"))
+	}
+
+	// Convert the slice of allergies into a map for efficiency later
+	userAllergies := make(map[string]bool)
+	for _, v := range userAllergiesSlice {
+		userAllergies[v] = true
+	}
+
+	// Get the product allergies sent by frontend
+	var rawProductIngredients RawProductIngredients
+	err = json.NewDecoder(r.Body).Decode(&rawProductIngredients)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON body"))
+		return
+	}
+	// Convert passed in string to lowercase because all alleriges are 
+	// stored in DB this way
+	productIngredients := strings.Split(strings.ToLower(rawProductIngredients.Ingredients), ",")
+
+	
+	var foundAllergies []string
+	// Compare product ingredients to user allergies
+	for _, v := range productIngredients {
+		if (userAllergies[v]) {
+			foundAllergies = append(foundAllergies, v)
+		}
+	}
+
+	if (len(foundAllergies) == 0) { // If this ingredient is in the map of allergies
+		w.WriteHeader(http.StatusOK)
+		res := make(map[string]string)
+		res["allergiesPresent"] = "false"
+		json.NewEncoder(w).Encode(res)
+	} else {
+		w.WriteHeader(http.StatusOK)
+		res := make(map[string]string)
+		res["allergiesPresent"] = "true"
+		res["allergies"] = strings.Join(foundAllergies, ",")
+		json.NewEncoder(w).Encode(res)
+	}
 }

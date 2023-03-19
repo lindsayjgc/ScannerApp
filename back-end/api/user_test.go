@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func TestSignUpEndpoint(t *testing.T) {
@@ -21,9 +22,9 @@ func TestSignUpEndpoint(t *testing.T) {
 	// Create a user to be added
 	user := User{
 		FirstName: "testfirstname",
-		LastName:  "testlastname",
-		Email:     "unit@test.com",
-		Password:  "unittest",
+		LastName: "testlastname",
+		Email: "unit@test.com",
+		Password: "ut",
 	}
 
 	// Create a mock request
@@ -50,6 +51,9 @@ func TestSignUpEndpoint(t *testing.T) {
 	if body != expected {
 		t.Errorf("Handler returned unexpected body: got %v, expected %v", rr.Body.String(), expected)
 	}
+
+	// Delete the user that was created for the test
+	UserDB.Where("email = ?", "unit@test.com").Delete(&user)
 }
 
 func TestLoginEndpoint(t *testing.T) {
@@ -57,9 +61,19 @@ func TestLoginEndpoint(t *testing.T) {
 	InitialAllergyMigration()
 	InitializeRouter()
 
+	// Create a temporary user to be logged in
+	passwordHash, _ := bcrypt.GenerateFromPassword([]byte("ut"), 0)
+	user := User{
+		FirstName: "testfirstname",
+		LastName: "testlastname",
+		Email: "unit@test.com",
+		Password: string(passwordHash),
+	}
+	UserDB.Create(&user)
+
 	creds := Credentials{
-		Email:    "unit@test.com",
-		Password: "unittest",
+		Email: "unit@test.com",
+		Password: "ut",
 	}
 
 	payload, _ := json.Marshal(creds)
@@ -69,7 +83,7 @@ func TestLoginEndpoint(t *testing.T) {
 	rr := httptest.NewRecorder()
 	r.ServeHTTP(rr, req)
 
-	if status := rr.Code; status != http.StatusAccepted {
+	if status := rr.Code; status != http.StatusOK {
 		t.Errorf("Handler returned the wrong status: got %v, expected %v", status, http.StatusCreated)
 	}
 
@@ -80,6 +94,9 @@ func TestLoginEndpoint(t *testing.T) {
 	if body != expected {
 		t.Errorf("Handler returned unexpected body: got %v, expected %v", rr.Body.String(), expected)
 	}
+
+	// Delete the user that was created for the test
+	UserDB.Where("email = ?", "unit@test.com").Delete(&user)
 }
 
 func TestLoggedInEndpoint(t *testing.T) {
@@ -92,7 +109,7 @@ func TestLoggedInEndpoint(t *testing.T) {
 	req.Header.Set("Content-Type", "application/json")
 
 	// Add a new cookie to the req for testing the endpoint
-	createCookie(req, t)
+	createTestCookie(req, t)
 
 	// Create a new recorder and serve
 	rr := httptest.NewRecorder()
@@ -112,69 +129,27 @@ func TestLoggedInEndpoint(t *testing.T) {
 	}
 }
 
-func TestDeleteEndpoint(t *testing.T) {
-	InitialUserMigration()
-	InitialAllergyMigration()
-	InitializeRouter()
-
-	req, _ := http.NewRequest("DELETE", "/api/delete-user", nil)
-	req.Header.Set("Content-Type", "application/json")
-	createCookie(req, t)
-
-	rr := httptest.NewRecorder()
-	r.ServeHTTP(rr, req)
-
-	// Process response
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("Handler returned the wrong status: got %v, expected %v", status, http.StatusCreated)
-	}
-
-	expected := `{"email":"unit@test.com","message":"User successfully deleted"}`
-	body := strings.Replace(rr.Body.String(), "\n", "", -1)
-	body = strings.Replace(body, "\r", "", -1)
-
-	if body != expected {
-		t.Errorf("Handler returned unexpected body: got %v, expected %v", rr.Body.String(), expected)
-	}
-}
-
-func TestLogoutEndpoint(t *testing.T) {
-	InitialUserMigration()
-	InitialAllergyMigration()
-	InitializeRouter()
-
-	req, _ := http.NewRequest("POST", "/api/logout", nil)
-	req.Header.Set("Content-Type", "application/json")
-	createCookie(req, t)
-
-	rr := httptest.NewRecorder()
-	r.ServeHTTP(rr, req)
-
-	// Process response
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("Handler returned the wrong status: got %v, expected %v", status, http.StatusCreated)
-	}
-
-	expected := `{"email":"unit@test.com","message":"User successfully logged out"}`
-	body := strings.Replace(rr.Body.String(), "\n", "", -1)
-	body = strings.Replace(body, "\r", "", -1)
-
-	if body != expected {
-		t.Errorf("Handler returned unexpected body: got %v, expected %v", rr.Body.String(), expected)
-	}
-}
-
 func TestUserInfo(t *testing.T) {
-	TestSignUpEndpoint(t)
+	InitialUserMigration()
+	InitialAllergyMigration()
+	InitializeRouter()
+
+	// Create a temporary user to be logged in
+	user := User{
+		FirstName: "testfirstname",
+		LastName: "testlastname",
+		Email: "unit@test.com",
+		Password: "ut",
+	}
+	UserDB.Create(&user)
 
 	req, _ := http.NewRequest("GET", "/api/user-info", nil)
 	resp := httptest.NewRecorder()
 	req.Header.Set("Content-Type", "application/json")
 
-	createCookie(req, t)
+	createTestCookie(req, t)
 
-	handler := http.HandlerFunc(UserInfo)
-	handler.ServeHTTP(resp, req)
+	r.ServeHTTP(resp, req)
 
 	if resp.Code != http.StatusOK {
 		t.Errorf("Error: response code should be %v, got %v", http.StatusOK, resp.Code)
@@ -201,10 +176,72 @@ func TestUserInfo(t *testing.T) {
 		t.Errorf("Error: expected %v, got %v", userInfo, decodedUser)
 	}
 
-	TestDeleteEndpoint(t)
+	// Delete the user that was created for the test
+	UserDB.Where("email = ?", "unit@test.com").Delete(&user)
 }
 
-func createCookie(req *http.Request, t *testing.T) {
+func TestLogoutEndpoint(t *testing.T) {
+	InitialUserMigration()
+	InitialAllergyMigration()
+	InitializeRouter()
+
+	req, _ := http.NewRequest("POST", "/api/logout", nil)
+	req.Header.Set("Content-Type", "application/json")
+	createTestCookie(req, t)
+
+	rr := httptest.NewRecorder()
+	r.ServeHTTP(rr, req)
+
+	// Process response
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("Handler returned the wrong status: got %v, expected %v", status, http.StatusCreated)
+	}
+
+	expected := `{"email":"unit@test.com","message":"User successfully logged out"}`
+	body := strings.Replace(rr.Body.String(), "\n", "", -1)
+	body = strings.Replace(body, "\r", "", -1)
+
+	if body != expected {
+		t.Errorf("Handler returned unexpected body: got %v, expected %v", rr.Body.String(), expected)
+	}
+}
+
+func TestDeleteEndpoint(t *testing.T) {
+	InitialUserMigration()
+	InitialAllergyMigration()
+	InitializeRouter()
+
+	// Create a temporary user to be logged in
+	user := User{
+		FirstName: "testfirstname",
+		LastName: "testlastname",
+		Email: "unit@test.com",
+		Password: "ut",
+	}
+	UserDB.Create(&user)
+
+	req, _ := http.NewRequest("DELETE", "/api/delete-user", nil);
+	req.Header.Set("Content-Type", "application/json")
+	createTestCookie(req, t)
+
+	rr := httptest.NewRecorder()
+	r.ServeHTTP(rr,req)
+
+	// Process response
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("Handler returned the wrong status: got %v, expected %v", status, http.StatusCreated);
+	}
+
+	expected := `{"email":"unit@test.com","message":"User successfully deleted"}`
+	body := strings.Replace(rr.Body.String(), "\n", "", -1);
+	body = strings.Replace(body, "\r", "", -1);
+
+	if body != expected {
+		t.Errorf("Handler returned unexpected body: got %v, expected %v", rr.Body.String(), expected);
+	}
+}
+
+func createTestCookie(req *http.Request, t *testing.T) {
 	// Create a new token string
 	expirationTime := time.Now().Add(time.Minute)
 	claims := &Claims{

@@ -15,6 +15,10 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { CommonModule } from '@angular/common';
+
 
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
@@ -23,6 +27,9 @@ import { SetupComponent } from './setup/setup.component';
 import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
 import { DeleteDialogComponent } from './dialogs/delete-dialog/delete-dialog.component';
+import { DeleteAllergyComponent } from './dialogs/delete-allergy/delete-allergy.component';
+import { AddAllergiesComponent } from './add-allergies/add-allergies.component';
+import { RemoveAllergiesComponent } from './remove-allergies/remove-allergies.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +40,10 @@ import { DeleteDialogComponent } from './dialogs/delete-dialog/delete-dialog.com
     SetupComponent,
     HomeComponent,
     ProfileComponent,
-    DeleteDialogComponent
+    DeleteDialogComponent,
+    DeleteAllergyComponent,
+    AddAllergiesComponent,
+    RemoveAllergiesComponent
   ],
   imports: [
     BrowserModule,
@@ -50,7 +60,10 @@ import { DeleteDialogComponent } from './dialogs/delete-dialog/delete-dialog.com
     MatToolbarModule,
     MatIconModule,
     MatMenuModule,
-    MatDialogModule
+    MatDialogModule,
+    MatChipsModule,
+    MatCheckboxModule,
+    CommonModule
   ],
   providers: [],
   bootstrap: [AppComponent]
