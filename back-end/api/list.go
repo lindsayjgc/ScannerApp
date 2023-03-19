@@ -13,14 +13,14 @@ import (
 
 var ListDB *gorm.DB
 
-type List struct {
+type GroceryList struct {
 	gorm.Model
 	Email string `json:"email"`
 	Title string `json:"title"`
 	Food  string `json:"food"`
 }
 
-type Title struct {
+type GroceryTitle struct {
 	gorm.Model
 	Email string `json:"email"`
 	Title string `json:"title"`
@@ -32,8 +32,6 @@ type ListTitle struct {
 
 func InitialListMigration() {
 	ListDB, err = gorm.Open(sqlite.Open(DB_PATH), &gorm.Config{})
-
-	AllergyDB.Exec("DROP TABLE lists")
 
 	if err != nil {
 		fmt.Println(err)
@@ -49,8 +47,8 @@ func InitialListMigration() {
 
 	jwtKey = []byte(os.Getenv("SECRET_KEY"))
 
-	ListDB.AutoMigrate(&List{})
-	ListDB.AutoMigrate(&Title{})
+	ListDB.AutoMigrate(&GroceryList{})
+	ListDB.AutoMigrate(&GroceryTitle{})
 }
 
 func CreateList(w http.ResponseWriter, r *http.Request) {
@@ -74,7 +72,7 @@ func CreateList(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if title already exists in database
-	var existingTitle Title
+	var existingTitle GroceryTitle
 	res := ListDB.First(&existingTitle, "email = ? AND title = ?", claims.Email, listTitle.Title)
 
 	if res.Error == nil {
@@ -84,7 +82,7 @@ func CreateList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var title Title
+	var title GroceryTitle
 	title.Email = claims.Email
 	title.Title = listTitle.Title
 	ListDB.Create(&title)
