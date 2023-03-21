@@ -27,20 +27,37 @@
     <mat-card-content>
       <p style="text-align: left;">Email: {{ email }}</p>
       <p style="text-align: left;">Allergies:</p>
-      <ul style="text-align: left;">
-        <li *ngFor="let allergy of allergies">
-          {{ allergy }}
-        </li>
-      </ul>
-      <div>
-        <button mat-raised-button color="primary" routerLink="/addallergies">
-          Add Allergies
-        </button>
-        <button mat-raised-button color="primary" routerLink="/removeallergies">
-          Remove Allergies
-        </button>
-      </div>
+      <mat-selection-list #allergyList [(ngModel)]="selectedAllergies">
+        <mat-list-option *ngFor="let allergy of allergies" [value]="allergy">
+          {{allergy}}
+        </mat-list-option>
+      </mat-selection-list>
     </mat-card-content>
+    <mat-card-content>
+      <button mat-raised-button color="primary" (click)="removeAllergies()">
+        Remove selected allergies
+      </button>
+    </mat-card-content>
+    <form #allergyForm="ngForm" (ngSubmit)="submitAllergies()">
+      <mat-card-content>
+        <mat-form-field class="allergen-group">
+          <mat-label>New allergens</mat-label>
+          <mat-chip-grid #chipGrid aria-label="Enter allergens">
+            <mat-chip-row *ngFor="let allergen of allergens" (removed)="remove(allergen)" [editable]="true"
+              (edited)="edit(allergen, $event)" [aria-description]=" 'press enter to edit ' + allergen.name">
+              {{allergen.name}}
+              <button matChipRemove [attr.aria-label]=" 'remove ' + allergen.name">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
+            <input placeholder="New allergen" [matChipInputFor]="chipGrid"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
+              (matChipInputTokenEnd)="add($event)" />
+          </mat-chip-grid>
+        </mat-form-field>
+        <button mat-raised-button color="primary" type="submit">Add new allergies</button>
+      </mat-card-content>
+    </form>
     <mat-card-actions>
       <button mat-raised-button color="warn" (click)="openDeleteDialog()">
         Delete account

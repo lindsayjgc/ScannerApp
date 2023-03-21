@@ -24,6 +24,7 @@ export class AllergensService {
     const allergyData = { allergies: allergyString };
     return this.http.delete<allergenparams>(this.apiUrl2, { body: allergyData });
   }
+
   getAllergens(): Observable<Allergen[]> {
     return this.http.get<Allergen[]>(this.apiUrl);
   }
