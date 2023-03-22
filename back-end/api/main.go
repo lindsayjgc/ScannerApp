@@ -31,6 +31,7 @@ func InitializeRouter() {
 	s.HandleFunc("/delete-allergies", DeleteAllergy).Methods("DELETE")
 	s.HandleFunc("/check-allergies", CheckAllergies).Methods("POST")
 	s.HandleFunc("/create-list", CreateList).Methods("POST")
+	s.HandleFunc("/add-list-item", AddGroceryItem).Methods("POST")
 
 }
 
