@@ -1,10 +1,10 @@
-describe('Remove Allergies', () => {
+describe('Add Allergies', () => {
 
   it('Can add and remove allergies', () => {
 
     cy.visit("http://localhost:4200/register");
 
-    cy.get('input[formControlName="email"]').type('randomperson3@gmail.com');
+    cy.get('input[formControlName="email"]').type('test@gmail.com');
     cy.contains('First Name').click().type('John');
     cy.contains('Last Name').click().type('Doe');
     cy.get('input[formControlName="password"]').type('password123');
@@ -43,21 +43,30 @@ describe('Remove Allergies', () => {
     // Assert that the user is redirected to the home page
     cy.url().should('eq', 'http://localhost:4200/home');
 
-    cy.visit("http://localhost:4200/profile")
+    // See allergies on profile page
+    cy.visit("http://localhost:4200/profile");
 
-    cy.get('button[routerlink="/removeallergies"]')
-      .click()
+    cy.get('mat-selection-list').should('contain', 'shellfish');
+    cy.get('mat-selection-list').should('contain', 'gluten');
 
-    cy.get('mat-form-field.allergen-group input').type('Peanuts{enter}');
-    // cy.get('.mat-chip-grid').contains('Peanuts').find('button').click();
-
-    cy.get('mat-form-field.allergen-group input').type('Gluten{enter}');
-    // cy.get('.mat-chip-row').contains('Gluten').find('button').click();
+    // Add new allergies
+    cy.get('mat-form-field.allergen-group input').type('treenuts{enter}');
+    cy.get('mat-form-field.allergen-group input').type('lactose{enter}');
+    cy.get('mat-form-field.allergen-group input').type('lettuce{enter}');
 
     cy.get('button[type="submit"]').click();
 
-    cy.url().should('eq', 'http://localhost:4200/profile');
+    cy.get('mat-selection-list').should('contain', 'treenuts');
+    cy.get('mat-selection-list').should('contain', 'lactose');
+    cy.get('mat-selection-list').should('contain', 'lettuce');
 
-    cy.get('ul').should('contain', 'shellfish');
+    // Remove allergies
+    cy.get('mat-list-option').contains('gluten').click();
+    cy.get('mat-list-option').contains('lettuce').click();
+
+    cy.get('button').contains('Remove selected allergies').click()
+
+    cy.get('mat-selection-list').should('not.contain', 'gluten');
+    cy.get('mat-selection-list').should('not.contain', 'lettuce');
   });
 });

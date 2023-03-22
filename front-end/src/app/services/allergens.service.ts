@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { allergenparams } from './allergenparams';
-import { Allergen } from '../add-allergies/add-allergies.component';
+import { Allergen } from './allergenparams';
 import { Observable } from 'rxjs';
 
 @Injectable({

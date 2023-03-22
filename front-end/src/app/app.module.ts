@@ -27,8 +27,6 @@ import { SetupComponent } from './setup/setup.component';
 import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
 import { DeleteDialogComponent } from './dialogs/delete-dialog/delete-dialog.component';
-import { AddAllergiesComponent } from './add-allergies/add-allergies.component';
-import { RemoveAllergiesComponent } from './remove-allergies/remove-allergies.component';
 
 @NgModule({
   declarations: [
@@ -40,8 +38,6 @@ import { RemoveAllergiesComponent } from './remove-allergies/remove-allergies.co
     HomeComponent,
     ProfileComponent,
     DeleteDialogComponent,
-    AddAllergiesComponent,
-    RemoveAllergiesComponent
   ],
   imports: [
     BrowserModule,

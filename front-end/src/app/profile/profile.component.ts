@@ -7,6 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { UsersService } from '../services/users.service';
 import { DeleteDialogComponent } from '../dialogs/delete-dialog/delete-dialog.component';
 import { AllergensService } from '../services/allergens.service';
+import { Allergen } from '../services/allergenparams';
 
 @Component({
   selector: 'app-profile',
@@ -112,6 +113,3 @@ export class ProfileComponent implements OnInit {
 
 }
 
-interface Allergen {
-  name: string;
-}
