@@ -33,6 +33,7 @@ func InitializeRouter() {
 	s.HandleFunc("/favorite", GetFavorites).Methods("GET")
 	s.HandleFunc("/favorite", AddFavorite).Methods("POST")
 	s.HandleFunc("/favorite", DeleteFavorite).Methods("DELETE")
+	s.HandleFunc("/check-favorite", CheckFavorite).Methods("POST")
 }
 
 func StartServer() {

@@ -89,6 +89,46 @@ func GetFavorites(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonFavorites)
 }
 
+func CheckFavorite(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// Check for logged in user and get their email
+	claims, err, resStatus := CheckCookie(w, r)
+
+	if err != nil {
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
+		return
+	}
+
+	var code Code
+	err = json.NewDecoder(r.Body).Decode(&code)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON body"))
+		return
+	}
+
+	// Search for the code in the database
+	var codeSearch Favorite
+	result := FavoriteDB.Where("code = ?", code.Code).Where("email = ?", claims.Email).First(&codeSearch)
+
+	// Create and assign a string for JSON response
+	var isFavorite string
+	if result.RowsAffected == 0 {
+		isFavorite = "false"
+	} else {
+		isFavorite = "true"
+	}
+
+	w.WriteHeader(http.StatusOK)
+	res := make(map[string]string)
+	res["code"] = code.Code
+	res["isFavorite"] = isFavorite
+	json.NewEncoder(w).Encode(res)
+	return
+}
+
 func AddFavorite(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
