@@ -23,12 +23,11 @@ type Favorite struct {
 }
 
 // Used for receiving a new favorite from frontend
-type NewFavorite struct {
+type RawFavorite struct {
 	Favorite string `json:"favorite"`
 	Code string `json:"code"`
 	Image string `json:"image"`
 }
-
 
 // Used for receiving a product code and checking
 // whether the product is already a favorite
@@ -59,6 +58,37 @@ func InitialFavoriteMigration() {
 	FavoriteDB.AutoMigrate(&Favorite{})
 }
 
+func GetFavorites(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// Check for logged in user and get their email
+	claims, err, resStatus := CheckCookie(w, r)
+
+	if err != nil {
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
+		return
+	}
+
+	var favorites []RawFavorite
+	result := FavoriteDB.Table("favorites").Where("email = ?", claims.Email).Where("deleted_at IS NULL").Select("favorite, code, image").Find(&favorites)
+
+	if result.RowsAffected == 0 {
+		w.WriteHeader(http.StatusNoContent)
+		json.NewEncoder(w).Encode(GenerateResponse("No favorites found"))
+		return
+	}
+
+	jsonFavorites, err := json.Marshal(favorites)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(GenerateResponse("Error encoding JSON response"))
+	}	
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(jsonFavorites)
+}
+
 func AddFavorite(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -71,7 +101,7 @@ func AddFavorite(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var newFavorite NewFavorite
+	var newFavorite RawFavorite
 	err = json.NewDecoder(r.Body).Decode(&newFavorite)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
