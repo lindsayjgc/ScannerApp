@@ -126,7 +126,6 @@ func CheckFavorite(w http.ResponseWriter, r *http.Request) {
 	res["code"] = code.Code
 	res["isFavorite"] = isFavorite
 	json.NewEncoder(w).Encode(res)
-	return
 }
 
 func AddFavorite(w http.ResponseWriter, r *http.Request) {

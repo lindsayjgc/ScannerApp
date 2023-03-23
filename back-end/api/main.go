@@ -51,7 +51,7 @@ func StartServer() {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			startTime := time.Now()
 			next.ServeHTTP(w, r)
-			duration := time.Now().Sub(startTime)
+			duration := time.Since(startTime)
 			log.Printf("[%s] %s %s (%s)", r.Method, r.URL.Path, r.RemoteAddr, duration)
 		})
 	}
