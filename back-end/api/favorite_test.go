@@ -115,6 +115,45 @@ func TestCheckFavoriteFound(t *testing.T) {
 	FavoriteDB.Where("email = ?", "unit@test.com").Unscoped().Delete(&deleteFavorite)
 }
 
+func TestCheckFavoriteNotFound(t *testing.T) {
+	InitialUserMigration()
+	InitialFavoriteMigration()
+	InitializeRouter()
+
+	// Create a code to check for the favorite
+	code := Code{
+		Code: "testcode",
+	}
+
+	// Create a mock request
+	payload, _ := json.Marshal(code)
+	req, _ := http.NewRequest("POST", "/api/check-favorite", bytes.NewBuffer(payload))
+	req.Header.Set("Content-Type", "application/json")
+	
+	// Create test cookie to simulate user login
+	createTestCookie(req, t)
+
+	// Create a mock request recorder
+	rr := httptest.NewRecorder()
+
+	// Send the request and recorder
+	r.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("Handler returned the wrong status: got %v, expected %v", status, http.StatusCreated)
+	}
+
+	expected := `{"code":"testcode","isFavorite":"false"}`
+
+	// Remove any linebreaks from the response writer body
+	body := strings.Replace(rr.Body.String(), "\n", "", -1)
+	body = strings.Replace(body, "\r", "", -1)
+
+	if body != expected {
+		t.Errorf("Handler returned unexpected body: got %v, expected %v", rr.Body.String(), expected)
+	}
+}
+
 func TestAddFavorite(t *testing.T) {
 	InitialUserMigration()
 	InitialFavoriteMigration()
