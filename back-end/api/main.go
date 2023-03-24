@@ -31,7 +31,10 @@ func InitializeRouter() {
 	s.HandleFunc("/delete-allergies", DeleteAllergy).Methods("DELETE")
 	s.HandleFunc("/check-allergies", CheckAllergies).Methods("POST")
 	s.HandleFunc("/create-list", CreateList).Methods("POST")
-
+	s.HandleFunc("/favorite", GetFavorites).Methods("GET")
+	s.HandleFunc("/favorite", AddFavorite).Methods("POST")
+	s.HandleFunc("/favorite", DeleteFavorite).Methods("DELETE")
+	s.HandleFunc("/check-favorite", CheckFavorite).Methods("POST")
 }
 
 func StartServer() {
@@ -49,7 +52,7 @@ func StartServer() {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			startTime := time.Now()
 			next.ServeHTTP(w, r)
-			duration := time.Now().Sub(startTime)
+			duration := time.Since(startTime)
 			log.Printf("[%s] %s %s (%s)", r.Method, r.URL.Path, r.RemoteAddr, duration)
 		})
 	}
@@ -66,6 +69,7 @@ func main() {
 	InitialUserMigration()
 	InitialAllergyMigration()
 	InitialListMigration()
+	InitialFavoriteMigration()
 	InitializeRouter()
 	StartServer()
 }
