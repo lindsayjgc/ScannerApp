@@ -186,6 +186,7 @@ func DeleteList(w http.ResponseWriter, r *http.Request) {
 			deletedLists = append(deletedLists, v)
 			title := GroceryTitle{Email: claims.Email, Title: v}
 			ListDB.Where("email = ? AND title = ?", title.Email, title.Title).Delete(&title)
+			ListDB.Where("email = ? AND title = ?", title.Email, title.Title).Delete(&GroceryItem{})
 		} else {
 			notDeletedLists = append(notDeletedLists, v)
 		}
