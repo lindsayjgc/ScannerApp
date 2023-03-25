@@ -4,3 +4,11 @@
   align-items: center;
   height: 80vh;
 }
+
+.mat-mdc-row .mat-mdc-cell {
+  cursor: pointer;
+}
+
+.mat-mdc-row:hover .mat-mdc-cell {
+  background-color: lightgray;
+}

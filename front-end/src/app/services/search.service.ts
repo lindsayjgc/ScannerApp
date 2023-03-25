@@ -10,8 +10,8 @@ export class SearchService {
 
   searchUrl = 'http://localhost:4200/openfood/search.pl?action=process';
 
-  search(option: string, query: string) {
-    const headers = new HttpHeaders();
-    return this.http.get<any>(this.searchUrl + '&tagtype_0=' + option + '&tag_contains_0=contains&tag_0=' + query + '&json=true', { 'headers': headers });
+  search(option: string, query: string, page: number) {
+    return this.http.get<any>(this.searchUrl + '&tagtype_0=' + option + '&tag_contains_0=contains&tag_0=' + query
+      + '&page=' + page + '&json=true');
   }
 }
