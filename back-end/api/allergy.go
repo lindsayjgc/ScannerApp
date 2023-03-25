@@ -30,10 +30,6 @@ type RawProductIngredients struct {
 	Ingredients string `json:"ingredients"`
 }
 
-type Email struct {
-	Email string `json:"email"`
-}
-
 func InitialAllergyMigration() {
 	AllergyDB, err = gorm.Open(sqlite.Open(DB_PATH), &gorm.Config{})
 
