@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/glebarez/sqlite"
 	"github.com/joho/godotenv"
@@ -24,6 +25,11 @@ type GroceryTitle struct {
 	gorm.Model
 	Email string `json:"email"`
 	Title string `json:"title"`
+}
+
+type RawListItems struct {
+	Title string `json:"title"`
+	Items string `json:"items"`
 }
 
 func InitialListMigration() {
@@ -98,28 +104,43 @@ func AddGroceryItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var listItem GroceryItem
-	err = json.NewDecoder(r.Body).Decode(&listItem)
+	var rawlistItems RawListItems
+	err = json.NewDecoder(r.Body).Decode(&rawlistItems)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON"))
 		return
 	}
 
-	// Check if item is already on list
-	var existingItem GroceryItem
-	res := ListDB.First(&existingItem, "email = ? AND title = ? AND item = ?", claims.Email, listItem.Title, listItem.Item)
+	newItems := strings.Split(strings.ToLower(string(rawlistItems.Items)), ",")
 
-	if res.Error == nil {
-		// item already exists in db
-		w.WriteHeader(http.StatusAlreadyReported)
-		json.NewEncoder(w).Encode(GenerateResponse("Item already exists"))
-		return
+	// Check if item is already on list
+	var existingItemsSlice []string
+	ListDB.Model(GroceryItem{}).Where("email = ? AND title = ?", claims.Email, rawlistItems.Title).Select("item").Find(&existingItemsSlice)
+
+	// Convert the slice of items into a map for efficiency later
+	existingItems := make(map[string]bool)
+	for _, v := range existingItemsSlice {
+		existingItems[string(v)] = true
 	}
 
-	listItem.Email = claims.Email
-	ListDB.Create(&listItem)
+	// Check for existing items and add them to DB if not
+	var addedItems []string
+	var notAddedItems []string
+	for _, v := range newItems {
+		if !existingItems[v] { // If this new item does not already exist
+			item := GroceryItem{Email: claims.Email, Title: rawlistItems.Title, Item: v}
+			addedItems = append(addedItems, v)
+			ListDB.Create(&item)
+		} else { // Otherwise, add to a list of already existing items
+			notAddedItems = append(notAddedItems, v)
+		}
+	}
 
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(GenerateResponse("Item successfully added"))
+	res := make(map[string]string)
+	res["addedItems"] = strings.Join(addedItems, ",")
+	res["existingItems"] = strings.Join(notAddedItems, ",")
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(res)
 }
