@@ -28,7 +28,7 @@ func CreateCookie(w http.ResponseWriter, credentials Credentials) (error, int) {
 	tokenString, err := token.SignedString(jwtKey)
 
 	if err != nil {
-		return errors.New("Error creating JWT"), http.StatusInternalServerError
+		return errors.New("error creating jwt"), http.StatusInternalServerError
 	}
 
 	http.SetCookie(w, 
@@ -53,9 +53,9 @@ func CheckCookie(w http.ResponseWriter, r *http.Request) (*Claims, error, int) {
 	cookie, err := r.Cookie("token")
 	if err != nil {
 		if err == http.ErrNoCookie {
-			return claims, errors.New("No user logged in"), http.StatusBadRequest
+			return claims, errors.New("no user logged in"), http.StatusBadRequest
 		}
-		return claims, errors.New("Other cookie-related error"), http.StatusBadRequest
+		return claims, errors.New("other cookie-related error"), http.StatusBadRequest
 	}
 
 	tokenStr := cookie.Value
@@ -69,17 +69,17 @@ func CheckCookie(w http.ResponseWriter, r *http.Request) (*Claims, error, int) {
 	// error for the JWT being expired
 	if err != nil {
 		if err == jwt.ErrSignatureInvalid {
-			return claims, errors.New("Error parsing JWT"), http.StatusInternalServerError
+			return claims, errors.New("error parsing JWT"), http.StatusInternalServerError
 		}
 
-		return claims, errors.New("Other JWT-related error"), http.StatusInternalServerError
+		return claims, errors.New("other JWT-related error"), http.StatusInternalServerError
 	}
 
 	if !tkn.Valid {
 		// Since JWT is now invalid, delete the cookie
 		DeleteCookie(w)
 
-		return claims, errors.New("Other JWT-related error"), http.StatusInternalServerError
+		return claims, errors.New("other JWT-related error"), http.StatusInternalServerError
 	}
 
 	return claims, nil, http.StatusOK

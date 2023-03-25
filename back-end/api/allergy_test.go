@@ -50,7 +50,7 @@ func TestAddAllergy(t *testing.T) {
 
 	// clean up testAllergy
 	allergy := Allergy{Email: "unit@test.com", Allergy: "testallergy"}
-	AllergyDB.Where("email = ? AND allergy = ?", allergy.Email, allergy.Allergy).Delete(&allergy)
+	AllergyDB.Where("email = ? AND allergy = ?", allergy.Email, allergy.Allergy).Unscoped().Delete(&allergy)
 }
 
 func TestCheckAllerigesNotFound(t *testing.T) {
@@ -123,7 +123,7 @@ func TestCheckAllerigesFound(t *testing.T) {
 
 	// Delete dummy allergy from DB
 	allergy = Allergy{Email: "unit@test.com", Allergy: "testallergy"}
-	AllergyDB.Where("email = ? AND allergy = ?", allergy.Email, allergy.Allergy).Delete(&allergy)
+	AllergyDB.Where("email = ? AND allergy = ?", allergy.Email, allergy.Allergy).Unscoped().Delete(&allergy)
 }
 
 
