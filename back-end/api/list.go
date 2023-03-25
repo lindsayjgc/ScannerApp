@@ -32,6 +32,10 @@ type RawListItems struct {
 	Items string `json:"items"`
 }
 
+type RawTitles struct {
+	Titles string `json:"titles"`
+}
+
 func InitialListMigration() {
 	ListDB, err = gorm.Open(sqlite.Open(DB_PATH), &gorm.Config{})
 
@@ -141,6 +145,55 @@ func AddGroceryItem(w http.ResponseWriter, r *http.Request) {
 	res["addedItems"] = strings.Join(addedItems, ",")
 	res["existingItems"] = strings.Join(notAddedItems, ",")
 
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(res)
+}
+
+func DeleteList(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	claims, err, resStatus := CheckCookie(w, r)
+
+	if err != nil {
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
+		return
+	}
+
+	var rawListsToDelete RawTitles
+	err = json.NewDecoder(r.Body).Decode(&rawListsToDelete)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON"))
+		return
+	}
+
+	listsToDelete := strings.Split(string(rawListsToDelete.Titles), ",")
+
+	var existingListsSlice []string
+	ListDB.Model(GroceryTitle{}).Where("email = ?", claims.Email).Select("title").Find(&existingListsSlice)
+
+	// Convert the slice of lists into a map for efficiency later
+	existingLists := make(map[string]bool)
+	for _, v := range existingListsSlice {
+		existingLists[string(v)] = true
+	}
+
+	var deletedLists []string
+	var notDeletedLists []string
+	for _, v := range listsToDelete {
+		if existingLists[v] {
+			deletedLists = append(deletedLists, v)
+			title := GroceryTitle{Email: claims.Email, Title: v}
+			ListDB.Where("email = ? AND title = ?", title.Email, title.Title).Delete(&title)
+		} else {
+			notDeletedLists = append(notDeletedLists, v)
+		}
+	}
+
+	res := make(map[string]string)
+	res["deletedLists"] = strings.Join(deletedLists, ",")
+	res["notDeletedLists"] = strings.Join(notDeletedLists, ",")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(res)
 }
