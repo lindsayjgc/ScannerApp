@@ -18,6 +18,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatListModule } from '@angular/material/list';
+import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 
 import { LoginComponent } from './login/login.component';
@@ -58,6 +59,7 @@ import { DeleteDialogComponent } from './dialogs/delete-dialog/delete-dialog.com
     MatChipsModule,
     MatCheckboxModule,
     MatListModule,
+    MatSelectModule,
     CommonModule
   ],
   providers: [],
