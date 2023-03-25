@@ -53,7 +53,7 @@ func TestSignUpEndpoint(t *testing.T) {
 	}
 
 	// Delete the user that was created for the test
-	UserDB.Where("email = ?", "unit@test.com").Delete(&user)
+	UserDB.Where("email = ?", "unit@test.com").Unscoped().Delete(&user)
 }
 
 func TestLoginEndpoint(t *testing.T) {
@@ -96,7 +96,7 @@ func TestLoginEndpoint(t *testing.T) {
 	}
 
 	// Delete the user that was created for the test
-	UserDB.Where("email = ?", "unit@test.com").Delete(&user)
+	UserDB.Where("email = ?", "unit@test.com").Unscoped().Delete(&user)
 }
 
 func TestLoggedInEndpoint(t *testing.T) {
@@ -177,7 +177,7 @@ func TestUserInfo(t *testing.T) {
 	}
 
 	// Delete the user that was created for the test
-	UserDB.Where("email = ?", "unit@test.com").Delete(&user)
+	UserDB.Where("email = ?", "unit@test.com").Unscoped().Delete(&user)
 }
 
 func TestLogoutEndpoint(t *testing.T) {
