@@ -28,6 +28,7 @@ import { SetupComponent } from './setup/setup.component';
 import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
 import { DeleteDialogComponent } from './dialogs/delete-dialog/delete-dialog.component';
+import { SearchComponent } from './search/search.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { DeleteDialogComponent } from './dialogs/delete-dialog/delete-dialog.com
     HomeComponent,
     ProfileComponent,
     DeleteDialogComponent,
+    SearchComponent,
   ],
   imports: [
     BrowserModule,

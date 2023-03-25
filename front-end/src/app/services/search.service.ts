@@ -12,8 +12,6 @@ export class SearchService {
 
   search(option: string, query: string) {
     const headers = new HttpHeaders();
-    query = query.toLowerCase().split(' ').join('_');
-
     return this.http.get<any>(this.searchUrl + '&tagtype_0=' + option + '&tag_contains_0=contains&tag_0=' + query + '&json=true', { 'headers': headers });
   }
 }
