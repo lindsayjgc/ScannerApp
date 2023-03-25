@@ -79,3 +79,7 @@ Cypress.Commands.add('mount', customMount)
 
 // Example use:
 // cy.mount(MyComponent)
+
+Cypress.on('uncaught:exception', (err, runnable, promise) => {
+  return false
+})

@@ -4,5 +4,13 @@
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": false
+  },
+  "/openfood": {
+    "target": "https://us.openfoodfacts.org/cgi",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/openfood": ""
+    }
   }
 }

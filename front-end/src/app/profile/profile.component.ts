@@ -3,12 +3,11 @@ import { catchError, Observable, of, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { HttpClient } from '@angular/common/http';
 
 import { UsersService } from '../services/users.service';
 import { DeleteDialogComponent } from '../dialogs/delete-dialog/delete-dialog.component';
 import { AllergensService } from '../services/allergens.service';
-import { DeleteAllergyComponent } from '../dialogs/delete-allergy/delete-allergy.component';
+import { Allergen } from '../services/allergenparams';
 
 @Component({
   selector: 'app-profile',
@@ -20,7 +19,12 @@ export class ProfileComponent implements OnInit {
   email: string = '';
   password: string = '';
   allergies: string[] = [];
-  allergyToRemove: string = '';
+
+  allergens: Allergen[] = [];
+  separatorKeysCodes: number[] = [13, 188]; // Enter and comma keys
+  addOnBlur = true;
+  selectedAllergies: string[] = [];
+
   constructor(private usersService: UsersService, private router: Router, public dialog1: MatDialog, private errorMessage: MatSnackBar, private allergensService: AllergensService, public dialog2: MatDialog, public dialog: MatDialog) { }
 
   ngOnInit() {
@@ -60,31 +64,52 @@ export class ProfileComponent implements OnInit {
     });
   }
 
+  add(event: any): void {
+    const input = event.input;
+    const value = event.value.trim();
 
-  // getAllergies() {
-  //   this.http.get<any>('http://localhost:4200/api/user-info').subscribe((data) => {
-  //     this.allergies = data.allergies.split(',');
-  //   });
-  // }
+    // Add the new allergen
+    if (value) {
+      this.allergens.push({ name: value });
+    }
 
-  // removeSelectedAllergies(selectedAllergies: string[]) {
-  //   selectedAllergies.forEach((allergy) => {
-  //     this.allergyService.deleteAllergy(allergy).subscribe(() => {
-  //       this.getAllergies();
-  //     });
-  //   });
-  // }
+    // Clear the input value
+    if (input) {
+      input.value = '';
+    }
+  }
 
-  // openDialog() {
-  //   const dialogRef = this.dialog.open(DeleteAllergyComponent, {
-  //     data: { allergies: this.allergies },
-  //   });
+  remove(allergen: Allergen): void {
+    const index = this.allergens.indexOf(allergen);
 
-  //   dialogRef.afterClosed().subscribe((result: string[]) => {
-  //     if (result) {
-  //       this.removeSelectedAllergies(result);
-  //     }
-  //   });
-  // }
+    if (index >= 0) {
+      this.allergens.splice(index, 1);
+    }
+  }
+
+  edit(allergen: Allergen, event: any): void {
+    const index = this.allergens.indexOf(allergen);
+
+    if (index >= 0) {
+      this.allergens[index].name = event.target.value.trim();
+    }
+  }
+
+  submitAllergies() {
+    const allergyString = this.allergens.map(allergen => allergen.name).join(', ');
+    this.allergensService.addAllergy(allergyString).subscribe((response: any) => {
+      console.log(response);
+      window.location.reload();
+    });
+  }
+
+  removeAllergies() {
+    const allergyString = this.selectedAllergies.toString();
+    this.allergensService.deleteAllergy(allergyString).subscribe((response: any) => {
+      console.log(response);
+      window.location.reload();
+    });
+  }
 
 }
+
