@@ -198,3 +198,52 @@ func DeleteList(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(res)
 }
+
+func DeleteListItem(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	claims, err, resStatus := CheckCookie(w, r)
+
+	if err != nil {
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
+		return
+	}
+
+	var rawItemsToDelete RawListItems
+	err = json.NewDecoder(r.Body).Decode(&rawItemsToDelete)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON"))
+		return
+	}
+
+	itemsToDelete := strings.Split(string(rawItemsToDelete.Items), ",")
+
+	var existingItemsSlice []string
+	ListDB.Model(GroceryItem{}).Where("email = ? AND title = ?", claims.Email, rawItemsToDelete.Title).Select("item").Find(&existingItemsSlice)
+
+	// Convert the slice of items into a map for efficiency later
+	existingItems := make(map[string]bool)
+	for _, v := range existingItemsSlice {
+		existingItems[string(v)] = true
+	}
+
+	var deletedItems []string
+	var notDeletedItems []string
+	for _, v := range itemsToDelete {
+		if existingItems[v] {
+			deletedItems = append(deletedItems, v)
+			item := GroceryItem{Email: claims.Email, Title: rawItemsToDelete.Title, Item: v}
+			ListDB.Where("email = ? AND title = ? AND item = ?", item.Email, item.Title, item.Item).Delete(&item)
+		} else {
+			notDeletedItems = append(notDeletedItems, v)
+		}
+	}
+
+	res := make(map[string]string)
+	res["deletedItems"] = strings.Join(deletedItems, ",")
+	res["notDeletedItems"] = strings.Join(notDeletedItems, ",")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(res)
+}
