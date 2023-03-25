@@ -19,6 +19,9 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatListModule } from '@angular/material/list';
 import { MatSelectModule } from '@angular/material/select';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatTableModule } from '@angular/material/table';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CommonModule } from '@angular/common';
 
 import { LoginComponent } from './login/login.component';
@@ -62,6 +65,9 @@ import { SearchComponent } from './search/search.component';
     MatCheckboxModule,
     MatListModule,
     MatSelectModule,
+    MatPaginatorModule,
+    MatTableModule,
+    MatProgressSpinnerModule,
     CommonModule
   ],
   providers: [],
