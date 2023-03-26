@@ -23,6 +23,9 @@ func SendEmail(toEmail string, code string, emailType string) error {
 	if emailType == "signup" {
 		subject = "Confirm Your Signup"
 		body = "This is an email from our Grocery App for CEN3031.\n\nPlease confirm your signup by entering this code:\n" + code + "\n\nThanks!\nGroup 105"
+	} else if emailType == "reset" {
+		subject = "Pasword Reset Confirmation"
+		body = "This is an email from our Grocery App for CEN3031.\n\nTo verify that it's you trying to reset your password, please enter this code:\n" + code + "\n\nThanks!\nGroup 105"
 	} else {
 		log.Fatal("invalid email type")
 	}
