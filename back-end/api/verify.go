@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"reflect"
 	"time"
 
 	"github.com/glebarez/sqlite"
 	"github.com/joho/godotenv"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -27,6 +29,11 @@ type Email struct {
 type RawCode struct {
 	Email string `json:"email"`
 	Code string `json:"code"`
+}
+
+type ResetData struct {
+	Email string `json:"email"`
+	Password string `json:"password"`
 }
 
 func InitialCodeMigration() {
@@ -96,4 +103,50 @@ func IssueCode(w http.ResponseWriter, r *http.Request, emailType string) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(GenerateResponse("Verification email sent successfully"))
+}
+
+func ResetPassword(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var resetData ResetData
+	err = json.NewDecoder(r.Body).Decode(&resetData)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON body"))
+		return
+	}
+
+	// Ensure all fields are not empty
+	v := reflect.ValueOf(resetData)
+	for i := 0; i < v.NumField(); i++ {
+		if v.Field(i).Interface() == "" {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(GenerateResponse("All fields are required."))
+			return
+		}
+	}
+
+	// Check if email already exists
+	var userSearch User
+	result := UserDB.First(&userSearch, "email = ?", resetData.Email)
+	if result.RowsAffected == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(GenerateResponse("Email not found"))
+		return
+	}
+
+	// If email does not exist, encrypt password for storage
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(resetData.Password), 0)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(GenerateResponse("Could not generate password hash"))
+		return
+	}
+
+	userSearch.Password = string(passwordHash)
+	UserDB.Save(&userSearch)
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(GenerateResponse("Password reset successfully"))
 }
