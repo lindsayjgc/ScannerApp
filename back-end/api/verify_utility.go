@@ -11,12 +11,11 @@ import (
 	"time"
 )
 
-func SendEmail(toEmail string, emailType string) error {
+func SendEmail(toEmail string, code string, emailType string) error {
 	// Set parameters for email 
 	from := os.Getenv("MAIL")
 	pw := os.Getenv("PW")
 	to := []string{toEmail}
-	code := GenerateRandomCode()
 	var subject string
 	var body string
 

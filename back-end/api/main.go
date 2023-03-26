@@ -35,7 +35,7 @@ func InitializeRouter() {
 	s.HandleFunc("/favorite", AddFavorite).Methods("POST")
 	s.HandleFunc("/favorite", DeleteFavorite).Methods("DELETE")
 	s.HandleFunc("/check-favorite", CheckFavorite).Methods("POST")
-	s.HandleFunc("/verify", VerifyEmail).Methods("POST")
+	s.HandleFunc("/verify/signup", VerifyEmailSignup).Methods("POST")
 }
 
 func StartServer() {

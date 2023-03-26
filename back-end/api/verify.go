@@ -9,7 +9,11 @@ type Email struct {
 	Email string `json:"email"`
 }
 
-func VerifyEmail(w http.ResponseWriter, r *http.Request) {
+func VerifyEmailSignup(w http.ResponseWriter, r *http.Request) {
+	IssueCode(w, r, "signup")
+}
+
+func IssueCode(w http.ResponseWriter, r *http.Request, emailType string) {
 	w.Header().Set("Content-Type", "application/json")
 
 	// Decode email from frontend
@@ -21,7 +25,8 @@ func VerifyEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = SendEmail(email.Email, "signup")
+	randomCode := GenerateRandomCode()
+	err = SendEmail(email.Email, randomCode, "signup")
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
