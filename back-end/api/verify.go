@@ -54,6 +54,10 @@ func VerifyEmailSignup(w http.ResponseWriter, r *http.Request) {
 	IssueCode(w, r, "signup")
 }
 
+func VerifyEmailReset(w http.ResponseWriter, r *http.Request) {
+	IssueCode(w, r, "reset")
+}
+
 func IssueCode(w http.ResponseWriter, r *http.Request, emailType string) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -67,7 +71,7 @@ func IssueCode(w http.ResponseWriter, r *http.Request, emailType string) {
 	}
 
 	randomCode := GenerateRandomCode()
-	err = SendEmail(email.Email, randomCode, "signup")
+	err = SendEmail(email.Email, randomCode, emailType)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
