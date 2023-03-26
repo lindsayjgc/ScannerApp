@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/glebarez/sqlite"
 	"github.com/joho/godotenv"
@@ -11,6 +12,13 @@ import (
 )
 
 var CodeDB *gorm.DB
+
+type Code struct {
+	gorm.Model
+	Email string 
+	Code string
+	Expiration time.Time `gorm:"type:datetime"`
+}
 
 type Email struct {
 	Email string `json:"email"`
@@ -71,4 +79,3 @@ func IssueCode(w http.ResponseWriter, r *http.Request, emailType string) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(GenerateResponse("Verification email sent successfully"))
 }
-
