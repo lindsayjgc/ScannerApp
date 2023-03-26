@@ -71,6 +71,7 @@ func main() {
 	InitialAllergyMigration()
 	InitialListMigration()
 	InitialFavoriteMigration()
+	InitialCodeMigration()
 	InitializeRouter()
 	StartServer()
 }
