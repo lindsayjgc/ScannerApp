@@ -21,6 +21,7 @@ export class HomeComponent {
 
   criterion: Criteria[] = [
     { value: 'categories', viewValue: 'Category' },
+    { value: 'brands', viewValue: 'Brand' },
   ];
   selectedCriteria = this.criterion[0].value;
 

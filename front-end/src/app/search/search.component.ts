@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { catchError, of } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 
@@ -12,12 +12,12 @@ import { SearchService } from '../services/search.service';
   styleUrls: ['./search.component.css']
 })
 export class SearchComponent implements OnInit {
-  constructor(private searchService: SearchService, private route: ActivatedRoute) { }
+  constructor(private searchService: SearchService, private route: ActivatedRoute, private router: Router) { }
   loading: boolean = true;
   currentPage: number = 0;
   resultCount: number = 0;
 
-  displayedColumns: string[] = ['name'];
+  displayedColumns: string[] = ['image', 'name'];
   dataSource = new MatTableDataSource();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -37,6 +37,7 @@ export class SearchComponent implements OnInit {
     this.searchService.search(this.route.snapshot.paramMap.get('option')!, this.route.snapshot.paramMap.get('query')!, this.currentPage + 1)
       .pipe(catchError(err => {
         console.error(err);
+        this.router.navigate(['/home']);
         return of();
       }))
       .subscribe((response) => {
