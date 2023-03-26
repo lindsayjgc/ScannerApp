@@ -50,7 +50,6 @@ func InitialCodeMigration() {
 	CodeDB.AutoMigrate(&Code{})
 }
 
-
 func VerifyEmailSignup(w http.ResponseWriter, r *http.Request) {
 	IssueCode(w, r, "signup")
 }
@@ -75,6 +74,21 @@ func IssueCode(w http.ResponseWriter, r *http.Request, emailType string) {
 		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
 		return
 	}
+
+	// Delete any existing codes
+	var deletedCode Code
+	CodeDB.Where("email = ?", email.Email).Delete(&deletedCode)
+
+	// Create expiration time for code
+	expiration := time.Now().Add(5* time.Minute)
+
+	// Create code object and save to DB for future checking
+	code := Code{
+		Email: email.Email,
+		Code: randomCode,
+		Expiration: expiration,
+	}
+	CodeDB.Create(&code)
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(GenerateResponse("Verification email sent successfully"))
