@@ -27,13 +27,18 @@ func InitializeRouter() {
 	s.HandleFunc("/delete-user", DeleteUser).Methods("DELETE")
 	s.HandleFunc("/logged-in", IsLoggedIn).Methods("GET")
 	s.HandleFunc("/user-info", UserInfo).Methods("GET")
+
 	s.HandleFunc("/add-allergies", AddAllergy).Methods("PUT")
 	s.HandleFunc("/delete-allergies", DeleteAllergy).Methods("DELETE")
 	s.HandleFunc("/check-allergies", CheckAllergies).Methods("POST")
+
 	s.HandleFunc("/create-list", CreateList).Methods("POST")
 	s.HandleFunc("/add-list-items", AddGroceryItem).Methods("POST")
 	s.HandleFunc("/delete-lists", DeleteList).Methods("DELETE")
 	s.HandleFunc("/delete-list-items", DeleteListItem).Methods("DELETE")
+	s.HandleFunc("/get-lists", GetGroceryTitles).Methods("GET")
+	s.HandleFunc("/get-list", GetGroceryList).Methods("GET")
+
 	s.HandleFunc("/favorite", GetFavorites).Methods("GET")
 	s.HandleFunc("/favorite", AddFavorite).Methods("POST")
 	s.HandleFunc("/favorite", DeleteFavorite).Methods("DELETE")
