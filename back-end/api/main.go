@@ -32,7 +32,7 @@ func InitializeRouter() {
 	s.HandleFunc("/delete-allergies", DeleteAllergy).Methods("DELETE")
 	s.HandleFunc("/check-allergies", CheckAllergies).Methods("POST")
 
-	s.HandleFunc("/create-list", CreateList).Methods("POST")
+	s.HandleFunc("/create-list", CreateList).Methods("PUT")
 	s.HandleFunc("/add-list-items", AddGroceryItem).Methods("POST")
 	s.HandleFunc("/delete-lists", DeleteList).Methods("DELETE")
 	s.HandleFunc("/delete-list-items", DeleteListItem).Methods("DELETE")

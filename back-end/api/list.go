@@ -187,7 +187,7 @@ func GetGroceryList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var listTitle RawTitles
+	var listTitle GroceryTitle
 	err = json.NewDecoder(r.Body).Decode(&listTitle)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -196,10 +196,10 @@ func GetGroceryList(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var itemsSlice []string
-	ListDB.Model(GroceryItem{}).Where("email = ? AND title = ?", claims.Email, listTitle.Titles).Select("item").Find(&itemsSlice)
+	ListDB.Model(GroceryItem{}).Where("email = ? AND title = ?", claims.Email, listTitle.Title).Select("item").Find(&itemsSlice)
 
 	var list RawListItems
-	list.Title = listTitle.Titles
+	list.Title = listTitle.Title
 	if len(itemsSlice) == 0 {
 		list.Items = "NONE"
 	} else {

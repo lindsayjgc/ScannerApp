@@ -192,13 +192,13 @@
 
 ##### Responses
 
-> | http code | content-type       | response                                                                                  |
-> | --------- | ------------------ | ----------------------------------------------------------------------------------------- |
-> | `200`     | `application/json` | `{"deletedAllergies":"*new allergies*", "notDeletedAllergies":"*preexisting allergies*"}` |
-> | `400`     | `application/json` | `{"message":"No user logged in"}`                                                         |
-> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                                                |
-> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                                         |
-> | `500`     | `application/json` | `{"message":"Other JWT-related error"}`                                                   |
+> | http code | content-type       | response                                                                                                 |
+> | --------- | ------------------ | -------------------------------------------------------------------------------------------------------- |
+> | `200`     | `application/json` | `{"deletedAllergies":"*allergies that existed*", "notDeletedAllergies":"*allergies that didn't exist*"}` |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`                                                                        |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                                                               |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                                                        |
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"}`                                                                  |
 
 </details>
 
@@ -224,4 +224,132 @@
 > | `500`     | `application/json` | `{"message":"Error searching for user allergies"}`                          |
 > | `500`     | `application/json` | `{"message":"Error decoding JSON body"}`                                    |
 
+</details>
+
+
+### Grocery Lists
+
+---
+
+<details>
+    <summary><code>PUT</code> <code><b>/api/create-list</b></code> <code>Creates an empty grocery list in database</code></summary>
+
+##### Parameters
+
+> | name    | type     | data type | description            |
+> | ------- | -------- | --------- | ---------------------- |
+> | `title` | required | string    | new grocery list title |
+
+##### Responses
+
+> | http code | content-type       | response                                   |
+> | --------- | ------------------ | ------------------------------------------ |
+> | `200`     | `application/json` | `{"list successfully created"}`            |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`          |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}` |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`          |
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"} `   |
+
+</details>
+
+<details>
+    <summary><code>POST</code> <code><b>/api/add-list-items</b></code> <code>Adds items to an existing grocery list</code></summary>
+
+##### Parameters
+
+> | name    | type     | data type | description                           |
+> | ------- | -------- | --------- | ------------------------------------- |
+> | `title` | required | string    | grocery list title                    |
+> | `items` | required | string    | new items to be added to grocery list |
+
+##### Responses
+
+> | http code | content-type       | response                                                                      |
+> | --------- | ------------------ | ----------------------------------------------------------------------------- |
+> | `200`     | `application/json` | `{"addedItems":"*new allergies*", "existingAllergies":"*preexisting items*"}` |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`                                             |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                                    |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                             |
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"} `                                      |
+</details>
+
+
+
+<details>
+    <summary><code>DELETE</code> <code><b>/api/delete-lists</b></code> <code>Deletes entire grocery lists</code></summary>
+
+##### Parameters
+
+> | name    | type     | data type | description                           |
+> | ------- | -------- | --------- | ------------------------------------- |
+> | `titles` | required | string   | grocery list titles to be deleted     |
+
+##### Responses
+
+> | http code | content-type       | response                                                                                 |
+> | --------- | ------------------ | ---------------------------------------------------------------------------------------- |
+> | `200`     | `application/json` | `{"deletedLists":"*lists that existed*", "notDeletedLists":"*lists that didn't exist*"}` |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`                                                        |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                                               |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                                        |
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"} `                                                 |
+</details>
+
+<details>
+    <summary><code>DELETE</code> <code><b>/api/delete-list-items</b></code> <code>Deletes specified grocery list items</code></summary>
+
+##### Parameters
+
+> | name    | type     | data type | description                                            |
+> | ------- | -------- | --------- | ------------------------------------------------------ |
+> | `title` | required | string    | grocery list title from which items will be deleted    |
+> | `items` | required | string    | items to be deleted from grocery list                  |
+
+##### Responses
+
+> | http code | content-type       | response                                                                                 |
+> | --------- | ------------------ | ---------------------------------------------------------------------------------------- |
+> | `200`     | `application/json` | `{"deletedItems":"*lists that existed*", "notDeletedItems":"*lists that didn't exist*"}` |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`                                                        |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                                               |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                                        |
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"} `                                                 |
+</details>
+
+<details>
+    <summary><code>GET</code> <code><b>/api/get-lists</b></code> <code>Provides a list of all grocery list titles</code></summary>
+
+##### Parameters
+
+> `none`
+
+##### Responses
+
+> | http code | content-type       | response                                   |
+> | --------- | ------------------ | ------------------------------------------ |
+> | `200`     | `application/json` | `"titles":*all titles or NONE*"`           |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`          |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}` |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`          |
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"}`    |
+</details>
+
+<details>
+    <summary><code>GET</code> <code><b>/api/get-list</b></code> <code>Provides the contents of requested list</code></summary>
+
+##### Parameters
+
+> | name    | type     | data type | description                                    |
+> | ------- | -------- | --------- | ---------------------------------------------- |
+> | `title` | required | string    | grocery list title for requested list items    |
+
+##### Responses
+
+> | http code | content-type       | response                                                         |
+> | --------- | ------------------ | ---------------------------------------------------------------- |
+> | `200`     | `application/json` | `{"title":"*title*", "items":"*comma delimited items or NONE*"}` |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`                                |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                       |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                |
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"} `                         |
 </details>
