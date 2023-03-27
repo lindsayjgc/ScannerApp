@@ -149,6 +149,68 @@ func AddGroceryItem(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(res)
 }
 
+// function for list of titles
+func GetGroceryTitles(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	claims, err, resStatus := CheckCookie(w, r)
+
+	if err != nil {
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
+		return
+	}
+
+	var groceryTitlesSlice []string
+	ListDB.Model(GroceryTitle{}).Where("email = ?", claims.Email).Select("title").Find(&groceryTitlesSlice)
+
+	var groceryTitles RawTitles
+	if len(groceryTitlesSlice) == 0 {
+		groceryTitles.Titles = "NONE"
+	} else {
+		groceryTitles.Titles = strings.Join(groceryTitlesSlice, ",")
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(groceryTitles)
+}
+
+// function for returning list and all items on it
+func GetGroceryList(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	claims, err, resStatus := CheckCookie(w, r)
+
+	if err != nil {
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
+		return
+	}
+
+	var listTitle RawTitles
+	err = json.NewDecoder(r.Body).Decode(&listTitle)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON"))
+		return
+	}
+
+	var itemsSlice []string
+	ListDB.Model(GroceryItem{}).Where("email = ? AND title = ?", claims.Email, listTitle.Titles).Select("item").Find(&itemsSlice)
+
+	var list RawListItems
+	list.Title = listTitle.Titles
+	if len(itemsSlice) == 0 {
+		list.Items = "NONE"
+	} else {
+		list.Items = strings.Join(itemsSlice, ",")
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(list)
+
+}
+
 func DeleteList(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 

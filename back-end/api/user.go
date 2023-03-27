@@ -259,7 +259,6 @@ func UserInfo(w http.ResponseWriter, r *http.Request) {
 	allInfo.FirstName = user.FirstName
 	allInfo.LastName = user.LastName
 	allInfo.Email = user.Email
-	// allInfo.Password = user.Password
 	if len(userAllergiesSlice) == 0 {
 		allInfo.Allergies = "NONE"
 	} else {
