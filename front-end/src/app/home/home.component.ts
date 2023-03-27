@@ -1,9 +1,6 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { catchError, of } from 'rxjs';
-
-import { SearchService } from '../services/search.service';
+import { Router } from '@angular/router';
 
 interface Criteria {
   value: string;
@@ -16,7 +13,7 @@ interface Criteria {
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent {
-  constructor(private searchService: SearchService) { }
+  constructor(private router: Router) { }
 
   searchForm = new FormGroup({
     search: new FormControl('', [Validators.required]),
@@ -24,17 +21,14 @@ export class HomeComponent {
 
   criterion: Criteria[] = [
     { value: 'categories', viewValue: 'Category' },
+    { value: 'brands', viewValue: 'Brand' },
   ];
   selectedCriteria = this.criterion[0].value;
 
+  query: string = "";
+
   search() {
-    this.searchService.search(this.selectedCriteria, this.searchForm.value.search!)
-      .pipe(catchError(err => {
-        console.error(err);
-        return of();
-      }))
-      .subscribe((response) => {
-        console.log(response);
-      });
+    this.query = this.searchForm.value.search!.toLowerCase().split(' ').join('_');
+    this.router.navigate(['/search', this.selectedCriteria, this.query]);
   }
 }

@@ -19,6 +19,9 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatListModule } from '@angular/material/list';
 import { MatSelectModule } from '@angular/material/select';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatTableModule } from '@angular/material/table';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CommonModule } from '@angular/common';
 
 import { LoginComponent } from './login/login.component';
@@ -28,6 +31,7 @@ import { SetupComponent } from './setup/setup.component';
 import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
 import { DeleteDialogComponent } from './dialogs/delete-dialog/delete-dialog.component';
+import { SearchComponent } from './search/search.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +43,7 @@ import { DeleteDialogComponent } from './dialogs/delete-dialog/delete-dialog.com
     HomeComponent,
     ProfileComponent,
     DeleteDialogComponent,
+    SearchComponent,
   ],
   imports: [
     BrowserModule,
@@ -60,6 +65,9 @@ import { DeleteDialogComponent } from './dialogs/delete-dialog/delete-dialog.com
     MatCheckboxModule,
     MatListModule,
     MatSelectModule,
+    MatPaginatorModule,
+    MatTableModule,
+    MatProgressSpinnerModule,
     CommonModule
   ],
   providers: [],
