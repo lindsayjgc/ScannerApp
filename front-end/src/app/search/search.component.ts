@@ -17,7 +17,7 @@ export class SearchComponent implements OnInit {
   currentPage: number = 0;
   resultCount: number = 0;
 
-  displayedColumns: string[] = ['image', 'name'];
+  displayedColumns: string[] = ['image', 'name', 'barcode'];
   dataSource = new MatTableDataSource();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -49,7 +49,7 @@ export class SearchComponent implements OnInit {
   }
 
   openProductPage(row: any) {
-    console.log(row.code);
+    this.router.navigate(['/product'], row.code);
   }
 
 }
