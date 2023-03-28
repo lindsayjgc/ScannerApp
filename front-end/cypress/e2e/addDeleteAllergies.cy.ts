@@ -5,9 +5,9 @@ describe('Add Allergies', () => {
     cy.visit("http://localhost:4200/register");
 
     cy.get('input[formControlName="email"]').type('test@gmail.com');
-    cy.contains('First Name').click().type('John');
-    cy.contains('Last Name').click().type('Doe');
-    cy.get('input[formControlName="password"]').type('password123');
+    cy.contains('First Name').click().type('Test');
+    cy.contains('Last Name').click().type('Test');
+    cy.get('input[formControlName="password"]').type('test');
 
     // Submit the form
     cy.get('button[type="submit"]').click();
@@ -46,8 +46,8 @@ describe('Add Allergies', () => {
     // See allergies on profile page
     cy.visit("http://localhost:4200/profile");
 
-    cy.get('mat-selection-list').should('contain', 'shellfish');
-    cy.get('mat-selection-list').should('contain', 'gluten');
+    cy.get('mat-selection-list').should('contain', 'shellfish')
+      .should('contain', 'gluten');
 
     // Add new allergies
     cy.get('mat-form-field.allergen-group input').type('treenuts{enter}');
@@ -55,18 +55,24 @@ describe('Add Allergies', () => {
     cy.get('mat-form-field.allergen-group input').type('lettuce{enter}');
 
     cy.get('button[type="submit"]').click();
-
-    cy.get('mat-selection-list').should('contain', 'treenuts');
-    cy.get('mat-selection-list').should('contain', 'lactose');
-    cy.get('mat-selection-list').should('contain', 'lettuce');
+    cy.get('mat-selection-list').should('contain', 'treenuts')
+      .should('contain', 'lactose')
+      .should('contain', 'lettuce');
 
     // Remove allergies
     cy.get('mat-list-option').contains('gluten').click();
     cy.get('mat-list-option').contains('lettuce').click();
 
     cy.get('button').contains('Remove selected allergies').click()
+    cy.get('mat-selection-list').should('not.contain', 'gluten')
+      .should('not.contain', 'lettuce');
 
-    cy.get('mat-selection-list').should('not.contain', 'gluten');
-    cy.get('mat-selection-list').should('not.contain', 'lettuce');
+    // Empty the allergy list
+    cy.get('mat-list-option').contains('shellfish').click();
+    cy.get('mat-list-option').contains('treenuts').click();
+    cy.get('mat-list-option').contains('lactose').click();
+
+    cy.get('button').contains('Remove selected allergies').click()
+    cy.get('mat-card').should('contain.text', 'NONE')
   });
 });
