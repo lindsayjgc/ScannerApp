@@ -1,20 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit , OnChanges , SimpleChanges, Input } from '@angular/core';
 import { catchError, Observable, of, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 import { UsersService } from '../services/users.service';
 import { DeleteDialogComponent } from '../dialogs/delete-dialog/delete-dialog.component';
 import { AllergensService } from '../services/allergens.service';
 import { Allergen } from '../services/allergenparams';
+import { GroceryListService } from '../services/grocery-list.service';
+import { CreateListDialogComponent } from '../dialogs/create-list-dialog/create-list-dialog.component';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnChanges {
   name: string = '';
   email: string = '';
   password: string = '';
@@ -25,9 +28,21 @@ export class ProfileComponent implements OnInit {
   addOnBlur = true;
   selectedAllergies: string[] = [];
 
-  groceryList: string[] = [];
+  listTitles: string = "";
+  @Input() listTitlesArray: string [] = [];
+  @Input() listContents: { [title: string]: string[] } = {};
+  dropdownOpen: { [title: string]: boolean } = {};
+  newTitle: string = "";
 
-  constructor(private usersService: UsersService, private router: Router, public dialog1: MatDialog, private errorMessage: MatSnackBar, private allergensService: AllergensService, public dialog2: MatDialog, public dialog: MatDialog) { }
+  constructor(private usersService: UsersService, private router: Router, public dialog1: MatDialog, private errorMessage: MatSnackBar, private allergensService: AllergensService, public dialog2: MatDialog, public dialog: MatDialog, private groceryListService: GroceryListService) { }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['listTitlesArray'] && changes['listTitlesArray'].currentValue) {
+      this.listTitles = changes['listTitlesArray'].currentValue;
+    }
+    if (changes['listContents'] && changes['listContents'].currentValue) {
+      this.listContents = changes['listContents'].currentValue;
+    }
+  }  
 
   ngOnInit() {
     this.usersService.loggedIn()
@@ -43,6 +58,17 @@ export class ProfileComponent implements OnInit {
       this.email = `${data.email}`;
       this.password = `${data.password}`;
     })
+    this.groceryListService.getListTitles().subscribe((titles: any) => {
+      this.listTitles = titles;
+    });
+    if (this.listTitles.length != 0) {
+      this.listTitlesArray = this.listTitles.split(',');
+      this.listTitlesArray.forEach((title) => {
+        this.groceryListService.getListContents(title).subscribe((contents: any) => {
+          this.listContents[title] = contents;
+        });
+      });
+    }
   }
 
   openDeleteDialog() {
@@ -111,6 +137,25 @@ export class ProfileComponent implements OnInit {
       console.log(response);
       window.location.reload();
     });
+  }
+
+  toggleDropdown(title: string): void {
+    this.dropdownOpen[title] = !this.dropdownOpen[title];
+  }
+  createNewList(newTitle: string): void {
+    const dialogRef = this.dialog2.open(CreateListDialogComponent);
+  
+    dialogRef.afterClosed().subscribe((newTitle: string) => {
+      if (newTitle) {
+        this.groceryListService.createEmptyList(newTitle).subscribe(() => {
+          this.listTitlesArray.push(newTitle);
+          this.listContents[newTitle] = [];
+        });
+      }
+    });
+  }
+  deleteList(listTitle: string) {
+    this.groceryListService.deleteEntireLists(listTitle);
   }
 
 }
