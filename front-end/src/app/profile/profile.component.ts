@@ -11,6 +11,7 @@ import { AllergensService } from '../services/allergens.service';
 import { Allergen } from '../services/allergenparams';
 import { GroceryListService } from '../services/grocery-list.service';
 import { CreateListDialogComponent } from '../dialogs/create-list-dialog/create-list-dialog.component';
+import { listParam } from '../services/deleteListparam';
 
 @Component({
   selector: 'app-profile',
@@ -28,20 +29,47 @@ export class ProfileComponent implements OnInit, OnChanges {
   addOnBlur = true;
   selectedAllergies: string[] = [];
 
+  titlesParam!: listParam;
   listTitles: string = "";
   @Input() listTitlesArray: string [] = [];
   @Input() listContents: { [title: string]: string[] } = {};
+  @Input() listNoItems: { [title: string]: boolean } = {};
   dropdownOpen: { [title: string]: boolean } = {};
   newTitle: string = "";
 
   constructor(private usersService: UsersService, private router: Router, public dialog1: MatDialog, private errorMessage: MatSnackBar, private allergensService: AllergensService, public dialog2: MatDialog, public dialog: MatDialog, private groceryListService: GroceryListService) { }
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['listTitlesArray'] && changes['listTitlesArray'].currentValue) {
-      this.listTitles = changes['listTitlesArray'].currentValue;
+    if (changes['listTitlesArray'] && changes['listTitlesArray'].currentValue || changes['listContents'] && changes['listContents'].currentValue) {
+      this.groceryListService.getListTitles().subscribe((titles: any) => {
+        this.titlesParam = titles;
+        this.listTitles = this.titlesParam.titles;
+        if (this.listTitles != "" && this.listTitles != "NONE") {
+          this.listTitlesArray = this.listTitles.split(',');
+          this.listTitlesArray.forEach((title) => {
+            this.groceryListService.getListContents(title).subscribe(
+              (contents: any) => {
+                this.listContents[title] = contents;
+                this.listNoItems[title] = false;
+              },
+              (error: any) => {
+                console.error(error);
+                this.listNoItems[title] = true;
+              }
+            );
+          });
+        }
+      });
     }
-    if (changes['listContents'] && changes['listContents'].currentValue) {
-      this.listContents = changes['listContents'].currentValue;
-    }
+    // if (changes['listContents'] && changes['listContents'].currentValue) {
+    //   if (this.listTitles.length != 0) {
+    //     this.listTitlesArray = this.listTitles.split(',');
+    //     this.listTitlesArray.forEach((title) => {
+    //       this.groceryListService.getListContents(title).subscribe((contents: any) => {
+    //         this.listContents[title] = contents;
+    //       });
+    //     });
+    //   }
+    // }
   }  
 
   ngOnInit() {
@@ -58,17 +86,25 @@ export class ProfileComponent implements OnInit, OnChanges {
       this.email = `${data.email}`;
       this.password = `${data.password}`;
     })
-    this.groceryListService.getListTitles().subscribe((titles: any) => {
-      this.listTitles = titles;
-    });
-    if (this.listTitles.length != 0) {
-      this.listTitlesArray = this.listTitles.split(',');
-      this.listTitlesArray.forEach((title) => {
-        this.groceryListService.getListContents(title).subscribe((contents: any) => {
-          this.listContents[title] = contents;
-        });
+      this.groceryListService.getListTitles().subscribe((titles: any) => {
+        this.titlesParam = titles;
+        this.listTitles = this.titlesParam.titles;
+        if (this.listTitles != "" && this.listTitles != "NONE") {
+          this.listTitlesArray = this.listTitles.split(',');
+          this.listTitlesArray.forEach((title) => {
+            this.groceryListService.getListContents(title).subscribe(
+              (contents: any) => {
+                this.listContents[title] = contents;
+                this.listNoItems[title] = false;
+              },
+              (error: any) => {
+                console.error(error);
+                this.listNoItems[title] = true;
+              }
+            );
+          });
+        }
       });
-    }
   }
 
   openDeleteDialog() {
@@ -151,11 +187,17 @@ export class ProfileComponent implements OnInit, OnChanges {
           this.listTitlesArray.push(newTitle);
           this.listContents[newTitle] = [];
         });
+        this.groceryListService.getListTitles().subscribe((titles: any) => {
+          this.listTitles = titles;
+        });
+        window.location.reload();
       }
     });
   }
   deleteList(listTitle: string) {
-    this.groceryListService.deleteEntireLists(listTitle);
+    this.groceryListService.deleteEntireLists(listTitle).subscribe(() => {
+      console.log(Response);
+    });
   }
 
 }
