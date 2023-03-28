@@ -6,6 +6,7 @@ import { SetupComponent } from './setup/setup.component';
 import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
 import { SearchComponent } from './search/search.component';
+import { ProductComponent } from './product/product.component';
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home' },
@@ -14,7 +15,8 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'setup', component: SetupComponent },
   { path: 'profile', component: ProfileComponent },
-  { path: 'search/:option/:query', component: SearchComponent }
+  { path: 'search/:option/:query', component: SearchComponent },
+  { path: 'product/:code', component: ProductComponent}
 ];
 
 @NgModule({

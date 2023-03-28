@@ -1,0 +1,23 @@
+  <div>
+    <h3></h3>
+    <div class="container">
+      <h1 class="product-name">{{ name }}</h1>
+      <img class="product-image" [src]="image" alt="My Image">
+      <div class="product-ingredients">
+        <ng-container *ngIf="isAllergic">
+          <p>Caution! Ingredients you are allergic to:</p>
+          <ul class="allergies-list">
+            <li *ngFor="let allergy of allergyIngredients">{{ allergy }}</li>
+          </ul>
+        </ng-container>
+        <ng-container *ngIf="!isAllergic">
+          <p>You are not allergic to anything in this product</p>
+        </ng-container>
+        <h2 class="ingredients-header">Product ingredients:</h2>
+        <ul class="ingredients-list">
+          <li *ngFor="let ingredient of ingredientsList">{{ ingredient }}</li>
+        </ul>
+      </div>
+    </div>
+    <h3></h3>
+  </div>

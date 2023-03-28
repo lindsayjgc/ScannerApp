@@ -32,6 +32,7 @@ import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
 import { DeleteDialogComponent } from './dialogs/delete-dialog/delete-dialog.component';
 import { SearchComponent } from './search/search.component';
+import { ProductComponent } from './product/product.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { SearchComponent } from './search/search.component';
     ProfileComponent,
     DeleteDialogComponent,
     SearchComponent,
+    ProductComponent,
   ],
   imports: [
     BrowserModule,
