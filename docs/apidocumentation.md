@@ -156,6 +156,92 @@
 
 </details>
 
+### Email Verification for Signup/Password Reset
+
+---
+
+<details>
+    <summary><code>POST</code> <code><b>/api/verify/signup</b></code> <code>Sends signup verification email with randomly generated code</code></summary>
+
+##### Parameters
+
+> | name    | type     | data type | description                                  |
+> | ------- | -------- | --------- | -------------------------------------------- |
+> | `email` | required | string    | email the user is attempting to sign up with |
+
+##### Responses
+
+> | http code | content-type       | response                                             |
+> | --------- | ------------------ | ---------------------------------------------------- |
+> | `200`     | `application/json` | `{"message":"Verification email sent successfully"}` |
+> | `500`     | `application/json` | `{"message":"Error decoding JSON body"}`             |
+> | `500`     | `application/json` | `{"message":"*email sending-related error*"}`        |
+
+</details>
+
+<details>
+    <summary><code>POST</code> <code><b>/api/verify/reset</b></code> <code>Sends password reset email with randomly generated code</code></summary>
+
+##### Parameters
+
+> | name    | type     | data type | description                                                 |
+> | ------- | -------- | --------- | ----------------------------------------------------------- |
+> | `email` | required | string    | email to the account the user is attempting to reset pw for |
+
+##### Responses
+
+> | http code | content-type       | response                                             |
+> | --------- | ------------------ | ---------------------------------------------------- |
+> | `200`     | `application/json` | `{"message":"Verification email sent successfully"}` |
+> | `500`     | `application/json` | `{"message":"Error decoding JSON body"}`             |
+> | `500`     | `application/json` | `{"message":"*email sending-related error*"}`        |
+
+</details>
+
+<details>
+    <summary><code>POST</code> <code><b>/api/check-code</b></code> <code>Checks code submitted by user against the code issued in verification email</code></summary>
+
+##### Parameters
+
+> | name    | type     | data type | description                                            |
+> | ------- | -------- | --------- | ------------------------------------------------------ |
+> | `code`  | required | string    | code submitted by user                                 |
+> | `email` | required | string    | email to the account signing up or having its pw reset |
+
+##### Responses
+
+> | http code | content-type       | response                                                            |
+> | --------- | ------------------ | ------------------------------------------------------------------- |
+> | `200`     | `application/json` | `{"isVerified": "true","message": "Email successfully verified"}`   |
+> | `200`     | `application/json` | `{"isVerified": "false","message": "*wrong code or expired code*"}` |
+> | `400`     | `application/json` | `{"message":"Email has not been issued a verification code"}`       |
+> | `500`     | `application/json` | `{"message":"Error decoding JSON body"}`                            |
+> | `500`     | `application/json` | `{"message":"*email sending-related error*"}`                       |
+
+</details>
+
+<details>
+    <summary><code>POST</code> <code><b>/api/reset-password</b></code> <code>Changes the user's password after being verified by the previous routes</code></summary>
+
+##### Parameters
+
+> | name       | type     | data type | description                    |
+> | ---------- | -------- | --------- | ------------------------------ |
+> | `email`    | required | string    | email of the existing account  |
+> | `password` | required | string    | new password submitted by user |
+
+##### Responses
+
+> | http code | content-type       | response                                         |
+> | --------- | ------------------ | ------------------------------------------------ |
+> | `200`     | `application/json` | `{"message":"Password reset successfully"}`      |
+> | `400`     | `application/json` | `{"message":"Email not found"}`                  |
+> | `400`     | `application/json` | `{"message":"All fields are required"}`          |
+> | `500`     | `application/json` | `{"message":"Error decoding JSON body"}`         |
+> | `500`     | `application/json` | `{"message":"Could not generate password hash"}` |
+
+</details>
+
 ### Allergies
 
 ---
@@ -226,7 +312,6 @@
 
 </details>
 
-
 ### Grocery Lists
 
 ---
@@ -271,18 +356,17 @@
 > | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                                    |
 > | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                             |
 > | `500`     | `application/json` | `{"message":"Other JWT-related error"} `                                      |
+
 </details>
-
-
 
 <details>
     <summary><code>DELETE</code> <code><b>/api/delete-lists</b></code> <code>Deletes entire grocery lists</code></summary>
 
 ##### Parameters
 
-> | name    | type     | data type | description                           |
-> | ------- | -------- | --------- | ------------------------------------- |
-> | `titles` | required | string   | grocery list titles to be deleted     |
+> | name     | type     | data type | description                       |
+> | -------- | -------- | --------- | --------------------------------- |
+> | `titles` | required | string    | grocery list titles to be deleted |
 
 ##### Responses
 
@@ -293,6 +377,7 @@
 > | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                                               |
 > | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                                        |
 > | `500`     | `application/json` | `{"message":"Other JWT-related error"} `                                                 |
+
 </details>
 
 <details>
@@ -300,10 +385,10 @@
 
 ##### Parameters
 
-> | name    | type     | data type | description                                            |
-> | ------- | -------- | --------- | ------------------------------------------------------ |
-> | `title` | required | string    | grocery list title from which items will be deleted    |
-> | `items` | required | string    | items to be deleted from grocery list                  |
+> | name    | type     | data type | description                                         |
+> | ------- | -------- | --------- | --------------------------------------------------- |
+> | `title` | required | string    | grocery list title from which items will be deleted |
+> | `items` | required | string    | items to be deleted from grocery list               |
 
 ##### Responses
 
@@ -314,6 +399,7 @@
 > | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                                               |
 > | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                                        |
 > | `500`     | `application/json` | `{"message":"Other JWT-related error"} `                                                 |
+
 </details>
 
 <details>
@@ -332,6 +418,7 @@
 > | `400`     | `application/json` | `{"message":"Other cookie-related error"}` |
 > | `500`     | `application/json` | `{"message":"Error parsing JWT"}`          |
 > | `500`     | `application/json` | `{"message":"Other JWT-related error"}`    |
+
 </details>
 
 <details>
@@ -339,9 +426,9 @@
 
 ##### Parameters
 
-> | name    | type     | data type | description                                    |
-> | ------- | -------- | --------- | ---------------------------------------------- |
-> | `title` | required | string    | grocery list title for requested list items    |
+> | name    | type     | data type | description                                 |
+> | ------- | -------- | --------- | ------------------------------------------- |
+> | `title` | required | string    | grocery list title for requested list items |
 
 ##### Responses
 
@@ -352,4 +439,99 @@
 > | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                       |
 > | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                |
 > | `500`     | `application/json` | `{"message":"Other JWT-related error"} `                         |
+
+</details>
+
+### Favorites
+
+---
+
+<details>
+    <summary><code>GET</code> <code><b>/api/favorite</b></code> <code>Returns all favorited products of the logged-in user</code></summary>
+
+##### Parameters
+
+> `none`
+
+##### Responses
+
+> | http code | content-type       | response                                                                 |
+> | --------- | ------------------ | ------------------------------------------------------------------------ |
+> | `200`     | `application/json` | `{"favorite":"*product name*","code": "*code*","image": "*image link*"}` |
+> | `204`     | `application/json` | `{"message":"No favorites found"}`                                       |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`                                        |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                               |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                        |
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"} `                                 |
+
+</details>
+
+<details>
+    <summary><code>POST</code> <code><b>/api/favorite</b></code> <code>Adds favorite to the logged-in user's account</code></summary>
+
+##### Parameters
+
+> | name       | type     | data type | description                                          |
+> | ---------- | -------- | --------- | ---------------------------------------------------- |
+> | `favorite` | required | string    | name of the favorite product                         |
+> | `code`     | required | string    | barcode of product from OpenFood API                 |
+> | `image`    | required | string    | link to image thumbnail of product from OpenFood API |
+
+##### Responses
+
+> | http code | content-type       | response                                       |
+> | --------- | ------------------ | ---------------------------------------------- |
+> | `201`     | `application/json` | `{"message":"Product successfully favorited"}` |
+> | `400`     | `application/json` | `{"message":"Product is already favorited"}`   |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`              |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`     |
+> | `500`     | `application/json` | `{"message":"Error decoding JSON body"}`       |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`              |
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"} `       |
+
+</details>
+
+<details>
+    <summary><code>DELETE</code> <code><b>/api/favorite</b></code> <code>Deletes favorite from logged-in user's account</code></summary>
+
+##### Parameters
+
+> | name   | type     | data type | description                          |
+> | ------ | -------- | --------- | ------------------------------------ |
+> | `code` | required | string    | barcode of product from OpenFood API |
+
+##### Responses
+
+> | http code | content-type       | response                                            |
+> | --------- | ------------------ | --------------------------------------------------- |
+> | `200`     | `application/json` | `{"message":"Favorite successfully deleted"}`       |
+> | `400`     | `application/json` | `{"message":"Product not found in user favorites"}` |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`                   |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`          |
+> | `500`     | `application/json` | `{"message":"Error decoding JSON body"}`            |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                   |
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"} `            |
+
+</details>
+
+<details>
+    <summary><code>POST</code> <code><b>/api/check-favorite</b></code> <code>Returns whether the product is a favorite of the logged-in user</code></summary>
+
+##### Parameters
+
+> | name   | type     | data type | description                          |
+> | ------ | -------- | --------- | ------------------------------------ |
+> | `code` | required | string    | barcode of product from OpenFood API |
+
+##### Responses
+
+> | http code | content-type       | response                                            |
+> | --------- | ------------------ | --------------------------------------------------- |
+> | `200`     | `application/json` | `{"code":"*code*","isFavorite": "*true or false*"}` |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`                   |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`          |
+> | `500`     | `application/json` | `{"message":"Error decoding JSON body"}`            |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                   |
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"} `            |
+
 </details>

@@ -32,7 +32,7 @@ type RawFavorite struct {
 // Used for receiving a product code and checking
 // whether the product is already a favorite
 // or to delete the product
-type Code struct {
+type ProductCode struct {
 	Code string `json:"code"`
 }
 
@@ -101,7 +101,7 @@ func CheckFavorite(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var code Code
+	var code ProductCode
 	err = json.NewDecoder(r.Body).Decode(&code)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -182,7 +182,7 @@ func DeleteFavorite(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var code Code
+	var code ProductCode
 	err = json.NewDecoder(r.Body).Decode(&code)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
