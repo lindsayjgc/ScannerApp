@@ -50,6 +50,7 @@ export class SearchComponent implements OnInit {
 
   openProductPage(row: any) {
     console.log(row.code);
+    this.router.navigate(['/product', row.code]);
   }
 
 }
