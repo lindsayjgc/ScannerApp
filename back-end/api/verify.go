@@ -105,6 +105,55 @@ func IssueCode(w http.ResponseWriter, r *http.Request, emailType string) {
 	json.NewEncoder(w).Encode(GenerateResponse("Verification email sent successfully"))
 }
 
+func CheckCode(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var rawCode RawCode
+	err = json.NewDecoder(r.Body).Decode(&rawCode)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON body"))
+		return
+	}
+
+	// Fetch the correct code from the DB
+	var codeSearch Code
+	result := CodeDB.Where("email = ?", rawCode.Email).First(&codeSearch)
+	if result.RowsAffected == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(GenerateResponse("Email has not been issued a verification code"))
+		return
+	}
+
+	// Create map for JSON response
+	res := make(map[string]string)
+
+	// Compare codes
+	if codeSearch.Code != rawCode.Code {
+		w.WriteHeader(http.StatusOK)
+		res["isVerified"] = "false"
+		res["message"] = "Incorrect code"
+		json.NewEncoder(w).Encode(res)
+		return
+	}
+
+	// Check if code has expired
+	if codeSearch.Expiration.Before(time.Now()) {
+		w.WriteHeader(http.StatusOK)
+		res["isVerified"] = "false"
+		res["message"] = "Verification code has expired"
+		json.NewEncoder(w).Encode(res)
+		return
+	}
+
+	var deletedCode Code
+	CodeDB.Where("email = ?", rawCode.Email).Delete(&deletedCode)
+	w.WriteHeader(http.StatusOK)
+	res["isVerified"] = "true"
+	res["message"] = "Email successfully verified"
+	json.NewEncoder(w).Encode(res)
+}
+
 func ResetPassword(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
