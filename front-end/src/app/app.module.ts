@@ -35,6 +35,7 @@ import { DeleteDialogComponent } from './dialogs/delete-dialog/delete-dialog.com
 import { SearchComponent } from './search/search.component';
 import { ProductComponent } from './product/product.component';
 import { CreateListDialogComponent } from './dialogs/create-list-dialog/create-list-dialog.component';
+import { AddItemDialogComponent } from './dialogs/add-item-dialog/add-item-dialog.component';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { CreateListDialogComponent } from './dialogs/create-list-dialog/create-l
     SearchComponent,
     ProductComponent,
     CreateListDialogComponent,
+    AddItemDialogComponent,
   ],
   imports: [
     BrowserModule,

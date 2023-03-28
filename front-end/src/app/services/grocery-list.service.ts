@@ -23,18 +23,12 @@ export class GroceryListService {
     // });
   }
   deleteItemsInList(title: string, items: string) {
-    return this.http.delete('http://localhost:4200/api/delete-list-items', { 
-    headers: new HttpHeaders().set('Content-Type', 'application/json'), 
-    params: { title , items }
-    });
+    return this.http.delete<listParam>('http://localhost:4200/api/delete-list-items', { params: { title , items }});
   }
   getListTitles() {
     return this.http.get('http://localhost:4200/api/get-lists');
   }
   getListContents(title: string) {
-    return this.http.get('http://localhost:4200/api/get-list', { 
-    headers: new HttpHeaders().set('Content-Type', 'application/json'), 
-    params: { title }
-    });
+    return this.http.get('http://localhost:4200/api/get-list', { params: { title } });
   }
 }
