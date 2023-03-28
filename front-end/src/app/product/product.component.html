@@ -1,8 +1,17 @@
+<div *ngIf="this.loading">
+  <mat-card-content class="loadingContainer">
+    <mat-spinner></mat-spinner>
+  </mat-card-content>
+</div>
+  
+<div *ngIf="!this.loading">
   <div>
     <h3></h3>
     <div class="container">
       <h1 class="product-name">{{ name }}</h1>
-      <img class="product-image" [src]="image" alt="My Image">
+      <ng-container *ngIf="imageFound">
+        <img class="product-image" [src]="image" alt="My Image">
+      </ng-container>
       <div class="product-ingredients">
         <ng-container *ngIf="isAllergic">
           <p>Caution! Ingredients you are allergic to:</p>
@@ -21,3 +30,4 @@
     </div>
     <h3></h3>
   </div>
+</div>
