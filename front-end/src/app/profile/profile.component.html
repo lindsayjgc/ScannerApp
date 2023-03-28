@@ -27,11 +27,16 @@
     <mat-card-content>
       <p>Email: {{ email }}</p>
       <p>Allergies:</p>
-      <mat-selection-list #allergyList [(ngModel)]="selectedAllergies">
-        <mat-list-option *ngFor="let allergy of allergies" [value]="allergy">
-          {{allergy}}
-        </mat-list-option>
-      </mat-selection-list>
+      <div *ngIf="this.allergies[0] != 'NONE'; else none">
+        <mat-selection-list #allergyList [(ngModel)]="selectedAllergies">
+          <mat-list-option *ngFor="let allergy of allergies" [value]="allergy">
+            {{allergy}}
+          </mat-list-option>
+        </mat-selection-list>
+      </div>
+      <ng-template #none>
+        <p>NONE</p>
+      </ng-template>
     </mat-card-content>
     <mat-card-content style="text-align: center;">
       <button mat-raised-button color="primary" (click)="removeAllergies()">
