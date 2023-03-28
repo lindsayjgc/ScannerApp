@@ -13,7 +13,7 @@ export class SetupComponent {
   separatorKeysCodes: number[] = [13, 188]; // Enter and comma keys
   addOnBlur = true;
 
-  constructor(private AllergensService: AllergensService, private router: Router) {}
+  constructor(private AllergensService: AllergensService, private router: Router) { }
 
   add(event: any): void {
     const input = event.input;
@@ -21,7 +21,7 @@ export class SetupComponent {
 
     // Add the new allergen
     if (value) {
-      this.allergens.push({name: value});
+      this.allergens.push({ name: value });
     }
 
     // Clear the input value
@@ -47,12 +47,12 @@ export class SetupComponent {
   }
 
   submitAllergies() {
-  const allergyString = this.allergens.map(allergen => allergen.name).join(', ');
-  this.AllergensService.addAllergy(allergyString).subscribe((response: any) => {
-    console.log(response);
-    this.router.navigate(['/home']);
-  });
-}
+    const allergyString = this.allergens.map(allergen => allergen.name).join(',');
+    this.AllergensService.addAllergy(allergyString).subscribe((response: any) => {
+      console.log(response);
+      this.router.navigate(['/home']);
+    });
+  }
 
 }
 

@@ -16,9 +16,9 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'setup', component: SetupComponent },
   { path: 'profile', component: ProfileComponent },
-  { path: 'search/:option/:query', component: SearchComponent },
+  { path: 'search/:option/:query/:page', component: SearchComponent },
+  { path: 'product/:code', component: ProductComponent },
   { path: '**', pathMatch: 'full', component: ErrorpageComponent },
-  { path: 'product/:code', component: ProductComponent}
 ];
 
 @NgModule({

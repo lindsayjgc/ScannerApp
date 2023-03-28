@@ -14,7 +14,7 @@ import { SearchService } from '../services/search.service';
 export class SearchComponent implements OnInit {
   constructor(private searchService: SearchService, private route: ActivatedRoute, private router: Router) { }
   loading: boolean = true;
-  currentPage: number = 0;
+  currentPage: number = parseInt(this.route.snapshot.paramMap.get('page')!) - 1;
   resultCount: number = 0;
 
   displayedColumns: string[] = ['image', 'name', 'barcode'];
@@ -29,6 +29,7 @@ export class SearchComponent implements OnInit {
 
   updatePage(event: PageEvent) {
     this.currentPage = event.pageIndex;
+    this.router.navigate(['/search', this.route.snapshot.paramMap.get('option')!, this.route.snapshot.paramMap.get('query')!, this.currentPage + 1]);
     this.loading = true;
     this.searchPage();
   }
