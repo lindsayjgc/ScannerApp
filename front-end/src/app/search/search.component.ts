@@ -49,7 +49,7 @@ export class SearchComponent implements OnInit {
   }
 
   openProductPage(row: any) {
-    this.router.navigate(['/product'], row.code);
+    this.router.navigate(['/product', row.code]);
   }
 
 }

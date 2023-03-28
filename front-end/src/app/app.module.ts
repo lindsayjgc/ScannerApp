@@ -33,6 +33,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { DeleteDialogComponent } from './dialogs/delete-dialog/delete-dialog.component';
 import { SearchComponent } from './search/search.component';
 import { ErrorpageComponent } from './errorpage/errorpage.component';
+import { ProductComponent } from './product/product.component';
 
 @NgModule({
   declarations: [
@@ -46,6 +47,7 @@ import { ErrorpageComponent } from './errorpage/errorpage.component';
     DeleteDialogComponent,
     SearchComponent,
     ErrorpageComponent,
+    ProductComponent,
   ],
   imports: [
     BrowserModule,
