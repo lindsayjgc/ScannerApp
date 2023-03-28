@@ -25,6 +25,8 @@ export class ProfileComponent implements OnInit {
   addOnBlur = true;
   selectedAllergies: string[] = [];
 
+  groceryList: string[] = [];
+
   constructor(private usersService: UsersService, private router: Router, public dialog1: MatDialog, private errorMessage: MatSnackBar, private allergensService: AllergensService, public dialog2: MatDialog, public dialog: MatDialog) { }
 
   ngOnInit() {
