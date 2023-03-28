@@ -32,6 +32,7 @@ import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
 import { DeleteDialogComponent } from './dialogs/delete-dialog/delete-dialog.component';
 import { SearchComponent } from './search/search.component';
+import { ErrorpageComponent } from './errorpage/errorpage.component';
 import { ProductComponent } from './product/product.component';
 
 @NgModule({
@@ -45,6 +46,7 @@ import { ProductComponent } from './product/product.component';
     ProfileComponent,
     DeleteDialogComponent,
     SearchComponent,
+    ErrorpageComponent,
     ProductComponent,
   ],
   imports: [

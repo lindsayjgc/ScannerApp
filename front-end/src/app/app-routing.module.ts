@@ -6,6 +6,7 @@ import { SetupComponent } from './setup/setup.component';
 import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
 import { SearchComponent } from './search/search.component';
+import { ErrorpageComponent } from './errorpage/errorpage.component';
 import { ProductComponent } from './product/product.component';
 
 const routes: Routes = [
@@ -16,6 +17,7 @@ const routes: Routes = [
   { path: 'setup', component: SetupComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'search/:option/:query', component: SearchComponent },
+  { path: '**', pathMatch: 'full', component: ErrorpageComponent },
   { path: 'product/:code', component: ProductComponent}
 ];
 
