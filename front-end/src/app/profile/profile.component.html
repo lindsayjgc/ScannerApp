@@ -21,26 +21,45 @@
   Delete account
 </button> -->
 
-<div style="display: flex; justify-content: center; align-items: center; height: 90vh;">
-  <mat-card style="max-width: 600px; text-align: center;">
-    <mat-card-title>{{ name }}'s Profile</mat-card-title>
+<div style="display: flex; justify-content: center; align-items: center; padding: 4vh; min-height: 82vh;">
+  <mat-card style="min-width: 35%;">
+    <mat-card-title style="text-align: center;">{{ name }}'s Profile</mat-card-title>
     <mat-card-content>
-      <p style="text-align: left;">Email: {{ email }}</p>
-      <p style="text-align: left;">Allergies:</p>
-      <ul style="text-align: left;">
-        <li *ngFor="let allergy of allergies">
-          {{ allergy }}
-        </li>
-      </ul>
-      <div>
-        <button mat-raised-button color="primary" routerLink="/addallergies">
-          Add Allergies
-        </button>
-        <button mat-raised-button color="primary" routerLink="/removeallergies">
-          Remove Allergies
-        </button>
-      </div>
+      <p>Email: {{ email }}</p>
+      <p>Allergies:</p>
+      <mat-selection-list #allergyList [(ngModel)]="selectedAllergies">
+        <mat-list-option *ngFor="let allergy of allergies" [value]="allergy">
+          {{allergy}}
+        </mat-list-option>
+      </mat-selection-list>
     </mat-card-content>
+    <mat-card-content style="text-align: center;">
+      <button mat-raised-button color="primary" (click)="removeAllergies()">
+        Remove selected allergies
+      </button>
+    </mat-card-content>
+    <form #allergyForm="ngForm" (ngSubmit)="submitAllergies()">
+      <mat-card-content>
+        <mat-form-field class="allergen-group" style="width: 100%;">
+          <mat-label>New allergens</mat-label>
+          <mat-chip-grid #chipGrid aria-label="Enter allergens">
+            <mat-chip-row *ngFor="let allergen of allergens" (removed)="remove(allergen)" [editable]="true"
+              (edited)="edit(allergen, $event)" [aria-description]=" 'press enter to edit ' + allergen.name">
+              {{allergen.name}}
+              <button matChipRemove [attr.aria-label]=" 'remove ' + allergen.name">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
+            <input placeholder="New allergen" [matChipInputFor]="chipGrid"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur"
+              (matChipInputTokenEnd)="add($event)" />
+          </mat-chip-grid>
+        </mat-form-field>
+      </mat-card-content>
+      <mat-card-content style="text-align: center;">
+        <button mat-raised-button color="primary" type="submit">Add new allergies</button>
+      </mat-card-content>
+    </form>
     <mat-card-actions>
       <button mat-raised-button color="warn" (click)="openDeleteDialog()">
         Delete account

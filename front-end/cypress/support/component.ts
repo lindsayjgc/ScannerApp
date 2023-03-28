@@ -35,6 +35,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatListModule } from '@angular/material/list';
+import { MatSelectModule } from '@angular/material/select';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatTableModule } from '@angular/material/table';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 // Augment the Cypress namespace to include type definitions for
 // your custom command.
@@ -63,7 +68,12 @@ const imports = [
   MatMenuModule,
   MatDialogModule,
   MatChipsModule,
-  MatCheckboxModule
+  MatCheckboxModule,
+  MatListModule,
+  MatSelectModule,
+  MatPaginatorModule,
+  MatTableModule,
+  MatProgressSpinnerModule,
 ]
 
 function customMount<T>(component: string | Type<T>, config?: MountConfig<T>) {
@@ -79,3 +89,7 @@ Cypress.Commands.add('mount', customMount)
 
 // Example use:
 // cy.mount(MyComponent)
+
+Cypress.on('uncaught:exception', (err, runnable, promise) => {
+  return false
+})

@@ -1,1 +1,31 @@
-<h1>Welcome to the Home page</h1>
+<div class="search-container">
+  <mat-card class="search-card">
+    <mat-card-header>
+      <mat-card-title>Search for products</mat-card-title>
+    </mat-card-header>
+
+    <form [formGroup]="searchForm" (ngSubmit)="search()">
+      <mat-card-content>
+        <mat-form-field appearance="fill" style="width: 32%; margin-right: 2%;">
+          <mat-label>Search by</mat-label>
+          <mat-select [(value)]="selectedCriteria">
+            <mat-option [value]="criteria.value" *ngFor="let criteria of criterion">
+              {{ criteria.viewValue }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field style="width: 66%;">
+          <mat-label>Enter search term</mat-label>
+          <input matInput formControlName="search">
+        </mat-form-field>
+      </mat-card-content>
+
+      <mat-card-content>
+        <button mat-raised-button color="primary" [disabled]="!searchForm.valid" type="submit">
+          Search
+        </button>
+      </mat-card-content>
+    </form>
+  </mat-card>
+</div>

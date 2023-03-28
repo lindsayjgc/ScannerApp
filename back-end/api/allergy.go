@@ -168,7 +168,7 @@ func CheckAllergies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Retrieve user's allergies as a slice 
+	// Retrieve user's allergies as a slice
 	// type allergy string
 	var userAllergiesSlice []string
 	result := AllergyDB.Model(Allergy{}).Where("email = ?", claims.Email).Select("allergy").Find(&userAllergiesSlice)
@@ -193,20 +193,19 @@ func CheckAllergies(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON body"))
 		return
 	}
-	// Convert passed in string to lowercase because all alleriges are 
+	// Convert passed in string to lowercase because all alleriges are
 	// stored in DB this way
 	productIngredients := strings.Split(strings.ToLower(rawProductIngredients.Ingredients), ",")
 
-	
 	var foundAllergies []string
 	// Compare product ingredients to user allergies
 	for _, v := range productIngredients {
-		if (userAllergies[v]) {
+		if userAllergies[v] {
 			foundAllergies = append(foundAllergies, v)
 		}
 	}
 
-	if (len(foundAllergies) == 0) { // If this ingredient is in the map of allergies
+	if len(foundAllergies) == 0 { // If this ingredient is in the map of allergies
 		w.WriteHeader(http.StatusOK)
 		res := make(map[string]string)
 		res["allergiesPresent"] = "false"
