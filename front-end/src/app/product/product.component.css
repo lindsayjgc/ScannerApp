@@ -56,3 +56,10 @@
     align-items: center;
     height: 60vh;
   }
+  .productContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4vh;
+    min-height: 82vh;
+  }
