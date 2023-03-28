@@ -34,6 +34,7 @@ export class ProductComponent implements OnInit {
       this.name = response.product.product_name;
       this.image = response.product.image_front_url;
       this.ingredients = response.product.ingredients_text
+      this.ingredients = this.ingredients.toLowerCase();
       console.log(this.ingredients);
       this.ingredientsList = this.ingredients.split(", ");
       this.commaIngredients = this.ingredientsList.join(',');
