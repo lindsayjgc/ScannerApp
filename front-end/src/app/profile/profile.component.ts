@@ -1,4 +1,4 @@
-import { Component, OnInit , OnChanges , SimpleChanges, Input } from '@angular/core';
+import { Component, OnInit , Input } from '@angular/core';
 import { catchError, Observable, of, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -84,18 +84,31 @@ export class ProfileComponent implements OnInit {
         this.listTitles = this.titlesParam.titles;
         if (this.listTitles != "" && this.listTitles != "NONE") {
           this.listTitlesArray = this.listTitles.split(',');
+          // this.listTitlesArray.forEach((title) => {
+          //   this.groceryListService.getListContents(title).subscribe(
+          //     (contents: any) => {
+          //       this.listContents[title] = contents;
+          //       this.listNoItems[title] = false;
+          //     },
+          //     (error: any) => {
+          //       console.error(error);
+          //       this.listNoItems[title] = true;
+          //     }
+          //   );
+          // });
           this.listTitlesArray.forEach((title) => {
-            this.groceryListService.getListContents(title).subscribe(
-              (contents: any) => {
+            this.groceryListService.getListContents(title).subscribe({
+              next: (contents: any) => {
                 this.listContents[title] = contents;
                 this.listNoItems[title] = false;
               },
-              (error: any) => {
+              error: (error: any) => {
                 console.error(error);
                 this.listNoItems[title] = true;
               }
-            );
+            });
           });
+          
         }
       });
   }
@@ -187,11 +200,11 @@ export class ProfileComponent implements OnInit {
       }
     });
   }
-  deleteList(listTitle: string) {
-    this.groceryListService.deleteEntireLists(listTitle).subscribe(() => {
-      console.log(Response);
-    });
-  }
+  // deleteList(listTitle: string) {
+  //   this.groceryListService.deleteEntireLists(listTitle).subscribe(() => {
+  //     console.log(Response);
+  //   });
+  // }
 
   addItems(title: string, newItem: string) {
     const dialogRef = this.dialog.open(AddItemDialogComponent);
@@ -219,13 +232,13 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  deleteItems(title: string) {
-    const itemString = this.selectedItems.toString();
-    this.groceryListService.deleteItemsInList(title, itemString).subscribe((response: any) => {
-      console.log(response);
-      window.location.reload();
-    });
-  }
+  // deleteItems(title: string) {
+  //   const itemString = this.selectedItems.toString();
+  //   this.groceryListService.deleteItemsInList(title, itemString).subscribe((response: any) => {
+  //     console.log(response);
+  //     window.location.reload();
+  //   });
+  // }
 
 }
 
