@@ -6,7 +6,10 @@
 -   [ ] Ability to search for products by category or brand.
 -   [ ] Display of search results in a table with multiple pages.
 -   [ ] URL updates based on current search parameters.
--   [ ] more
+-   [ ] View product information by clicking after search.
+-   [ ] Get alerted to allergens found or not found in product on product's page.
+-   [ ] Can create multiple grocery lists in profile.
+-   [ ] Can add items to grocery lists in profile.
 
 **Backend**
 -   [ ] Add database support for storing favorite products.
