@@ -205,3 +205,54 @@ func TestGetLists(t *testing.T) {
 	ListDB.Where("email = ? AND title = ?", title1.Email, title1.Title).Unscoped().Delete(&title1)
 	ListDB.Where("email = ? AND title = ?", title2.Email, title2.Title).Unscoped().Delete(&title2)
 }
+
+func TestGetGroceryList(t *testing.T) {
+	InitialUserMigration()
+	InitialListMigration()
+	InitializeRouter()
+
+	title := GroceryTitle{Email: "unit@test.com", Title: "testTitle"}
+	ListDB.Create(&title)
+	item1 := GroceryItem{Email: "unit@test.com", Title: "testTitle", Item: "testitem1"}
+	ListDB.Create(&item1)
+	item2 := GroceryItem{Email: "unit@test.com", Title: "testTitle", Item: "testitem2"}
+	ListDB.Create(&item2)
+
+	testTitle := RawTitle{
+		Title: "testTitle",
+	}
+
+	payload, _ := json.Marshal(testTitle)
+	req, _ := http.NewRequest("GET", "/get-list", bytes.NewBuffer(payload))
+	req.Header.Set("Content-Type", "application/json")
+
+	createTestCookie(req, t)
+
+	// create ResponseRecorder
+	rr := httptest.NewRecorder()
+
+	// invoke target function
+	GetGroceryList(rr, req)
+
+	// get the response
+	response := rr.Result()
+	body, _ := ioutil.ReadAll(response.Body)
+
+	// assertion
+	if http.StatusOK != response.StatusCode {
+		t.Errorf("Expected %v; got %v\n", http.StatusOK, response.StatusCode)
+	}
+
+	resMap := make(map[string]string)
+	json.Unmarshal(body, &resMap)
+
+	expected := `{"title":"testTitle","items":"testitem1,testitem2"}`
+	if resMap["title"] != "testTitle" || resMap["items"] != "testitem1,testitem2" {
+		t.Errorf("Expected %v; got %v", expected, resMap)
+	}
+
+	ListDB.Where("email = ? AND title = ?", title.Email, title.Title).Unscoped().Delete(&title)
+	ListDB.Where("email = ? AND title = ? AND item = ?", item1.Email, item1.Title, item1.Item).Unscoped().Delete(&item1)
+	ListDB.Where("email = ? AND title = ? AND item = ?", item2.Email, item2.Title, item2.Item).Unscoped().Delete(&item2)
+
+}
