@@ -10,4 +10,10 @@ describe('navigation when not logged in', () => {
     cy.visit('http://localhost:4200/profile')
     cy.url().should('include', '/login')
   })
+
+  //Test 404 page with random URL
+  it('should go to 404 page', () => {
+    cy.visit('http://localhost:4200/random')
+    cy.get('body').should('contain.text', '404')
+  })
 })

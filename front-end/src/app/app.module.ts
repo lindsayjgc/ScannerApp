@@ -23,6 +23,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CommonModule } from '@angular/common';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
@@ -34,6 +35,8 @@ import { DeleteDialogComponent } from './dialogs/delete-dialog/delete-dialog.com
 import { SearchComponent } from './search/search.component';
 import { ErrorpageComponent } from './errorpage/errorpage.component';
 import { ProductComponent } from './product/product.component';
+import { CreateListDialogComponent } from './dialogs/create-list-dialog/create-list-dialog.component';
+import { AddItemDialogComponent } from './dialogs/add-item-dialog/add-item-dialog.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +51,8 @@ import { ProductComponent } from './product/product.component';
     SearchComponent,
     ErrorpageComponent,
     ProductComponent,
+    CreateListDialogComponent,
+    AddItemDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -72,7 +77,8 @@ import { ProductComponent } from './product/product.component';
     MatPaginatorModule,
     MatTableModule,
     MatProgressSpinnerModule,
-    CommonModule
+    CommonModule,
+    MatExpansionModule
   ],
   providers: [],
   bootstrap: [AppComponent]
