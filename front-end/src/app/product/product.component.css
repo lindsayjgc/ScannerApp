@@ -1,0 +1,65 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .product-name {
+    margin-top: 50px;
+    font-size: 36px;
+    text-align: center;
+  }
+  
+  .product-image {
+    margin-top: 20px;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .product-ingredients {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .ingredients-header {
+    font-size: 24px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  .ingredients-list {
+    text-align: left;
+    margin-left: 35%;
+    list-style-position: inside;
+    font-size: 18px;
+    line-height: 1.5;
+  }
+  
+  p {
+    font-size: 24px;
+    text-align: center;
+  }
+
+  ul.allergies-list {
+    text-align: left;
+    margin-left: 35%;
+    list-style-position: inside;
+    font-size: 18px;
+    color: red;
+    line-height: 1.5;
+  }
+
+  .loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60vh;
+  }
+  .productContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4vh;
+    min-height: 82vh;
+  }

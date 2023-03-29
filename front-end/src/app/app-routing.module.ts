@@ -5,8 +5,9 @@ import { RegisterComponent } from './register/register.component';
 import { SetupComponent } from './setup/setup.component';
 import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
-import { AddAllergiesComponent } from './add-allergies/add-allergies.component';
-import { RemoveAllergiesComponent } from './remove-allergies/remove-allergies.component';
+import { SearchComponent } from './search/search.component';
+import { ErrorpageComponent } from './errorpage/errorpage.component';
+import { ProductComponent } from './product/product.component';
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home' },
@@ -15,8 +16,10 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'setup', component: SetupComponent },
   { path: 'profile', component: ProfileComponent },
-  { path: 'addallergies', component: AddAllergiesComponent},
-  { path: 'removeallergies', component: RemoveAllergiesComponent}];
+  { path: 'search/:option/:query/:page', component: SearchComponent },
+  { path: 'product/:code', component: ProductComponent },
+  { path: '**', pathMatch: 'full', component: ErrorpageComponent },
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

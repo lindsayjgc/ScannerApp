@@ -1,0 +1,16 @@
+.search-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 90vh;
+}
+
+.search-card {
+  width: 40%;
+}
+
+@media (max-width: 700px) {
+  .search-card {
+    width: 70%;
+  }
+}

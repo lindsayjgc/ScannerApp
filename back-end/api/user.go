@@ -252,14 +252,13 @@ func UserInfo(w http.ResponseWriter, r *http.Request) {
 
 	// Retrieve user allergies as a slice
 	var userAllergiesSlice []string
-	result = AllergyDB.Model(Allergy{}).Where("email = ?", claims.Email).Select("allergy").Find(&userAllergiesSlice)
+	AllergyDB.Model(Allergy{}).Where("email = ?", claims.Email).Select("allergy").Find(&userAllergiesSlice)
 
 	// all important user info combined into one struct for easier use by frontend
 	var allInfo AllUserInfo
 	allInfo.FirstName = user.FirstName
 	allInfo.LastName = user.LastName
 	allInfo.Email = user.Email
-	// allInfo.Password = user.Password
 	if len(userAllergiesSlice) == 0 {
 		allInfo.Allergies = "NONE"
 	} else {
