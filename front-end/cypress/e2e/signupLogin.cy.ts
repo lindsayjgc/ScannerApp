@@ -13,7 +13,7 @@ describe("Add User", () => {
     cy.get('button[type="submit"]').click();
 
     // Assert that the user is redirected to the setup page
-    cy.url().should("include", "/setup");
+    cy.url().should('eq', 'http://localhost:4200/setup');
   });
 
   it("displays an error message when signing up with an existing email address", () => {
