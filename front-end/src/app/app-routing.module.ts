@@ -6,6 +6,7 @@ import { SetupComponent } from './setup/setup.component';
 import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
 import { SearchComponent } from './search/search.component';
+import { ErrorpageComponent } from './errorpage/errorpage.component';
 import { ProductComponent } from './product/product.component';
 
 const routes: Routes = [
@@ -15,8 +16,9 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'setup', component: SetupComponent },
   { path: 'profile', component: ProfileComponent },
-  { path: 'search/:option/:query', component: SearchComponent },
-  { path: 'product/:code', component: ProductComponent}
+  { path: 'search/:option/:query/:page', component: SearchComponent },
+  { path: 'product/:code', component: ProductComponent },
+  { path: '**', pathMatch: 'full', component: ErrorpageComponent },
 ];
 
 @NgModule({

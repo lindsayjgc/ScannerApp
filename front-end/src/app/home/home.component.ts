@@ -29,6 +29,6 @@ export class HomeComponent {
 
   search() {
     this.query = this.searchForm.value.search!.toLowerCase().split(' ').join('_');
-    this.router.navigate(['/search', this.selectedCriteria, this.query]);
+    this.router.navigate(['/search', this.selectedCriteria, this.query, '1']);
   }
 }

@@ -1,37 +1,19 @@
-<!-- <div>
-  <h1>{{ name }}'s Profile</h1>
-  <p>Allergies:</p>
-  <ul>
-    <li *ngFor="let allergy of allergies">
-      {{ allergy }}
-    </li>
-  </ul>
-  <div> -->
-<!-- <button mat-raised-button color="primary" (click)="openDialog()">Remove Allergies</button> -->
-<!-- <button mat-raised-button color="primary" routerLink="/addallergies">
-      Add Allergies
-    </button>
-    <button mat-raised-button color="primary" routerLink="/removeallergies">
-      Remove Allergies
-    </button>
-  </div>      
-</div>
-
-<button mat-raised-button color="warn" (click)="openDeleteDialog()">
-  Delete account
-</button> -->
-
 <div style="display: flex; justify-content: center; align-items: center; padding: 4vh; min-height: 82vh;">
   <mat-card style="min-width: 35%;">
     <mat-card-title style="text-align: center;">{{ name }}'s Profile</mat-card-title>
     <mat-card-content>
       <p>Email: {{ email }}</p>
       <p>Allergies:</p>
-      <mat-selection-list #allergyList [(ngModel)]="selectedAllergies">
-        <mat-list-option *ngFor="let allergy of allergies" [value]="allergy">
-          {{allergy}}
-        </mat-list-option>
-      </mat-selection-list>
+      <div *ngIf="this.allergies[0] != 'NONE'; else none">
+        <mat-selection-list #allergyList [(ngModel)]="selectedAllergies">
+          <mat-list-option *ngFor="let allergy of allergies" [value]="allergy">
+            {{allergy}}
+          </mat-list-option>
+        </mat-selection-list>
+      </div>
+      <ng-template #none>
+        <p>NONE</p>
+      </ng-template>
     </mat-card-content>
     <mat-card-content style="text-align: center;">
       <button mat-raised-button color="primary" (click)="removeAllergies()">
@@ -60,6 +42,49 @@
         <button mat-raised-button color="primary" type="submit">Add new allergies</button>
       </mat-card-content>
     </form>
+    <mat-card-content>
+      <p>Grocery Lists:</p>
+      <div>
+        <button mat-raised-button color="primary" (click)="createNewList(newTitle)">Create New List</button>
+      </div>
+      <!-- <div *ngFor="let listTitle of listTitles">
+        <div class="dropdown">
+          <button class="dropdown-btn" (click)="toggleDropdown(listTitle)">
+            {{listTitle}}
+            <span *ngIf="dropdownOpen[listTitle]" class="arrow-up"></span>
+            <span *ngIf="!dropdownOpen[listTitle]" class="arrow-down"></span>
+          </button>
+          <button (click)="deleteList(listTitle)">Delete List</button>
+          <div *ngIf="dropdownOpen[listTitle]" class="dropdown-content">
+            <ul>
+              <li *ngFor="let item of listContents[listTitle]">{{item}}</li>
+            </ul>
+          </div>
+        </div>
+      </div> -->
+      <div *ngFor="let title of listTitlesArray">
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>{{ title }}</mat-expansion-panel-header>
+          <ng-container *ngIf="!listNoItems[title]">
+            <mat-selection-list #itemList [(ngModel)]="selectedItems">
+              <mat-list>
+                <mat-list-item *ngFor="let item of listContents[title]">{{ item }}</mat-list-item>
+              </mat-list>
+            </mat-selection-list>
+          </ng-container>
+          <ng-container *ngIf="listNoItems[title]">
+            <mat-list>
+              <p>No items in list</p>
+            </mat-list>
+          </ng-container>
+          <mat-action-row>
+            <!-- <button mat-button color="warn" (click)="deleteItems(title)">Delete Checked Items</button> -->
+            <button mat-button color="primary" (click)="addItems(title, newItem)">Add Item</button>
+            <!-- <button mat-button color="warn" (click)="deleteList(title)">Delete List</button> -->
+          </mat-action-row>
+        </mat-expansion-panel>
+      </div>      
+    </mat-card-content>
     <mat-card-actions>
       <button mat-raised-button color="warn" (click)="openDeleteDialog()">
         Delete account
