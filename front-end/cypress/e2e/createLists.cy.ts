@@ -5,7 +5,7 @@ describe('See Products', () => {
   
     it('should check if lists can be created', () => {
       // Fill out the sign up form
-      cy.get('input[formControlName="email"]').type('random6753@gmail.com');
+      cy.get('input[formControlName="email"]').type('random6754@gmail.com');
       cy.contains('First Name').click().type('John');
       cy.contains('Last Name').click().type('Doe');
       cy.get('input[formControlName="password"]').type('password123');
@@ -41,15 +41,15 @@ describe('See Products', () => {
       // const listTitles = ['1', '2', '3'];
     cy.contains('Create New List').click();
     cy.contains("Title").click().type("1");
-    cy.contains('Create').click();
+    cy.contains('Add New List').click();
     cy.contains('1');
     cy.contains('Create New List').click();
     cy.contains("Title").click().type("2");
-    cy.contains('Create').click();
+    cy.contains('Add New List').click();
     cy.contains('2');
     cy.contains('Create New List').click();
     cy.contains("Title").click().type("3");
-    cy.contains('Create').click();
+    cy.contains('Add New List').click();
     cy.contains('3');
     });
   });

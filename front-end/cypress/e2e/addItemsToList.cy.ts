@@ -41,31 +41,31 @@ describe('See Products', () => {
       // const listTitles = ['1', '2', '3'];
     cy.contains('Create New List').click();
     cy.contains("Title").click().type("1");
-    cy.contains('Create').click();
+    cy.contains('Add New List').click();
     cy.contains('Create New List').click();
     cy.contains("Title").click().type("2");
-    cy.contains('Create').click();
+    cy.contains('Add New List').click();
     cy.contains('Create New List').click();
     cy.contains("Title").click().type("3");
-    cy.contains('Create').click();
+    cy.contains('Add New List').click();
+
 
     cy.contains('1').click(); // Click on dropdown for list 1
-    cy.contains("Add Item").click();
-    // cy.contains("Item").click({ force: true }).type("eggs");
-    // cy.get('input').click().type("eggs");
-
+    cy.get('button').contains('Add Item').click();
     cy.contains('Add Items to List').should('be.visible')
-    // cy.get('input[ng-model="newItem"]').click().type("eggs");
-    // cy.get('Item').click().type("eggs");
-    
-    // cy.contains("Add").click();
-    // cy.contains('2').click(); // Click on dropdown for list 2
-    // cy.contains("Add Item").click();
-    // cy.contains("Item").click().type("milk");
-    // cy.get('input').click();
-    // cy.contains('3').click(); // Click on dropdown for list 3
-    // cy.contains("Add Item").click();
-    // cy.contains("Item").click().type("syrup");
-    // cy.contains("Add").click();
+    cy.contains("Product").click().type("eggs");
+    cy.contains("Add To List").click();
+
+    cy.contains('2').click(); // Click on dropdown for list 1
+    cy.get('button').contains('Add Item').click();
+    cy.contains('Add Items to List').should('be.visible')
+    cy.contains("Product").click().type("chips");
+    cy.contains("Add To List").click();
+
+    cy.contains('3').click(); // Click on dropdown for list 1
+    cy.get('button').contains('Add Item').click();
+    cy.contains('Add Items to List').should('be.visible')
+    cy.contains("Product").click().type("coffee");
+    cy.contains("Add To List").click();
     });
   });
