@@ -168,3 +168,40 @@ func TestDeleteListItem(t *testing.T) {
 		t.Errorf("Expected %s; got %s \n", expectedMsg, resMap["deletedItems"])
 	}
 }
+
+func TestGetLists(t *testing.T) {
+	InitialUserMigration()
+	InitialListMigration()
+	InitializeRouter()
+
+	title1 := GroceryTitle{Email: "unit@test.com", Title: "testTitle1"}
+	ListDB.Create(&title1)
+	title2 := GroceryTitle{Email: "unit@test.com", Title: "testTitle2"}
+	ListDB.Create(&title2)
+
+	req, _ := http.NewRequest("GET", "/get-lists", nil)
+	rr := httptest.NewRecorder()
+	req.Header.Set("Content-Type", "application/json")
+
+	createTestCookie(req, t)
+
+	GetGroceryTitles(rr, req)
+
+	response := rr.Result()
+	body, _ := ioutil.ReadAll(response.Body)
+
+	if response.StatusCode != http.StatusOK {
+		t.Errorf("Error: Expected %v, got %v", http.StatusOK, response.StatusCode)
+	}
+
+	resMap := make(map[string]string)
+	json.Unmarshal(body, &resMap)
+
+	expectedMsg := "testTitle1,testTitle2"
+	if resMap["titles"] != expectedMsg {
+		t.Errorf("Expected %s; got %s \n", expectedMsg, resMap["titles"])
+	}
+
+	ListDB.Where("email = ? AND title = ?", title1.Email, title1.Title).Unscoped().Delete(&title1)
+	ListDB.Where("email = ? AND title = ?", title2.Email, title2.Title).Unscoped().Delete(&title2)
+}
