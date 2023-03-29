@@ -53,35 +53,35 @@ func TestAddAllergy(t *testing.T) {
 	AllergyDB.Where("email = ? AND allergy = ?", allergy.Email, allergy.Allergy).Unscoped().Delete(&allergy)
 }
 
-func TestCheckAllerigesNotFound(t *testing.T) {
+func TestCheckAllergiesNotFound(t *testing.T) {
 	// Initialize router and connect to DB for this test instance
 	InitialUserMigration()
 	InitialAllergyMigration()
 	InitializeRouter()
 
-	ingredients := RawProductIngredients {
+	ingredients := RawProductIngredients{
 		Ingredients: "walnuts",
 	}
 
-	payload, _ := json.Marshal(ingredients);
-	req, _ := http.NewRequest("POST", "/api/check-allergies", bytes.NewBuffer(payload));
+	payload, _ := json.Marshal(ingredients)
+	req, _ := http.NewRequest("POST", "/api/check-allergies", bytes.NewBuffer(payload))
 	req.Header.Set("Content-Type", "application/json")
 	createTestCookie(req, t)
 
 	rr := httptest.NewRecorder()
-	r.ServeHTTP(rr,req)
+	r.ServeHTTP(rr, req)
 
 	// Process response
 	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("Handler returned the wrong status: got %v, expected %v", status, http.StatusCreated);
+		t.Errorf("Handler returned the wrong status: got %v, expected %v", status, http.StatusCreated)
 	}
 
 	expected := `{"allergiesPresent":"false"}`
-	body := strings.Replace(rr.Body.String(), "\n", "", -1);
-	body = strings.Replace(body, "\r", "", -1);
+	body := strings.Replace(rr.Body.String(), "\n", "", -1)
+	body = strings.Replace(body, "\r", "", -1)
 
 	if body != expected {
-		t.Errorf("Handler returned unexpected body: got %v, expected %v", rr.Body.String(), expected);
+		t.Errorf("Handler returned unexpected body: got %v, expected %v", rr.Body.String(), expected)
 	}
 }
 
@@ -96,36 +96,35 @@ func TestCheckAllerigesFound(t *testing.T) {
 	allergy := Allergy{Email: "unit@test.com", Allergy: "testallergy"}
 	AllergyDB.Create(&allergy)
 
-	ingredients := RawProductIngredients {
+	ingredients := RawProductIngredients{
 		Ingredients: "testallergy",
 	}
 
-	payload, _ := json.Marshal(ingredients);
-	req, _ := http.NewRequest("POST", "/api/check-allergies", bytes.NewBuffer(payload));
+	payload, _ := json.Marshal(ingredients)
+	req, _ := http.NewRequest("POST", "/api/check-allergies", bytes.NewBuffer(payload))
 	req.Header.Set("Content-Type", "application/json")
 	createTestCookie(req, t)
 
 	rr := httptest.NewRecorder()
-	r.ServeHTTP(rr,req)
+	r.ServeHTTP(rr, req)
 
 	// Process response
 	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("Handler returned the wrong status: got %v, expected %v", status, http.StatusCreated);
+		t.Errorf("Handler returned the wrong status: got %v, expected %v", status, http.StatusCreated)
 	}
 
 	expected := `{"allergies":"testallergy","allergiesPresent":"true"}`
-	body := strings.Replace(rr.Body.String(), "\n", "", -1);
-	body = strings.Replace(body, "\r", "", -1);
+	body := strings.Replace(rr.Body.String(), "\n", "", -1)
+	body = strings.Replace(body, "\r", "", -1)
 
 	if body != expected {
-		t.Errorf("Handler returned unexpected body: got %v, expected %v", rr.Body.String(), expected);
+		t.Errorf("Handler returned unexpected body: got %v, expected %v", rr.Body.String(), expected)
 	}
 
 	// Delete dummy allergy from DB
 	allergy = Allergy{Email: "unit@test.com", Allergy: "testallergy"}
 	AllergyDB.Where("email = ? AND allergy = ?", allergy.Email, allergy.Allergy).Unscoped().Delete(&allergy)
 }
-
 
 func TestDeleteAllergy(t *testing.T) {
 	InitialUserMigration()
