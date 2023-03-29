@@ -191,7 +191,7 @@ func GetGroceryList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var listTitle GroceryTitle
+	var listTitle RawTitle
 	err = json.NewDecoder(r.Body).Decode(&listTitle)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

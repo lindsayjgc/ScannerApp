@@ -86,3 +86,42 @@ func TestAddGroceryItem(t *testing.T) {
 	item := GroceryItem{Email: "unit@test.com", Title: "testTitle", Item: "testitem"}
 	ListDB.Where("email = ? AND title = ? AND item = ?", item.Email, item.Title, item.Item).Unscoped().Delete(&item)
 }
+
+func TestDeleteList(t *testing.T) {
+	InitialUserMigration()
+	InitialListMigration()
+	InitializeRouter()
+
+	title := GroceryTitle{Email: "unit@test.com", Title: "testTitle"}
+	ListDB.Create(&title)
+
+	testTitle := RawTitles{
+		Titles: "testTitle",
+	}
+
+	payload, _ := json.Marshal(testTitle)
+	req, _ := http.NewRequest("DELETE", "/delete-lists", bytes.NewBuffer(payload))
+	req.Header.Set("Content-Type", "application/json")
+
+	createTestCookie(req, t)
+
+	rr := httptest.NewRecorder()
+
+	DeleteList(rr, req)
+
+	response := rr.Result()
+	body, _ := ioutil.ReadAll(response.Body)
+
+	if http.StatusOK != response.StatusCode {
+		t.Errorf("Expected %v; got %v\n", http.StatusOK, response.StatusCode)
+	}
+
+	resMap := make(map[string]string)
+	json.Unmarshal(body, &resMap)
+
+	expectedMsg := "testTitle"
+
+	if resMap["deletedLists"] != expectedMsg || resMap["notDeletedLists"] != "" {
+		t.Errorf("Expected %s; got %s \n", expectedMsg, resMap["deletedLists"])
+	}
+}
