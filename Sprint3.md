@@ -1,6 +1,12 @@
 ## Work Completed
 
 **Frontend**
+-   [ ] Refactored profile page for easier addition and removal of allergies.
+-   [ ] Unknown URLs redirect to 404 page.
+-   [ ] Ability to search for products by category or brand.
+-   [ ] Display of search results in a table with multiple pages.
+-   [ ] URL updates based on current search parameters.
+-   [ ] more
 
 **Backend**
 -   [ ] Add database support for storing favorite products.
@@ -18,6 +24,25 @@
 -   [ ] Unit tests for all verification email-related handlers.
 
 ## Frontend Unit Tests
+### Unit (Component) Tests
+
+-   [ ] login.component.spec.ts
+-   [ ] navbar.component.spec.ts
+-   [ ] register.component.spec.ts
+-   [ ] profile.component.spec.ts
+-   [ ] home.component.spec.ts
+
+### Cypress (End to End) Tests
+
+-   [ ] addDeleteAllergies.cy.ts
+-   [ ] addItemsToList.cy.ts
+-   [ ] createLists.cy.ts
+-   [ ] deleteAccount.cy.ts
+-   [ ] navigation.cy.ts
+-   [ ] search.cy.ts
+-   [ ] seeProduct.cy.ts
+-   [ ] setup.cy.ts
+-   [ ] signupLogin.cy.ts
 
 ## Backend Unit Tests
 
