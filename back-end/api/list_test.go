@@ -46,3 +46,43 @@ func TestCreateList(t *testing.T) {
 	title := GroceryTitle{Email: "unit@test.com", Title: "testTitle"}
 	ListDB.Where("email = ? AND title = ?", title.Email, title.Title).Unscoped().Delete(&title)
 }
+
+func TestAddGroceryItem(t *testing.T) {
+	InitialUserMigration()
+	InitialListMigration()
+	InitializeRouter()
+
+	testItem := RawListItems{
+		Title: "testTitle",
+		Items: "testitem",
+	}
+
+	payload, _ := json.Marshal(testItem)
+	req, _ := http.NewRequest("POST", "/add-list-items", bytes.NewBuffer(payload))
+	req.Header.Set("Content-Type", "application/json")
+
+	createTestCookie(req, t)
+
+	rr := httptest.NewRecorder()
+
+	AddGroceryItem(rr, req)
+
+	response := rr.Result()
+	body, _ := ioutil.ReadAll(response.Body)
+
+	if http.StatusOK != response.StatusCode {
+		t.Errorf("Expected %v; got %v\n", http.StatusOK, response.StatusCode)
+	}
+
+	resMap := make(map[string]string)
+	json.Unmarshal(body, &resMap)
+
+	expected := "testitem"
+
+	if resMap["addedItems"] != expected || resMap["existingItems"] != "" {
+		t.Errorf("Expected %s; got %s \n", expected, resMap["addedItems"])
+	}
+
+	item := GroceryItem{Email: "unit@test.com", Title: "testTitle", Item: "testitem"}
+	ListDB.Where("email = ? AND title = ? AND item = ?", item.Email, item.Title, item.Item).Unscoped().Delete(&item)
+}
