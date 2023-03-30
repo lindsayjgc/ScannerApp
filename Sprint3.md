@@ -6,7 +6,7 @@
 -   [ ] Ability to search for products by category or brand.
 -   [ ] Display of search results in a table with multiple pages.
 -   [ ] URL updates based on current search parameters.
--   [ ] View product information (including image and ingredients) by clicking after search.
+-   [ ] View product information (including image and ingredients) by clicking on product after search.
 -   [ ] Get alerted to allergens found or not found in product on product's page.
 -   [ ] Can create and view multiple grocery lists in profile.
 -   [ ] Can add items to grocery lists in profile.
