@@ -20,11 +20,15 @@
 -   [ ] Utility function for sending emails to user-inputted emails.
 -   [ ] Add database support for storing verification codes.
 -   [ ] Route and handler for sending an email with code for verification when signing up.
--   [ ] Route and handler for sending an email with code for verficiation when requesting password reset,
+-   [ ] Route and handler for sending an email with code for verficiation when requesting password reset.
 -   [ ] Route and handler for checking a user-inputted code against the code that was issued in verification email.
 -   [ ] Route and handler for accepting new login info and resetting user password.
 -   [ ] Unit tests for all favorite-related handlers.
 -   [ ] Unit tests for all verification email-related handlers.
+-   [ ] Add database support for storing grocery lists.
+-   [ ] Routes and handlers for creating, getting, and deleting lists.
+-   [ ] Routes and handlers for adding items to lists, getting individual lists, and deleting list items.
+-   [ ] Unit tests for all list-related handlers.
 
 ## Frontend Unit Tests
 ### Unit (Component) Tests
@@ -67,7 +71,13 @@
 -   [ ] TestVerifyEmailSignup
 -   [ ] TestVerifyEmailReset
 -   [ ] TestCheckCode
--   [ ] TestResetPassword
+-   [ ] TestResetPasswords
+-   [ ] TestCreateList
+-   [ ] TestAddGroceryItem
+-   [ ] TestDeleteLIst
+-   [ ] TestDeleteListItem
+-   [ ] TestGetLists
+-   [ ] TestGetGroceryList
 
 ## Backend API Documentation
 
