@@ -83,6 +83,7 @@ func main() {
 	InitialListMigration()
 	InitialFavoriteMigration()
 	InitialCodeMigration()
+	InitialLabelMigration()
 	InitializeRouter()
 	StartServer()
 }
