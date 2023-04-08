@@ -47,6 +47,8 @@ func InitializeRouter() {
 	s.HandleFunc("/verify/reset", VerifyEmailReset).Methods("POST")
 	s.HandleFunc("/check-code", CheckCode).Methods("POST")
 	s.HandleFunc("/reset-password", ResetPassword).Methods("POST")
+
+	s.HandleFunc("/label", GetLabels).Methods("GET")
 }
 
 func StartServer() {
