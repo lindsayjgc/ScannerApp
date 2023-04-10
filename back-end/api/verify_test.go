@@ -53,7 +53,7 @@ func TestVerifyEmailSignup(t *testing.T) {
 	CodeDB.Where("email = ?", "cen3031groceryapp@gmail.com").Unscoped().Delete(&deletedCode)
 }
 
-func TestVerifyReset(t *testing.T) {
+func TestVerifyEmailReset(t *testing.T) {
 	// Initialize router and connect to DB for this test instance
 	InitialUserMigration()
 	InitialCodeMigration()
