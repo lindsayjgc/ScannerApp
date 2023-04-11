@@ -98,6 +98,15 @@ func AddPreference(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(GenerateResponse("Label type is invalid"))
 	}
 
+	var checkPrefExists Preference
+	result = PreferenceDB.Where("user = ?", claims.Email).Where("label_type = ?", newPref.LabelType).Where("name = ?", newPref.Name).First(&checkPrefExists)
+
+	if result.RowsAffected != 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(GenerateResponse("Preference already exists"))
+		return
+	}
+
 	addPref := Preference{
 		User: claims.Email,
 		LabelType: newPref.LabelType,
