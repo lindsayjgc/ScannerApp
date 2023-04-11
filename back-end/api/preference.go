@@ -86,6 +86,7 @@ func AddPreference(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON body"))
+		return
 	}
 
 	// Verify that the preference is valid
@@ -106,4 +107,39 @@ func AddPreference(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(GenerateResponse("Preference successfully added"))
+}
+
+func DeletePreference(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// Check for logged in user and get their email
+	claims, err, resStatus := CheckCookie(w, r)
+
+	if err != nil {
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
+		return
+	}
+
+	// Decode the preference to be deleted from the frontend
+	var deleteLabel Label
+	err = json.NewDecoder(r.Body).Decode(&deleteLabel)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON body"))
+		return
+	}
+
+	var deletedPreference Preference
+	result := PreferenceDB.Where("user = ?", claims.Email).Where("label_type = ?", deleteLabel.LabelType).Where("name = ?", deleteLabel.Name).Delete(&deletedPreference)
+
+	if result.RowsAffected == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(GenerateResponse("Preference not found"))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(GenerateResponse("Preference successfully deleted"))
 }
