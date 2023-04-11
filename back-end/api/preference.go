@@ -42,6 +42,32 @@ func InitialPreferenceMigration() {
 	PreferenceDB.AutoMigrate(&Preference{})
 }
 
+func GetPreferences(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// Check for logged in user and get their email
+	claims, err, resStatus := CheckCookie(w, r)
+
+	if err != nil {
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
+		return
+	}
+
+	// Get preferences from DB by user email
+	var preferences []Preference
+	result := PreferenceDB.Table("preferences").Where("user = ?", claims.Email).Find(&preferences)
+
+	if result.RowsAffected == 0 {
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(GenerateResponse("No preferences found"))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(preferences)
+}
+
 func AddPreference(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -76,7 +102,6 @@ func AddPreference(w http.ResponseWriter, r *http.Request) {
 		LabelType: newPref.LabelType,
 		Name: newPref.Name,
 	}
-	fmt.Println(addPref)
 	PreferenceDB.Create(&addPref)
 
 	w.WriteHeader(http.StatusCreated)

@@ -49,6 +49,7 @@ func InitializeRouter() {
 	s.HandleFunc("/reset-password", ResetPassword).Methods("POST")
 
 	s.HandleFunc("/label", GetLabels).Methods("GET")
+	s.HandleFunc("/preference", GetPreferences).Methods("GET")
 	s.HandleFunc("/preference", AddPreference).Methods("POST")
 }
 
