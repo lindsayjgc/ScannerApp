@@ -43,6 +43,12 @@ describe('Set Up', () => {
 
     // Assert that the user is redirected to the home page
     cy.url().should('eq', 'http://localhost:4200/home');
+
+    cy.visit('http://localhost:4200/profile')
+    cy.contains('Delete account').click()
+    cy.contains('Yes').click()
+    cy.contains("Password").click().type('password123')
+    cy.contains('Delete my account').click()
   });
 });
 

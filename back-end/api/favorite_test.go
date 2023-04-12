@@ -211,9 +211,13 @@ func TestDeleteFavorite(t *testing.T) {
 		Image: "testimagelink.com",
 	}
 	FavoriteDB.Create(&favorite)
+
+	code := Code{
+		Code: "testcode",
+	}
 	
 	// Create a mock request
-	payload, _ := json.Marshal(favorite)
+	payload, _ := json.Marshal(code)
 	req, _ := http.NewRequest("DELETE", "/api/favorite", bytes.NewBuffer(payload))
 	req.Header.Set("Content-Type", "application/json")
 	

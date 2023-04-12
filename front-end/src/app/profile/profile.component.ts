@@ -166,7 +166,8 @@ export class ProfileComponent implements OnInit {
   }
 
   submitAllergies() {
-    const allergyString = this.allergens.map(allergen => allergen.name).join(', ');
+    const allergyString = this.allergens.map(allergen => allergen.name).join(',');
+    console.log(allergyString);
     this.allergensService.addAllergy(allergyString).subscribe((response: any) => {
       console.log(response);
       window.location.reload();

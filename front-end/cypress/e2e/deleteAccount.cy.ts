@@ -1,12 +1,15 @@
 describe('delete account', () => {
   it('can go to profile page', () => {
-    //Log in first
-    cy.visit('http://localhost:4200/login')
-    cy.get('.login-container').contains('Email').parent().find('input').type('random@gmail.com')
-    cy.get('.login-container').contains('Password').parent().find('input').type('password123')
-    cy.get('.login-container').find('button').contains('Login').click()
+    //Register first
+    cy.visit("http://localhost:4200/register");
+    cy.get('input[formControlName="email"]').type("random@gmail.com");
+    cy.contains("First Name").click().type("John");
+    cy.contains("Last Name").click().type("Doe");
+    cy.get('input[formControlName="password"]').type("password123");
+    cy.get('button[type="submit"]').click();
 
     //Navigate to profile
+    cy.visit('http://localhost:4200/')
     cy.get('.toolbarContainer').find('button').click()
     cy.contains('Profile').click()
     cy.url().should('include', '/profile')
@@ -23,7 +26,7 @@ describe('delete account', () => {
     cy.visit('http://localhost:4200/profile')
     cy.contains('Delete account').click()
     cy.contains('Yes').click()
-    cy.get('body').find('input').type('wrongpassword')
+    cy.contains("Password").click().type('wrongpassword');
     cy.contains('Delete my account').click()
 
     //Error should display
@@ -41,7 +44,7 @@ describe('delete account', () => {
     cy.visit('http://localhost:4200/profile')
     cy.contains('Delete account').click()
     cy.contains('Yes').click()
-    cy.get('body').find('input').type('password123')
+    cy.contains("Password").click().type('password123')
     cy.contains('Delete my account').click()
 
     //Should have been logged out

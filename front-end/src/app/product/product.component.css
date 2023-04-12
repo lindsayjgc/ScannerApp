@@ -49,3 +49,17 @@
     color: red;
     line-height: 1.5;
   }
+
+  .loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60vh;
+  }
+  .productContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4vh;
+    min-height: 82vh;
+  }
