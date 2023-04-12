@@ -166,54 +166,90 @@ func GetRecipeRecommendations(w http.ResponseWriter, r *http.Request) {
 
 	// Create a new HTTP client and GET request
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", API_URL, nil)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(GenerateResponse("Error creating request to API"))
-		return
-	}
+	
+	// The handler should always return 10 recipes; use a loop structure, as we
+	// process out recipes that have already been liked/disliked by the user
+	// Because of this, we may need to make multiple API calls to get more recipes
+	var recipeHits []Recipe // Recipes that will be returned to the user
+	const RECIPE_MAX = 5
 
-	// Send request
-	resp, err := client.Do(req)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(GenerateResponse("Error sending request to API"))
-		return
-	}
-	defer resp.Body.Close() // Close body when done
-
-	// Read response body
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(GenerateResponse("Error reading response from API"))
-		return
-	}
-
-	// Unmarshal in an object
-	var response Response
-	err = json.Unmarshal(body, &response)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(GenerateResponse("Error translating API response into JSON"))
-		panic(err)
-	}
-
-	// Process the recipes into the DB and an array for return
-	var recipeHits []Recipe
-	for _, rec := range response.Hits {
-		newRecipe := Recipe{
-			User: claims.Email,
-			APIURI: rec.Recipe.Uri,
-			SourceURL: rec.Recipe.Url,
-			// Capture the ID from after the # in the URI
-			RecipeID: strings.Split(rec.Recipe.Uri, "#")[1], 
-			Label: rec.Recipe.Label,
-			Liked: nil,
+	for len(recipeHits) < RECIPE_MAX {
+		req, err := http.NewRequest("GET", API_URL, nil)
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(GenerateResponse("Error creating request to API"))
+			return
 		}
 
-		recipeHits = append(recipeHits, newRecipe)
-		RecipeDB.Save(&newRecipe)
+		// Send request
+		resp, err := client.Do(req)
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(GenerateResponse("Error sending request to API"))
+			return
+		}
+		defer resp.Body.Close() // Close body when done
+
+		// Read response body
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(GenerateResponse("Error reading response from API"))
+			return
+		}
+
+		// Unmarshal in an object
+		var response Response
+		err = json.Unmarshal(body, &response)
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(GenerateResponse("Error translating API response into JSON"))
+			panic(err)
+		}
+
+		// Process the recipes into the DB and an array for return
+		for _, rec := range response.Hits {
+			// Capture the ID from after the # in the URI
+			newRecipeID := strings.Split(rec.Recipe.Uri, "#")[1]
+			
+			// Check if this recipe has already been liked/disliked by the user
+			var recipeSearch Recipe
+			result := RecipeDB.Table("recipes").Where("user = ?", claims.Email).Where("recipe_id = ?", newRecipeID).First(&recipeSearch)
+			if result.RowsAffected != 0 && recipeSearch.Liked != nil {
+				continue
+			}
+
+			// Create new recipe object from API info
+			newRecipe := Recipe{
+				User: claims.Email,
+				APIURI: rec.Recipe.Uri,
+				SourceURL: rec.Recipe.Url,
+				RecipeID: newRecipeID,
+				Label: rec.Recipe.Label,
+				Liked: nil,
+			}
+			recipeHits = append(recipeHits, newRecipe)
+
+			// Only save the recipe if it wasn't found in the search
+			if result.RowsAffected == 0 {
+				RecipeDB.Save(&newRecipe)
+			}
+
+			if len(recipeHits) >= RECIPE_MAX {
+				break
+			}
+		}
+
+		// Check if we have the criteria of 5 recipes to be returned
+		// If so, change the API_URL for the next request to the next
+		// page of results
+		if len(recipeHits) < RECIPE_MAX {
+			API_URL = response.Links.Next.Href
+		}
 	}
 	
 	// Respond with the recipes
