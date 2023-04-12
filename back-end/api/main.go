@@ -52,6 +52,7 @@ func InitializeRouter() {
 	s.HandleFunc("/preference", GetPreferences).Methods("GET")
 	s.HandleFunc("/preference", AddPreference).Methods("POST")
 	s.HandleFunc("/preference", DeletePreference).Methods("DELETE")
+	s.HandleFunc("/recipe/recommendation", GetRecipeRecommendations).Methods("GET")
 }
 
 func StartServer() {
@@ -90,6 +91,7 @@ func main() {
 	InitialCodeMigration()
 	InitialLabelMigration()
 	InitialPreferenceMigration()
+	InitialRecipeMigration()
 	InitializeRouter()
 	StartServer()
 }
