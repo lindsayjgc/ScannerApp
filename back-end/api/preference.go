@@ -96,6 +96,7 @@ func AddPreference(w http.ResponseWriter, r *http.Request) {
 	if result.RowsAffected == 0 {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(GenerateResponse("Label type is invalid"))
+		return
 	}
 
 	var checkPrefExists Preference
