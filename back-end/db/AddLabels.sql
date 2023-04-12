@@ -43,7 +43,8 @@ INSERT INTO labels values(NULL, NULL, NULL, NULL, 'health', 'wheat-free');
 
 INSERT INTO labels values(NULL, NULL, NULL, NULL, 'mealType', 'breakfast');
 INSERT INTO labels values(NULL, NULL, NULL, NULL, 'mealType', 'brunch');
-INSERT INTO labels values(NULL, NULL, NULL, NULL, 'mealType', 'lunch/dinner');
+INSERT INTO labels values(NULL, NULL, NULL, NULL, 'mealType', 'lunch');
+INSERT INTO labels values(NULL, NULL, NULL, NULL, 'mealType', 'dinner');
 INSERT INTO labels values(NULL, NULL, NULL, NULL, 'mealType', 'snack');
 INSERT INTO labels values(NULL, NULL, NULL, NULL, 'mealType', 'teatime');
 
