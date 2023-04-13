@@ -10,5 +10,12 @@ describe('add-allergies', () => {
     // Remove an allergen
     cy.get('.allergen-group mat-chip-row button[aria-label="remove Peanuts"]').click();
     cy.get('.allergen-group').should('not.contain', 'Peanuts');
+
+    cy.contains("'s Profile");
+    cy.contains("Email:");
+    cy.contains("Allergies:");
+    cy.contains("Grocery Lists:");
+    cy.contains("Create New List");
+    cy.contains("Delete account");
   });
 })
