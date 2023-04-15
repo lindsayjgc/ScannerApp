@@ -37,6 +37,7 @@ import { ErrorpageComponent } from './errorpage/errorpage.component';
 import { ProductComponent } from './product/product.component';
 import { CreateListDialogComponent } from './dialogs/create-list-dialog/create-list-dialog.component';
 import { AddItemDialogComponent } from './dialogs/add-item-dialog/add-item-dialog.component';
+import { ResetComponent } from './reset/reset.component';
 
 @NgModule({
   declarations: [
@@ -53,6 +54,7 @@ import { AddItemDialogComponent } from './dialogs/add-item-dialog/add-item-dialo
     ProductComponent,
     CreateListDialogComponent,
     AddItemDialogComponent,
+    ResetComponent,
   ],
   imports: [
     BrowserModule,

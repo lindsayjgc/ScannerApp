@@ -15,7 +15,7 @@ export class LoginComponent {
   constructor(private usersService: UsersService, private loginMessage: MatSnackBar, private router: Router) { }
 
   loginForm = new FormGroup({
-    email: new FormControl('', [Validators.required]),
+    email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required]),
   });
 
