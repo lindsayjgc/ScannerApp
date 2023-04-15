@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"strings"
@@ -22,7 +22,14 @@ type Recipe struct {
 	SourceURL string
 	RecipeID string
 	Label string
-	Liked *bool // Denotes whether a user has liked or disliked a recommendation, can be null
+	Liked *string // Denotes whether a user has liked or disliked a recommendation, can be null
+}
+
+// Used to decode data from frontend when trying to change 
+// whether a user like/dislikes a recipe
+type LikeStatusData struct {
+	RecipeID string `json:"id"`
+	Liked *string `json:"liked"`
 }
 
 type Response struct {
@@ -137,17 +144,6 @@ func GetRecipeRecommendations(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get the distinct preference label types that the user has
-	// Used for formulating the search URL for the recipe API
-	// var preferenceTypes []string
-	// result := PreferenceDB.Table("preferences").Distinct("label_type").Where("user = ?", claims.Email).Where("deleted_at IS NULL").Pluck("label_type", &preferenceTypes)
-
-	// if result.RowsAffected == 0 {
-	// 	w.WriteHeader(http.StatusNoContent)
-	// 	json.NewEncoder(w).Encode(GenerateResponse("User has not indicated any preferences for recipes"))
-	// 	return
-	// }
-
 	// Get all of the user's preferences for use in the search URL
 	var preferences []Preference
 	result := PreferenceDB.Table("preferences").Where("user = ?", claims.Email).Find(&preferences)
@@ -193,7 +189,7 @@ func GetRecipeRecommendations(w http.ResponseWriter, r *http.Request) {
 		defer resp.Body.Close() // Close body when done
 
 		// Read response body
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -255,4 +251,57 @@ func GetRecipeRecommendations(w http.ResponseWriter, r *http.Request) {
 	// Respond with the recipes
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(recipeHits)
+}
+
+func UpdateRecipeLikeStatus(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// Check for logged in user and get their email
+	claims, err, resStatus := CheckCookie(w, r)
+
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
+		return
+	}
+
+	// Decode the recipe to update
+	var updateStatus LikeStatusData
+	err = json.NewDecoder(r.Body).Decode(&updateStatus)
+
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON body"))
+		return
+	}
+
+	// Check that the liked status is invalid
+	if *updateStatus.Liked != "true" && *updateStatus.Liked != "false" {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(GenerateResponse("Invalid like status"))
+		return
+	}
+
+	var recipeSearch Recipe
+	result := RecipeDB.Where("user = ?", claims.Email).Where("recipe_id", updateStatus.RecipeID).First(&recipeSearch)
+
+	if result.RowsAffected == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(GenerateResponse("Recipe not found in user recommendations"))
+		return
+	}
+
+	if *recipeSearch.Liked == *updateStatus.Liked {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(GenerateResponse("Like status already set to " + *recipeSearch.Liked))
+		return		
+	}
+
+	recipeSearch.Liked = updateStatus.Liked
+	RecipeDB.Save(&recipeSearch)
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(GenerateResponse("Recommendation status updated"))
 }

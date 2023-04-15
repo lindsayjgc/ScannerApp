@@ -53,6 +53,7 @@ func InitializeRouter() {
 	s.HandleFunc("/preference", AddPreference).Methods("POST")
 	s.HandleFunc("/preference", DeletePreference).Methods("DELETE")
 	s.HandleFunc("/recipe/recommendation", GetRecipeRecommendations).Methods("GET")
+	s.HandleFunc("/recipe/update", UpdateRecipeLikeStatus).Methods("PUT")
 }
 
 func StartServer() {
