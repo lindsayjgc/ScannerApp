@@ -136,7 +136,7 @@ func CheckCode(w http.ResponseWriter, r *http.Request) {
 
 	// Compare codes
 	if codeSearch.Code != rawCode.Code {
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusUnauthorized)
 		res["isVerified"] = "false"
 		res["message"] = "Incorrect code"
 		json.NewEncoder(w).Encode(res)
@@ -145,7 +145,7 @@ func CheckCode(w http.ResponseWriter, r *http.Request) {
 
 	// Check if code has expired
 	if codeSearch.Expiration.Before(time.Now()) {
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusUnauthorized)
 		res["isVerified"] = "false"
 		res["message"] = "Verification code has expired"
 		json.NewEncoder(w).Encode(res)

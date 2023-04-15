@@ -213,8 +213,8 @@
 > | http code | content-type       | response                                                            |
 > | --------- | ------------------ | ------------------------------------------------------------------- |
 > | `200`     | `application/json` | `{"isVerified": "true","message": "Email successfully verified"}`   |
-> | `200`     | `application/json` | `{"isVerified": "false","message": "*wrong code or expired code*"}` |
 > | `400`     | `application/json` | `{"message":"Email has not been issued a verification code"}`       |
+> | `401`     | `application/json` | `{"isVerified": "false","message": "*wrong code or expired code*"}` |
 > | `500`     | `application/json` | `{"message":"Error decoding JSON body"}`                            |
 > | `500`     | `application/json` | `{"message":"*email sending-related error*"}`                       |
 
