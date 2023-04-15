@@ -77,8 +77,14 @@ func IssueCode(w http.ResponseWriter, r *http.Request, emailType string) {
 		return
 	}
 
-	randomCode := GenerateRandomCode()
-	err = SendEmail(email.Email, randomCode, emailType)
+	// Check if the specified frontend testing email has been passed in
+	var randomCode string
+	if (email.Email == "test@test.com") {
+		randomCode = "000000"
+	} else {
+		randomCode = GenerateRandomCode()
+		err = SendEmail(email.Email, randomCode, emailType)
+	}
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
