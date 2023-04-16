@@ -22,6 +22,11 @@ type RawSearch struct {
 	Query string `json:"query"`
 }
 
+type Query struct {
+	Query string
+	Count int
+}
+
 var SearchDB *gorm.DB
 
 // saves searches
@@ -69,10 +74,11 @@ func SaveQuery(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var existingQuery Search
-	res := ListDB.First(&existingQuery, "email = ? AND query = ?", claims.Email, query.Query)
+	res := SearchDB.First(&existingQuery, "email = ? AND query = ?", claims.Email, query.Query)
 
 	if res.Error == nil {
 		existingQuery.Count = existingQuery.Count + 1
+		SearchDB.Save(existingQuery)
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(GenerateResponse("Query count updated"))
 		return
@@ -84,4 +90,21 @@ func SaveQuery(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(GenerateResponse("Query count updated"))
+}
+
+func GetQueries(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	claims, err, resStatus := CheckCookie(w, r)
+
+	if err != nil {
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
+		return
+	}
+
+	var existingQueriesSlice []Query
+	SearchDB.Model(&Search{}).Select("query, count").Where("email = ?", claims.Email).Group("query").Scan(&existingQueriesSlice)
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(existingQueriesSlice)
 }
