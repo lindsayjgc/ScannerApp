@@ -88,6 +88,7 @@ func StartServer() {
 }
 
 func main() {
+	GetFoodList()
 	InitialUserMigration()
 	InitialAllergyMigration()
 	InitialListMigration()
