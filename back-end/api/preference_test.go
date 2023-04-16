@@ -1,10 +1,12 @@
 package main
 
 import (
-	"fmt"
+	"bytes"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"regexp"
+	"strings"
 	"testing"
 )
 
@@ -47,6 +49,42 @@ func TestGetPreferences(t *testing.T) {
 
 	// Clean up test data from DB
 	var deletedPrefs []Preference
-	FavoriteDB.Table("preferences").Where("email = ?", "unit@test.com").Unscoped().Delete(&deletedPrefs)
-	fmt.Println(deletedPrefs)
+	PreferenceDB.Table("preferences").Where("user = ?", "unit@test.com").Unscoped().Delete(&deletedPrefs)
+}
+
+func TestAddPreference(t *testing.T) {
+	InitialPreferenceMigration()
+	InitialLabelMigration()
+	InitializeRouter()
+
+	newPref := Label{
+		LabelType: "diet",
+		Name: "balanced",
+	}
+
+	payload, _ := json.Marshal(newPref)
+	req, _ := http.NewRequest("POST", "/api/preference", bytes.NewBuffer(payload))
+	req.Header.Set("Content-Type", "application/json")
+
+	// Create test cookie to simulate user login
+	createTestCookie(req, t)
+
+	rr := httptest.NewRecorder()
+	r.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusCreated {
+		t.Errorf("Handler returned the wrong status: got %v, expected %v", status, http.StatusCreated)
+	}
+
+	expected := `{"message":"Preference successfully added"}`
+	body := strings.Replace(rr.Body.String(), "\n", "", -1)
+	body = strings.Replace(body, "\r", "", -1)
+
+	if body != expected {
+		t.Errorf("Handler returned unexpected body: got %v, expected %v", rr.Body.String(), expected)
+	}
+
+	// Delete the user that was created for the test
+	var deletedPref Preference
+	PreferenceDB.Where("user = ?", "unit@test.com").Unscoped().Delete(&deletedPref)
 }
