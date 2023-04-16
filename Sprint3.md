@@ -104,6 +104,8 @@
     > | ------------ | ------------------------------------ |
     > | `SECRET_KEY` | use key generator to create your own |
     > | `PORT`       | 9000                                 |
+    > | `MAIL`       | cen3031groceryapp@gmail.com          |
+    > | `PW`         | hyvowpezafvisvws                     |
 
     </details>
 
