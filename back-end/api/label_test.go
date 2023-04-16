@@ -11,12 +11,6 @@ func TestGetLabels(t *testing.T) {
 	InitialLabelMigration()
 	InitializeRouter()
 
-	// API_URL := "http://localhost:9000/api/label"
-	
-	// // Set query parameters
-	// params := url.Values{}
-	// params.Set("type", "diet")	
-
 	req, _ := http.NewRequest("GET", "/api/label?type=diet", nil)
 	req.Header.Set("Content-Type", "application/json")
 
