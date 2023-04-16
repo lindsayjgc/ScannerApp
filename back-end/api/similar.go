@@ -22,6 +22,24 @@ type FoodList struct {
 	Foods []Food
 }
 
+type FoodNutrient struct {
+	Number                string  `json:"number"`
+	Name                  string  `json:"name"`
+	Amount                float64 `json:"amount"`
+	UnitName              string  `json:"unitName"`
+	DerivationCode        string  `json:"derivationCode"`
+	DerivationDescription string  `json:"derivationDescription"`
+}
+
+type NewFood struct {
+	FdcID           int64          `json:"fdcId"`
+	Description     string         `json:"description"`
+	DataType        string         `json:"dataType"`
+	PublicationDate string         `json:"publicationDate"`
+	NdbNumber       string         `json:"ndbNumber"`
+	FoodNutrients   []FoodNutrient `json:"foodNutrients"`
+}
+
 func fetchFoodListPage(pageNumber int) ([]Food, error) {
 	err := godotenv.Load()
 	if err != nil {
@@ -60,7 +78,36 @@ func GetFoodList() ([]Food, error) {
 
 	// Append foodListEnd to foodList
 	foodList = append(foodList, foodListEnd...)
-	fmt.Println(foodList)
 
 	return foodList, nil
+}
+
+func GetFoodNutrients(fdcID int64) (map[string]float64, error) {
+	fmt.Printf("Fetching nutrients for FdcID %d...\n", fdcID)
+	// Make request to the API to get nutrient data for the given food
+	response, err := http.Get(fmt.Sprintf("https://api.nal.usda.gov/fdc/v1/food/%d?format=abridged&nutrients=203&nutrients=204&nutrients=205&api_key=3ZUwh4W1oWTjCsqkbe9Del7axRUyKG1XR4Y6KMUN", fdcID))
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+
+	// Read the response body and unmarshal the JSON data
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var food NewFood
+	err = json.Unmarshal(body, &food)
+	if err != nil {
+		return nil, err
+	}
+
+	// Build a map of nutrient names and values
+	nutrients := make(map[string]float64)
+	for _, nutrient := range food.FoodNutrients {
+		nutrients[nutrient.Name] = nutrient.Amount
+		fmt.Printf("Nutrient: %s, Amount: %f\n", nutrient.Name, nutrient.Amount)
+	}
+	return nutrients, nil
 }

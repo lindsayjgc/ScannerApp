@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -88,7 +89,16 @@ func StartServer() {
 }
 
 func main() {
-	GetFoodList()
+	list, err := GetFoodList()
+	if err != nil {
+		fmt.Println(err)
+	}
+	nutrients, err := GetFoodNutrients(list[0].FdcID)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(nutrients)
+
 	InitialUserMigration()
 	InitialAllergyMigration()
 	InitialListMigration()
