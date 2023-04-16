@@ -51,5 +51,11 @@ describe('See Products', () => {
     cy.contains("Title").click().type("3");
     cy.contains('Add New List').click();
     cy.contains('3');
+
+    cy.visit('http://localhost:4200/profile')
+    cy.contains('Delete account').click()
+    cy.contains('Yes').click()
+    cy.contains("Password").click().type('password123')
+    cy.contains('Delete my account').click()
     });
   });
