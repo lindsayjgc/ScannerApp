@@ -59,7 +59,6 @@ type Response struct {
 					Source            string    `json:"source"`
 					Url               string    `json:"url"`
 					ShareAs           string    `json:"shareAs"`
-					// Yield             int    		`json:"yield,omitempty"`
 					DietLabels        []string  `json:"dietLabels"`
 					HealthLabels      []string  `json:"healthLabels"`
 					Cautions          []string  `json:"cautions"`
@@ -82,30 +81,7 @@ type Response struct {
 					DishType           []string `json:"dishType"`
 					Instructions       []string `json:"instructions"`
 					Tags               []string `json:"tags"`
-					// ExternalId         string   `json:"externalId"`
-					// TotalNutrients     struct{} `json:"totalNutrients"`
-					// TotalDaily         struct{} `json:"totalDaily"`
-					// Digest             []struct {
-					// 		Label        string  `json:"label"`
-					// 		Tag          string  `json:"tag"`
-					// 		SchemaOrgTag string  `json:"schemaOrgTag"`
-					// 		Total        float64 `json:"total"`
-					// 		HasRDI       bool    `json:"hasRDI"`
-					// 		Daily        float64 `json:"daily"`
-					// 		Unit         string  `json:"unit"`
-							// Sub          struct{} `json:"sub"`
-					// } `json:"digest"`
 			} `json:"recipe"`
-			// Links struct {
-			// 		Self struct {
-			// 				Href  string `json:"href"`
-			// 				Title string `json:"title"`
-			// 		} `json:"self"`
-			// 		Next struct {
-			// 				Href  string `json:"href"`
-			// 				Title string `json:"title"`
-			// 		} `json:"next"`
-			// } `json:"_links"`
 	} `json:"hits"`
 }
 
