@@ -9,6 +9,10 @@ import { Message } from './message';
 export class VerifyService {
   constructor(private http: HttpClient) { }
 
+  verifyEmail(email: string) {
+    return this.http.post<Message>('http://localhost:4200/api/verify/signup', { email });
+  }
+
   resetEmail(email: string) {
     return this.http.post<Message>('http://localhost:4200/api/verify/reset', { email });
   }
