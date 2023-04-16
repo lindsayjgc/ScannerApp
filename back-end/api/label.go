@@ -55,7 +55,7 @@ func GetLabels(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check that label type from query params 
-	labelTypes := []string{"Diet", "Health", "mealType", "dishType"}
+	labelTypes := []string{"diet", "health", "mealType", "dishType"}
 	isValidLabel := false
 	for _, l := range labelTypes {
 		if l == labelType {
