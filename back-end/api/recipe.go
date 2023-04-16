@@ -22,14 +22,14 @@ type Recipe struct {
 	SourceURL string
 	RecipeID string
 	Label string
-	Liked *string // Denotes whether a user has liked or disliked a recommendation, can be null
+	Liked string
 }
 
 // Used to decode data from frontend when trying to change 
 // whether a user like/dislikes a recipe
 type LikeStatusData struct {
 	RecipeID string `json:"id"`
-	Liked *string `json:"liked"`
+	Liked string `json:"liked"`
 }
 
 type Response struct {
@@ -191,7 +191,7 @@ func GetRecipeRecommendations(w http.ResponseWriter, r *http.Request) {
 			// Check if this recipe has already been liked/disliked by the user
 			var recipeSearch Recipe
 			result := RecipeDB.Table("recipes").Where("user = ?", claims.Email).Where("recipe_id = ?", newRecipeID).First(&recipeSearch)
-			if result.RowsAffected != 0 && recipeSearch.Liked != nil {
+			if result.RowsAffected != 0 && recipeSearch.Liked != "none" {
 				continue
 			}
 
@@ -202,7 +202,7 @@ func GetRecipeRecommendations(w http.ResponseWriter, r *http.Request) {
 				SourceURL: rec.Recipe.Url,
 				RecipeID: newRecipeID,
 				Label: rec.Recipe.Label,
-				Liked: nil,
+				Liked: "none",
 			}
 			recipeHits = append(recipeHits, newRecipe)
 
@@ -254,7 +254,7 @@ func UpdateRecipeLikeStatus(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check that the liked status is invalid
-	if *updateStatus.Liked != "true" && *updateStatus.Liked != "false" {
+	if updateStatus.Liked != "true" && updateStatus.Liked != "false" {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(GenerateResponse("Invalid like status"))
 		return
@@ -269,9 +269,9 @@ func UpdateRecipeLikeStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if *recipeSearch.Liked == *updateStatus.Liked {
+	if recipeSearch.Liked == updateStatus.Liked {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(GenerateResponse("Like status already set to " + *recipeSearch.Liked))
+		json.NewEncoder(w).Encode(GenerateResponse("Like status already set to " + recipeSearch.Liked))
 		return		
 	}
 
