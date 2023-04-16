@@ -117,7 +117,7 @@ func TestDeletePreference(t *testing.T) {
 	r.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("Handler returned the wrong status: got %v, expected %v", status, http.StatusCreated)
+		t.Errorf("Handler returned the wrong status: got %v, expected %v", status, http.StatusOK)
 	}
 
 	expected := `{"message":"Preference successfully deleted"}`
