@@ -108,3 +108,35 @@ func GetQueries(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(existingQueriesSlice)
 }
+
+func RemoveQuery(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	claims, err, resStatus := CheckCookie(w, r)
+
+	if err != nil {
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
+		return
+	}
+
+	var deleteSearch RawSearch
+	err = json.NewDecoder(r.Body).Decode(&deleteSearch)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON"))
+		return
+	}
+
+	var query Search
+	res := SearchDB.Where("email = ? AND query = ?", claims.Email, deleteSearch.Query).First(&query)
+	if res.Error != nil {
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(GenerateResponse("Query not deleted"))
+		return
+	}
+	SearchDB.Delete(&query)
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(GenerateResponse("Query successfully deleted"))
+}

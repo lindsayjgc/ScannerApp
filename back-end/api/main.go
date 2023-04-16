@@ -56,6 +56,7 @@ func InitializeRouter() {
 
 	s.HandleFunc("/search", SaveQuery).Methods("POST")
 	s.HandleFunc("/search", GetQueries).Methods("GET")
+	s.HandleFunc("/search", RemoveQuery).Methods("DELETE")
 }
 
 func StartServer() {
