@@ -88,3 +88,47 @@ func TestAddPreference(t *testing.T) {
 	var deletedPref Preference
 	PreferenceDB.Where("user = ?", "unit@test.com").Unscoped().Delete(&deletedPref)
 }
+
+func TestDeletePreference(t *testing.T) {
+	InitialPreferenceMigration()
+	InitialLabelMigration()
+	InitializeRouter()
+
+	testPref := Preference{
+		User: "unit@test.com",
+		LabelType: "diet",
+		Name: "balanced",
+	}
+	PreferenceDB.Create(&testPref)
+
+	deletePref := Label{
+		LabelType: "diet",
+		Name: "balanced",
+	}
+
+	payload, _ := json.Marshal(deletePref)
+	req, _ := http.NewRequest("DELETE", "/api/preference", bytes.NewBuffer(payload))
+	req.Header.Set("Content-Type", "application/json")
+
+	// Create test cookie to simulate user login
+	createTestCookie(req, t)
+
+	rr := httptest.NewRecorder()
+	r.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("Handler returned the wrong status: got %v, expected %v", status, http.StatusCreated)
+	}
+
+	expected := `{"message":"Preference successfully deleted"}`
+	body := strings.Replace(rr.Body.String(), "\n", "", -1)
+	body = strings.Replace(body, "\r", "", -1)
+
+	if body != expected {
+		t.Errorf("Handler returned unexpected body: got %v, expected %v", rr.Body.String(), expected)
+	}
+
+	// Delete the pref that was created for the test
+	var deletedPref Preference
+	PreferenceDB.Where("user = ?", "unit@test.com").Unscoped().Delete(&deletedPref)
+}
