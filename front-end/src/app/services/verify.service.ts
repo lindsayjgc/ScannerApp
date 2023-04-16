@@ -9,7 +9,15 @@ import { Message } from './message';
 export class VerifyService {
   constructor(private http: HttpClient) { }
 
-  resetPassword(email: string) {
+  resetEmail(email: string) {
     return this.http.post<Message>('http://localhost:4200/api/verify/reset', { email });
+  }
+
+  checkCode(code: string, email: string) {
+    return this.http.post<any>('http://localhost:4200/api/check-code', { code, email });
+  }
+
+  resetPassword(email: string, password: string) {
+    return this.http.post<Message>('http://localhost:4200/api/reset-password', { email, password });
   }
 }
