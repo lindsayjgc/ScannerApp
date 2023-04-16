@@ -1,4 +1,4 @@
-.container {
+/* .container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -62,4 +62,121 @@
     align-items: center;
     padding: 4vh;
     min-height: 82vh;
+  } */
+
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
+  
+  .productContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4vh;
+    min-height: 82vh;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  
+  .product-wrapper {
+    display: flex;
+    align-items: center;
+    padding: 4vh;
+  }
+  
+  .product-image-container {
+    flex: 1;
+    margin-right: 20px;
+    margin-left: 10px;
+  }
+  
+  .product-details-container {
+    flex: 2;
+  }
+  
+  .product-name {
+    /* margin-top: 50px; */
+    font-size: 36px;
+    text-align: center;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-weight: bold;
+  }
+  
+  .product-image {
+    margin-top: 20px;
+    max-width: 100%;
+    
+  }
+  
+  .product-info {
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .allergy-info {
+    color: red;
+  }
+
+  .product-subheader {
+    font-size: 20px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  .ingredients-header {
+    font-size: 20px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .span {
+  content: "\26A0";
+  }
+  
+  .ingredients-list {
+    text-align: left;
+    /* margin-left: 35%; */
+    list-style-position: inside;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  
+  p {
+    font-size: 24px;
+    text-align: center;
+  }
+  
+  .allergies-list {
+    text-align: center;
+    /* margin-left: 35%; */
+    list-style-position: inside;
+    font-size: 16px;
+    color: red;
+    line-height: 1.5;
+  }
+
+  .allergies-list span {
+  display: block;
+  }
+  
+  .loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60vh;
+  }
+
+  .ingredients-list span:last-child::after {
+    content: "";
+  }
+
+  .add-item-button {
+    display: center;
+  }
+  
+  

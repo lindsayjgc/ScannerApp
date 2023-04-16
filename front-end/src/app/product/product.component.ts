@@ -4,6 +4,14 @@ import { ActivatedRoute } from '@angular/router';
 import { ProductService } from '../services/product.service';
 import { Allergen } from '../services/allergenparams';
 
+import { AddItemDialogComponent } from '../dialogs/add-item-dialog/add-item-dialog.component';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { GroceryListService } from '../services/grocery-list.service';
+import { ProfileComponent } from '../profile/profile.component';
+import { AddProductDialogComponent } from '../dialogs/add-product-dialog/add-product-dialog.component';
+import { DeleteDialogComponent } from '../dialogs/delete-dialog/delete-dialog.component';
+import { DeleteProductDialogComponent } from '../dialogs/delete-product-dialog/delete-product-dialog.component';
+
 @Component({
   selector: 'app-product',
   templateUrl: './product.component.html',
@@ -23,7 +31,11 @@ export class ProductComponent implements OnInit {
   loading: boolean = true;
   imageFound: boolean = false;
 
-  constructor(private route: ActivatedRoute, private http: HttpClient, private productService: ProductService) { }
+  titlesToSend: string = "";
+  nameToSend: string = "";
+  noIngredients: boolean = false;
+
+  constructor(private route: ActivatedRoute, private http: HttpClient, private productService: ProductService, public dialog: MatDialog, private groceryListService: GroceryListService, public dialog2: MatDialog) { }
 
   ngOnInit() {
     this.code = this.route.snapshot.paramMap.get('code') ?? '';
@@ -64,6 +76,7 @@ export class ProductComponent implements OnInit {
             });
           } else {
             this.ingredientsList = ["Unknown"];
+            this.noIngredients = true;
           }
 
           this.loading = false;
@@ -73,6 +86,39 @@ export class ProductComponent implements OnInit {
 
     fetchIngredients().then((ingredientsList) => {
       console.log(this.ingredientsList);
+    });
+  }
+
+  addItem(name: string) {
+        const dialogRef = this.dialog.open(AddProductDialogComponent);
+
+        dialogRef.afterClosed().subscribe((titles: string []) => {
+          if (titles) {
+              this.titlesToSend = titles.toString();
+              this.nameToSend = name.toLowerCase();
+              console.log(this.titlesToSend);
+              this.groceryListService.addItemsToList(this.titlesToSend, this.nameToSend).subscribe((response) => {
+                console.log(response);
+              });
+          }
+        });
+  }
+
+  deleteItem(name: string) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.data = name;
+
+    const dialogRef = this.dialog2.open(DeleteProductDialogComponent, dialogConfig);
+
+
+    dialogRef.afterClosed().subscribe((titles: string []) => {
+      if (titles) {
+          this.titlesToSend = titles.toString();
+          this.nameToSend = name.toLowerCase();
+          this.groceryListService.deleteItemsInList(this.titlesToSend, this.nameToSend).subscribe((response) => {
+            console.log(response);
+          });
+      }
     });
   }
 }
