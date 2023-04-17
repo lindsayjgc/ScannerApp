@@ -57,10 +57,6 @@ import { GroceryListsComponent } from './grocery-lists/grocery-lists.component';
     ProductComponent,
     CreateListDialogComponent,
     AddItemDialogComponent,
-
-    AddProductDialogComponent,
-    DeleteProductDialogComponent,
-    GroceryListsComponent,
   ],
   imports: [
     BrowserModule,
