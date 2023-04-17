@@ -5,15 +5,15 @@ describe('Set Up', () => {
 
   it('should sign up a new user and set up allergies', () => {
     // Fill out the sign up form
-    cy.get('input[formControlName="email"]').type('random1267987@gmail.com');
+    cy.get('input[formControlName="email"]').type('test@test.com');
     cy.contains('First Name').click().type('John');
     cy.contains('Last Name').click().type('Doe');
     cy.get('input[formControlName="password"]').type('password123');
-
-    // Submit the form
     cy.get('button[type="submit"]').click();
 
-    // Assert that the user is redirected to the setup page
+    // Verify email
+    cy.contains('Verification code').click().type('000000');
+    cy.get('button[type="submit"]').click();
     cy.url().should('eq', 'http://localhost:4200/setup');
 
     // Set up allergies

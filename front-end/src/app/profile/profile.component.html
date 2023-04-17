@@ -47,7 +47,16 @@
       <div>
         <button mat-raised-button color="primary" (click)="viewLists()">View Grocery Lists</button>
       </div>
-      <!-- <div *ngFor="let listTitle of listTitles">
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="warn" (click)="openDeleteDialog()">
+        Delete account
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>
+
+<!-- <div *ngFor="let listTitle of listTitles">
         <div class="dropdown">
           <button class="dropdown-btn" (click)="toggleDropdown(listTitle)">
             {{listTitle}}
@@ -63,8 +72,7 @@
         </div>
       </div> -->
 
-
-      <!-- <div *ngFor="let title of listTitlesArray">
+<!-- <div *ngFor="let title of listTitlesArray">
         <mat-expansion-panel>
           <mat-expansion-panel-header>{{ title }}</mat-expansion-panel-header>
           <ng-container *ngIf="!listNoItems[title]">
@@ -86,14 +94,7 @@
           </mat-action-row>
         </mat-expansion-panel>
       </div>      
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-raised-button color="warn" (click)="openDeleteDialog()">
-        Delete account
-      </button>
-    </mat-card-actions>
-  </mat-card>
-</div> -->
+    </mat-card-content>-->
 
 <!-- <div *ngFor="let title of listTitlesArray">
   <mat-expansion-panel>
