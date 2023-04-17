@@ -25,7 +25,7 @@ describe("Add User", () => {
     cy.url().should('eq', 'http://localhost:4200/setup');
   });
 
-  it("displays an error message when signing up with an existing email address", () => {
+  it("gets error when signing up with an existing email address", () => {
     // Visit the sign up page
     cy.visit("http://localhost:4200/register");
 
@@ -44,6 +44,7 @@ describe("Add User", () => {
 
   it('gets error for wrong password', () => {
     //Get error for wrong password
+    cy.visit('http://localhost:4200/login')
     cy.contains('Email').click().type('test@test.com')
     cy.contains('Password').click().type('password')
     cy.get('.login-container').find('button').contains('Login').click()

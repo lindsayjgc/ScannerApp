@@ -67,6 +67,7 @@ export class RegisterComponent {
       }))
       .subscribe(response => {
         this.submitted = true;
+        console.log(response);
       });
   }
 }
