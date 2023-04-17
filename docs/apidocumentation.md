@@ -20,6 +20,8 @@
     > | ------------ | ------------------------------------ |
     > | `SECRET_KEY` | use key generator to create your own |
     > | `PORT`       | 9000                                 |
+    > | `MAIL`       | cen3031groceryapp@gmail.com          |
+    > | `PW`         | hyvowpezafvisvws                     |
 
     </details>
 
@@ -422,7 +424,7 @@
 </details>
 
 <details>
-    <summary><code>GET</code> <code><b>/api/get-list</b></code> <code>Provides the contents of requested list</code></summary>
+    <summary><code>POST</code> <code><b>/api/get-list</b></code> <code>Provides the contents of requested list</code></summary>
 
 ##### Parameters
 

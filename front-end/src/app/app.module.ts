@@ -39,6 +39,10 @@ import { CreateListDialogComponent } from './dialogs/create-list-dialog/create-l
 import { AddItemDialogComponent } from './dialogs/add-item-dialog/add-item-dialog.component';
 import { ResetComponent } from './reset/reset.component';
 
+import { AddProductDialogComponent } from './dialogs/add-product-dialog/add-product-dialog.component';
+import { DeleteProductDialogComponent } from './dialogs/delete-product-dialog/delete-product-dialog.component';
+import { GroceryListsComponent } from './grocery-lists/grocery-lists.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -55,6 +59,9 @@ import { ResetComponent } from './reset/reset.component';
     CreateListDialogComponent,
     AddItemDialogComponent,
     ResetComponent,
+    AddProductDialogComponent,
+    DeleteProductDialogComponent,
+    GroceryListsComponent,
   ],
   imports: [
     BrowserModule,
