@@ -89,22 +89,30 @@ func StartServer() {
 }
 
 func main() {
-	list, err := GetFoodList()
+
+	foodList, err := GetFoodList()
 	if err != nil {
-		fmt.Println(err)
-	}
-	nutrients1, err := GetFoodNutrients(list[0].FdcID)
-	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Error:", err)
+		return
 	}
 
-	nutrients2, err := GetFoodNutrients(list[1].FdcID)
-	if err != nil {
-		fmt.Println(err)
+	// Fetch nutrient data for each food and build nutrient maps
+	for i, food := range foodList {
+		nutrients, err := GetFoodNutrients(food.FdcID)
+		if err != nil {
+			fmt.Printf("Error fetching nutrients for food with FdcID %d: %v\n", food.FdcID, err)
+			continue
+		}
+		foodList[i].Nutrients = nutrients
 	}
 
-	cosSim := CosineSimilarity(nutrients1, nutrients2)
-	fmt.Println(cosSim)
+	search := "chicken"
+	similarFoods := GetSimilarFoods(search, foodList)
+
+	fmt.Printf("Similar foods for %s:\n", search)
+	for _, food := range similarFoods {
+		fmt.Printf("%s (FdcID: %d)\n", food.Description, food.FdcID)
+	}
 
 	InitialUserMigration()
 	InitialAllergyMigration()

@@ -7,6 +7,8 @@ import (
 	"math"
 	"net/http"
 	"os"
+	"sort"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -39,6 +41,11 @@ type NewFood struct {
 	PublicationDate string         `json:"publicationDate"`
 	NdbNumber       string         `json:"ndbNumber"`
 	FoodNutrients   []FoodNutrient `json:"foodNutrients"`
+}
+
+type SimilarityResult struct {
+	FdcID      int64
+	Similarity float64
 }
 
 func fetchFoodListPage(pageNumber int) ([]Food, error) {
@@ -108,7 +115,6 @@ func GetFoodNutrients(fdcID int64) (map[string]float64, error) {
 	nutrients := make(map[string]float64)
 	for _, nutrient := range food.FoodNutrients {
 		nutrients[nutrient.Name] = nutrient.Amount
-		fmt.Printf("Nutrient: %s, Amount: %f\n", nutrient.Name, nutrient.Amount)
 	}
 	return nutrients, nil
 }
@@ -137,4 +143,55 @@ func CosineSimilarity(x, y map[string]float64) float64 {
 
 	// Compute the cosine similarity
 	return dotProduct / (math.Sqrt(xMagnitude) * math.Sqrt(yMagnitude))
+}
+
+func GetSimilarFoods(search string, foodList []Food) []Food {
+
+	// Get the search food
+	var searchFood Food
+	for _, food := range foodList {
+		if strings.Contains(strings.ToLower(food.Description), strings.ToLower(search)) {
+			searchFood = food
+			break
+		}
+	}
+	if searchFood.FdcID == 0 {
+		fmt.Println("Search food not found")
+		return nil
+	}
+
+	// return similarFoods
+	// Compute the cosine similarity for each food in the list
+	var results []SimilarityResult
+	for _, food := range foodList {
+		if food.FdcID != searchFood.FdcID {
+			similarity := CosineSimilarity(searchFood.Nutrients, food.Nutrients)
+			result := SimilarityResult{
+				FdcID:      food.FdcID,
+				Similarity: similarity,
+			}
+			results = append(results, result)
+		}
+	}
+
+	// Sort the results by similarity in descending order
+	sort.Slice(results, func(i, j int) bool {
+		return results[i].Similarity > results[j].Similarity
+	})
+
+	// Get the most similar foods based on the coefficient
+	var similarFoods []Food
+	for _, result := range results {
+		for _, food := range foodList {
+			if food.FdcID == result.FdcID {
+				similarFoods = append(similarFoods, food)
+				break
+			}
+		}
+		if len(similarFoods) >= 5 {
+			break
+		}
+	}
+
+	return similarFoods
 }
