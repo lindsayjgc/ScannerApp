@@ -9,6 +9,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"sync"
 
 	"github.com/joho/godotenv"
 )
@@ -90,33 +91,111 @@ func GetFoodList() ([]Food, error) {
 	return foodList, nil
 }
 
+func GetAllNutrients() error {
+	foodList, err = GetFoodList()
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+
+	var wg sync.WaitGroup
+	nutrientErrors := make(chan error, len(foodList))
+
+	for i, food := range foodList {
+		wg.Add(1)
+		go func(i int, food Food) {
+			defer wg.Done()
+			nutrients, err := GetFoodNutrients(food.FdcID)
+			if err != nil {
+				nutrientErrors <- fmt.Errorf("Error fetching nutrients for food with FdcID %d: %v", food.FdcID, err)
+				return
+			}
+			foodList[i].Nutrients = nutrients
+		}(i, food)
+	}
+
+	wg.Wait()
+	close(nutrientErrors)
+
+	for err := range nutrientErrors {
+		fmt.Println(err)
+	}
+
+	return nil
+}
+
 func GetFoodNutrients(fdcID int64) (map[string]float64, error) {
 	fmt.Printf("Fetching nutrients for FdcID %d...\n", fdcID)
-	// Make request to the API to get nutrient data for the given food
-	response, err := http.Get(fmt.Sprintf("https://api.nal.usda.gov/fdc/v1/food/%d?format=abridged&nutrients=203&nutrients=204&nutrients=205&api_key=3ZUwh4W1oWTjCsqkbe9Del7axRUyKG1XR4Y6KMUN", fdcID))
-	if err != nil {
-		return nil, err
-	}
-	defer response.Body.Close()
+	nutrientIds := []int{203, 204, 205}
+	nutrientChunks := chunkNutrientIds(nutrientIds, 3)
 
-	// Read the response body and unmarshal the JSON data
-	body, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var food NewFood
-	err = json.Unmarshal(body, &food)
-	if err != nil {
-		return nil, err
-	}
-
-	// Build a map of nutrient names and values
 	nutrients := make(map[string]float64)
-	for _, nutrient := range food.FoodNutrients {
-		nutrients[nutrient.Name] = nutrient.Amount
+	var mutex sync.Mutex
+	var wg sync.WaitGroup
+
+	errChan := make(chan error, len(nutrientChunks))
+
+	for _, chunk := range nutrientChunks {
+		wg.Add(1)
+		go func(chunk []int) {
+			defer wg.Done()
+
+			url := fmt.Sprintf("https://api.nal.usda.gov/fdc/v1/food/%d?format=abridged&api_key=%s", fdcID, os.Getenv("API_KEY"))
+			for _, nutrient := range chunk {
+				url += fmt.Sprintf("&nutrients=%d", nutrient)
+			}
+
+			response, err := http.Get(url)
+			if err != nil {
+				errChan <- err
+				return
+			}
+			defer response.Body.Close()
+
+			body, err := ioutil.ReadAll(response.Body)
+			if err != nil {
+				errChan <- err
+				return
+			}
+
+			var food NewFood
+			err = json.Unmarshal(body, &food)
+			if err != nil {
+				errChan <- err
+				return
+			}
+
+			mutex.Lock()
+			for _, nutrient := range food.FoodNutrients {
+				nutrients[nutrient.Name] = nutrient.Amount
+			}
+			mutex.Unlock()
+
+		}(chunk)
 	}
+
+	wg.Wait()
+	close(errChan)
+
+	for err := range errChan {
+		return nil, err
+	}
+
 	return nutrients, nil
+}
+
+func chunkNutrientIds(nutrientIds []int, chunkSize int) [][]int {
+	var chunks [][]int
+	for i := 0; i < len(nutrientIds); i += chunkSize {
+		end := i + chunkSize
+
+		if end > len(nutrientIds) {
+			end = len(nutrientIds)
+		}
+
+		chunks = append(chunks, nutrientIds[i:end])
+	}
+	return chunks
 }
 
 func CosineSimilarity(x, y map[string]float64) float64 {
@@ -197,22 +276,6 @@ func GetSimilarFoods(search string, foodList []Food) []Food {
 }
 
 var foodList []Food
-
-func GetAllNutrients() {
-	foodList, err = GetFoodList()
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-	for i, food := range foodList {
-		nutrients, err := GetFoodNutrients(food.FdcID)
-		if err != nil {
-			fmt.Printf("Error fetching nutrients for food with FdcID %d: %v\n", food.FdcID, err)
-			continue
-		}
-		foodList[i].Nutrients = nutrients
-	}
-}
 
 func SimilarFoods(w http.ResponseWriter, r *http.Request) {
 	if len(foodList) == 0 {
