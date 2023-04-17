@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"os"
 
@@ -110,4 +111,30 @@ func GetFoodNutrients(fdcID int64) (map[string]float64, error) {
 		fmt.Printf("Nutrient: %s, Amount: %f\n", nutrient.Name, nutrient.Amount)
 	}
 	return nutrients, nil
+}
+
+func CosineSimilarity(x, y map[string]float64) float64 {
+	// Get the intersection of keys between the two maps
+	var keys []string
+	for key := range x {
+		if _, ok := y[key]; ok {
+			keys = append(keys, key)
+		}
+	}
+
+	// If there are no common keys, return 0
+	if len(keys) == 0 {
+		return 0
+	}
+
+	// Compute the dot product and the magnitudes
+	var dotProduct, xMagnitude, yMagnitude float64
+	for _, key := range keys {
+		dotProduct += x[key] * y[key]
+		xMagnitude += x[key] * x[key]
+		yMagnitude += y[key] * y[key]
+	}
+
+	// Compute the cosine similarity
+	return dotProduct / (math.Sqrt(xMagnitude) * math.Sqrt(yMagnitude))
 }

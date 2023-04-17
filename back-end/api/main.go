@@ -93,11 +93,18 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	nutrients, err := GetFoodNutrients(list[0].FdcID)
+	nutrients1, err := GetFoodNutrients(list[0].FdcID)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(nutrients)
+
+	nutrients2, err := GetFoodNutrients(list[1].FdcID)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	cosSim := CosineSimilarity(nutrients1, nutrients2)
+	fmt.Println(cosSim)
 
 	InitialUserMigration()
 	InitialAllergyMigration()
