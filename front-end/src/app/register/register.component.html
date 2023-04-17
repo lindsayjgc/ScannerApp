@@ -1,32 +1,54 @@
 <div class="signup-container">
-    <mat-card class="signup-card">
-      <mat-card-header class="signup-title">
-        <mat-card-title>Sign Up</mat-card-title>
-      </mat-card-header>
+  <mat-card class="signup-card">
+    <mat-card-header class="signup-title">
+      <mat-card-title>Sign Up</mat-card-title>
+    </mat-card-header>
 
+    <div *ngIf="this.submitted; else firstScreen">
+      <form [formGroup]="verifyForm" (ngSubmit)="verifyUser()">
+        <mat-card-content>
+          <mat-card-subtitle style="text-align: left;">
+            Enter the code sent to your email to finish signing up.
+          </mat-card-subtitle>
+        </mat-card-content>
+        <mat-card-content>
+          <mat-form-field style="width: 100%;">
+            <mat-label>Verification code</mat-label>
+            <input matInput formControlName="code">
+          </mat-form-field>
+        </mat-card-content>
+        <mat-card-content>
+          <button mat-raised-button color="primary" [disabled]="!verifyForm.valid" type="submit">
+            Sign Up
+          </button>
+        </mat-card-content>
+      </form>
+    </div>
+
+    <ng-template #firstScreen>
       <form [formGroup]="signupForm" (ngSubmit)="signupUser()">
         <mat-card-content>
           <mat-form-field class="form-group">
             <mat-label>Email</mat-label>
-            <input matInput type = "email" formControlName = "email">
+            <input matInput type="email" formControlName="email">
           </mat-form-field>
         </mat-card-content>
         <mat-card-content>
           <mat-form-field class="form-name">
             <mat-label>First Name</mat-label>
-            <input matInput type = "text" formControlName = "firstName">
+            <input matInput type="text" formControlName="firstName">
           </mat-form-field>
         </mat-card-content>
         <mat-card-content>
           <mat-form-field class="form-name">
             <mat-label>Last Name</mat-label>
-            <input matInput type = "text" formControlName = "lastName">
+            <input matInput type="text" formControlName="lastName">
           </mat-form-field>
         </mat-card-content>
         <mat-card-content>
           <mat-form-field class="form-group">
             <mat-label>Password</mat-label>
-            <input matInput type = "password" formControlName = "password">
+            <input matInput type="password" formControlName="password">
           </mat-form-field>
         </mat-card-content>
         <mat-card-content>
@@ -36,5 +58,7 @@
       <mat-card-content class="login-link">
         <a mat-button routerLink="/login">Already registered? Click here to login</a>
       </mat-card-content>
-    </mat-card>
-  </div>
+    </ng-template>
+
+  </mat-card>
+</div>

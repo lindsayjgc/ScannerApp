@@ -77,8 +77,14 @@ func IssueCode(w http.ResponseWriter, r *http.Request, emailType string) {
 		return
 	}
 
-	randomCode := GenerateRandomCode()
-	err = SendEmail(email.Email, randomCode, emailType)
+	// Check if the specified frontend testing email has been passed in
+	var randomCode string
+	if (email.Email == "test@test.com") {
+		randomCode = "000000"
+	} else {
+		randomCode = GenerateRandomCode()
+		err = SendEmail(email.Email, randomCode, emailType)
+	}
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -130,7 +136,7 @@ func CheckCode(w http.ResponseWriter, r *http.Request) {
 
 	// Compare codes
 	if codeSearch.Code != rawCode.Code {
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusUnauthorized)
 		res["isVerified"] = "false"
 		res["message"] = "Incorrect code"
 		json.NewEncoder(w).Encode(res)
@@ -139,7 +145,7 @@ func CheckCode(w http.ResponseWriter, r *http.Request) {
 
 	// Check if code has expired
 	if codeSearch.Expiration.Before(time.Now()) {
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusUnauthorized)
 		res["isVerified"] = "false"
 		res["message"] = "Verification code has expired"
 		json.NewEncoder(w).Encode(res)
