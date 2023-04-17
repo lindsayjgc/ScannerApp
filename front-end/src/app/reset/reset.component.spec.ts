@@ -1,6 +1,6 @@
 import { ResetComponent } from "./reset.component"
 
-describe('SetupComponent', () => {
+describe('ResetComponent', () => {
   it('mounts', () => {
     cy.mount(ResetComponent)
   })

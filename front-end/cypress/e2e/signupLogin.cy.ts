@@ -42,11 +42,19 @@ describe("Add User", () => {
     cy.contains("Error: Email already registered to an account");
   });
 
+  it('gets error for wrong password', () => {
+    //Get error for wrong password
+    cy.contains('Email').click().type('test@test.com')
+    cy.contains('Password').click().type('password')
+    cy.get('.login-container').find('button').contains('Login').click()
+    cy.get('body').find('mat-snack-bar-container').should('contain.text', 'Incorrect password')
+  })
+
   it('can log in and log out', () => {
     //Confirm that logging in goes to home page
     cy.visit('http://localhost:4200/login')
-    cy.get('.login-container').contains('Email').parent().find('input').type('test@test.com')
-    cy.get('.login-container').contains('Password').parent().find('input').type('password123')
+    cy.contains('Email').click().type('test@test.com')
+    cy.contains('Password').click().type('password123')
     cy.get('.login-container').find('button').contains('Login').click()
     cy.url().should('include', '/home')
 
@@ -60,8 +68,8 @@ describe("Add User", () => {
 
   it('deletes account', () => {
     cy.visit('http://localhost:4200/login')
-    cy.get('.login-container').contains('Email').parent().find('input').type('test@test.com')
-    cy.get('.login-container').contains('Password').parent().find('input').type('password123')
+    cy.contains('Email').click().type('test@test.com')
+    cy.contains('Password').click().type('password123')
     cy.get('.login-container').find('button').contains('Login').click()
 
     cy.visit('http://localhost:4200/profile')
