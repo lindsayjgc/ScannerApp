@@ -9,8 +9,6 @@ import { SearchComponent } from './search/search.component';
 import { ErrorpageComponent } from './errorpage/errorpage.component';
 import { ProductComponent } from './product/product.component';
 
-import { GroceryListsComponent } from './grocery-lists/grocery-lists.component';
-
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home' },
   { path: 'home', component: HomeComponent },
