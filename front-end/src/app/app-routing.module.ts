@@ -20,6 +20,7 @@ const routes: Routes = [
   { path: 'reset', component: ResetComponent },
   { path: 'search/:option/:query/:page', component: SearchComponent },
   { path: 'product/:code', component: ProductComponent },
+  { path: 'lists', component: GroceryListsComponent },
   { path: '**', pathMatch: 'full', component: ErrorpageComponent },
 ];
 
