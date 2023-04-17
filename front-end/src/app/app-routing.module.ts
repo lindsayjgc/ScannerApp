@@ -8,6 +8,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { SearchComponent } from './search/search.component';
 import { ErrorpageComponent } from './errorpage/errorpage.component';
 import { ProductComponent } from './product/product.component';
+import { ResetComponent } from './reset/reset.component';
 import { GroceryListsComponent } from './grocery-lists/grocery-lists.component';
 
 const routes: Routes = [
