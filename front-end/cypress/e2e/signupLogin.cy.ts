@@ -39,7 +39,7 @@ describe("Add User", () => {
     cy.get('button[type="submit"]').click();
 
     // Assert that an error message is displayed
-    cy.contains("Error: Email is already registered to an account");
+    cy.contains("Error: Email already registered to an account");
   });
 
   it('can log in and log out', () => {
