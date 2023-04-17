@@ -3,7 +3,6 @@ describe('Add Allergies', () => {
   it('Can add and remove allergies', () => {
 
     cy.visit("http://localhost:4200/register");
-
     cy.get('input[formControlName="email"]').type('test@test.com');
     cy.contains('First Name').click().type('Test');
     cy.contains('Last Name').click().type('Test');
