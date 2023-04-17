@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -58,6 +57,7 @@ func InitializeRouter() {
 	s.HandleFunc("/search", SaveQuery).Methods("POST")
 	s.HandleFunc("/search", GetQueries).Methods("GET")
 	s.HandleFunc("/search", RemoveQuery).Methods("DELETE")
+	s.HandleFunc("/similar", SimilarFoods).Methods("POST")
 }
 
 func StartServer() {
@@ -89,31 +89,6 @@ func StartServer() {
 }
 
 func main() {
-
-	foodList, err := GetFoodList()
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-
-	// Fetch nutrient data for each food and build nutrient maps
-	for i, food := range foodList {
-		nutrients, err := GetFoodNutrients(food.FdcID)
-		if err != nil {
-			fmt.Printf("Error fetching nutrients for food with FdcID %d: %v\n", food.FdcID, err)
-			continue
-		}
-		foodList[i].Nutrients = nutrients
-	}
-
-	search := "chicken"
-	similarFoods := GetSimilarFoods(search, foodList)
-
-	fmt.Printf("Similar foods for %s:\n", search)
-	for _, food := range similarFoods {
-		fmt.Printf("%s (FdcID: %d)\n", food.Description, food.FdcID)
-	}
-
 	InitialUserMigration()
 	InitialAllergyMigration()
 	InitialListMigration()

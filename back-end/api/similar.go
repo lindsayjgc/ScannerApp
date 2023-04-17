@@ -195,3 +195,47 @@ func GetSimilarFoods(search string, foodList []Food) []Food {
 
 	return similarFoods
 }
+
+var foodList []Food
+
+func GetAllNutrients() {
+	foodList, err = GetFoodList()
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	for i, food := range foodList {
+		nutrients, err := GetFoodNutrients(food.FdcID)
+		if err != nil {
+			fmt.Printf("Error fetching nutrients for food with FdcID %d: %v\n", food.FdcID, err)
+			continue
+		}
+		foodList[i].Nutrients = nutrients
+	}
+}
+
+func SimilarFoods(w http.ResponseWriter, r *http.Request) {
+	if len(foodList) == 0 {
+		GetAllNutrients()
+	}
+
+	var newSearch RawSearch
+	err = json.NewDecoder(r.Body).Decode(&newSearch)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON"))
+		return
+	}
+
+	search := newSearch.Query
+	fmt.Print(search)
+
+	similarFoods := GetSimilarFoods(search, foodList)
+
+	res := make(map[int64]string)
+	for _, food := range similarFoods {
+		res[food.FdcID] = food.Description
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(res)
+}
