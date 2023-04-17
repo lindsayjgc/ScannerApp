@@ -120,10 +120,9 @@
           </div>        
         </div>
       </div>
-      <div class="add-item-button" style="display: flex; justify-content: center; height: 100%;">
-        <button mat-button color="primary" (click)="addItem(name)">Add Item</button>
-        <button mat-button color="primary" (click)="deleteItem(name)">Delete Item</button>
-
+      <div class="add-item-button" style="display: flex; justify-content: space-around; height: 100%; margin-bottom: 40px; margin-left: 25%">
+        <button mat-raised-button color="primary" (click)="addItem(name)">Add Item</button>
+        <button mat-raised-button color="primary" (click)="deleteItem(name)">Remove Item</button>
       </div>  
     </div>
   </mat-card>

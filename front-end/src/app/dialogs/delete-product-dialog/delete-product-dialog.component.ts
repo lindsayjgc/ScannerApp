@@ -38,11 +38,13 @@ export class DeleteProductDialogComponent {
           this.groceryListService.getListContents(title).subscribe(
             (contents: GroceryItems) => {
               this.listContents[title] = contents.items.split(",");
+              this.titlesToShow = [];
               for (let title in this.listContents) {
                 console.log(title);
                 for (let element of this.listContents[title]) {
                   console.log(element);
                   if (element == this.data.toLowerCase()) {
+                    console.log(title);
                     this.titlesToShow.push(title);
                   }
                 }
