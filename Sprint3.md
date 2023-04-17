@@ -1,6 +1,7 @@
 ## Work Completed
 
 **Frontend**
+
 -   [ ] Refactored profile page for easier addition and removal of allergies.
 -   [ ] Unknown URLs redirect to 404 page.
 -   [ ] Ability to search for products by category or brand.
@@ -12,6 +13,7 @@
 -   [ ] Can add items to grocery lists in profile.
 
 **Backend**
+
 -   [ ] Add database support for storing favorite products.
 -   [ ] Routes and handlers for adding, creating, and deleting favorites.
 -   [ ] Route and handler for accepting a product barcode and checking whether it is a favorite,
@@ -31,6 +33,7 @@
 -   [ ] Unit tests for all list-related handlers.
 
 ## Frontend Unit Tests
+
 ### Unit (Component) Tests
 
 -   [ ] login.component.spec.ts
@@ -101,6 +104,8 @@
     > | ------------ | ------------------------------------ |
     > | `SECRET_KEY` | use key generator to create your own |
     > | `PORT`       | 9000                                 |
+    > | `MAIL`       | cen3031groceryapp@gmail.com          |
+    > | `PW`         | hyvowpezafvisvws                     |
 
     </details>
 
@@ -294,8 +299,8 @@
 > | http code | content-type       | response                                                            |
 > | --------- | ------------------ | ------------------------------------------------------------------- |
 > | `200`     | `application/json` | `{"isVerified": "true","message": "Email successfully verified"}`   |
-> | `200`     | `application/json` | `{"isVerified": "false","message": "*wrong code or expired code*"}` |
 > | `400`     | `application/json` | `{"message":"Email has not been issued a verification code"}`       |
+> | `401`     | `application/json` | `{"isVerified": "false","message": "*wrong code or expired code*"}` |
 > | `500`     | `application/json` | `{"message":"Error decoding JSON body"}`                            |
 > | `500`     | `application/json` | `{"message":"*email sending-related error*"}`                       |
 
@@ -616,4 +621,3 @@
 > | `500`     | `application/json` | `{"message":"Other JWT-related error"} `            |
 
 </details>
-

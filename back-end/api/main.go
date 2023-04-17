@@ -37,7 +37,7 @@ func InitializeRouter() {
 	s.HandleFunc("/delete-lists", DeleteList).Methods("DELETE")
 	s.HandleFunc("/delete-list-items", DeleteListItem).Methods("DELETE")
 	s.HandleFunc("/get-lists", GetGroceryTitles).Methods("GET")
-	s.HandleFunc("/get-list", GetGroceryList).Methods("GET")
+	s.HandleFunc("/get-list", GetGroceryList).Methods("POST")
 
 	s.HandleFunc("/favorite", GetFavorites).Methods("GET")
 	s.HandleFunc("/favorite", AddFavorite).Methods("POST")

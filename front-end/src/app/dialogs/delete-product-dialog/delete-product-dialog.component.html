@@ -1,0 +1,18 @@
+<h2 mat-dialog-title>Select ONE List To Delete This Item From</h2>
+    <div mat-dialog-content>
+      <!-- <mat-form-field>
+        <mat-label>Product</mat-label>
+        <input matInput [(ngModel)]="newItem">
+      </mat-form-field> -->
+      <mat-selection-list #itemList [(ngModel)]="selectedItems">
+        <mat-list>
+          <mat-list-item *ngFor="let item of titlesToShow">
+            <mat-checkbox (click)="onItemChecked(item)" [(ngModel)]="itemChecked[item]"> {{ item }} </mat-checkbox>
+          </mat-list-item>
+        </mat-list>
+      </mat-selection-list>
+    </div>
+    <div mat-dialog-actions>
+      <button mat-button [mat-dialog-close]="selectedItems" cdkFocusInitial>Delete From List</button>
+      <button mat-button (click)="onCancel()">Cancel</button>
+    </div>

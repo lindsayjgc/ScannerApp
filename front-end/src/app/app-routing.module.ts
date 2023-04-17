@@ -8,6 +8,8 @@ import { ProfileComponent } from './profile/profile.component';
 import { SearchComponent } from './search/search.component';
 import { ErrorpageComponent } from './errorpage/errorpage.component';
 import { ProductComponent } from './product/product.component';
+import { ResetComponent } from './reset/reset.component';
+import { GroceryListsComponent } from './grocery-lists/grocery-lists.component';
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home' },
@@ -16,8 +18,10 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'setup', component: SetupComponent },
   { path: 'profile', component: ProfileComponent },
+  { path: 'reset', component: ResetComponent },
   { path: 'search/:option/:query/:page', component: SearchComponent },
   { path: 'product/:code', component: ProductComponent },
+  { path: 'lists', component: GroceryListsComponent },
   { path: '**', pathMatch: 'full', component: ErrorpageComponent },
 ];
 

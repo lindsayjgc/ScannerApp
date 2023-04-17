@@ -1,0 +1,16 @@
+.reset-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 90vh;
+}
+
+.reset-card {
+  width: 40%;
+}
+
+@media (max-width: 700px) {
+  .reset-card {
+    width: 70%;
+  }
+}
