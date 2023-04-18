@@ -12,6 +12,10 @@ img {
     height: auto;
 }
 
+.favorites-subheader {
+  padding: 20px;
+}
+
 table {
     border-collapse: collapse;
   }

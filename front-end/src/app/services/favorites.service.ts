@@ -23,6 +23,6 @@ export class FavoritesService {
   }
 
   checkFavorite(code: string) {
-    return this.http.post<CheckIfFavorite>('http://localhost:4200/api/check-favorite', { code });
+    return this.http.post('http://localhost:4200/api/check-favorite', { code });
   }
 }

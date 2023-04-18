@@ -22,6 +22,7 @@ export class FavoriteProductsComponent {
   favCodeArray: string[] = [];
   favImageArray: string[] = [];
   productRows: { name: string; code: string; image: string; }[] = [];
+  hasFavorites: boolean = false;
 
   
   // titlesParam!: listParam;
@@ -63,6 +64,7 @@ export class FavoriteProductsComponent {
             this.favImageArray.push(contents[i].image);
             this.productRows.push({name: contents[i].favorite, code: contents[i].code, image: contents[i].image});
           }
+          this.hasFavorites = true;
         }
       });
   }
