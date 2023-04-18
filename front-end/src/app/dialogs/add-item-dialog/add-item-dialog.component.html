@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>Add Items to List</h2>
+<!-- <h2 mat-dialog-title>Add Items to List</h2>
     <div mat-dialog-content>
       <mat-form-field>
         <mat-label>Product</mat-label>
@@ -8,4 +8,41 @@
     <div mat-dialog-actions>
       <button mat-button [mat-dialog-close]="newItem" cdkFocusInitial>Add To List</button>
       <button mat-button (click)="onCancel()">Cancel</button>
+    </div> -->
+
+
+    <div class="items-container">
+      <mat-card class="item-card">
+        <mat-card-header class="item-title">
+          <mat-card-title>Add Items</mat-card-title>
+          <mat-card-subtitle>Enter items one at a time, pressing enter between entries. Press the "x" to remove an item.</mat-card-subtitle>
+          <mat-card-subtitle>If you do not wish to add any items at this time, just press submit.</mat-card-subtitle>
+        </mat-card-header>
+    
+          <mat-card-content>
+            <mat-form-field class="item-group">
+              <mat-label>Items</mat-label>
+              <mat-chip-grid #chipGrid aria-label="Enter items">
+                <mat-chip-row *ngFor="let itemVal of newItems"
+                              (removed)="remove(itemVal)"
+                              [editable]="true"
+                              (edited)="edit(itemVal, $event)"
+                              [aria-description]=" 'press enter to edit ' + itemVal.item">
+                  {{itemVal.item}}
+                  <button matChipRemove [attr.aria-label]=" 'remove ' + itemVal.item">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip-row>
+                <input placeholder="New item"
+                        [matChipInputFor]="chipGrid"
+                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                        [matChipInputAddOnBlur]="addOnBlur"
+                        (matChipInputTokenEnd)="add($event)"/>
+              </mat-chip-grid>
+            </mat-form-field>
+          </mat-card-content>
+          <mat-card-content>
+            <button mat-button color ="primary" [mat-dialog-close]="newItems" cdkFocusInitial>Add To List</button>
+          </mat-card-content>
+      </mat-card>
     </div>

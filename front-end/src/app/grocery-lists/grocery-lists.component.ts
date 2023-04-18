@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { listParam } from '../services/deleteListparam';
-import { GroceryItems } from '../services/grocery-list.service.spec';
+import { GroceryItems, GroceryList } from '../services/grocery-list.service.spec';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { GroceryListService } from '../services/grocery-list.service';
@@ -34,6 +34,8 @@ export class GroceryListsComponent {
   newItem: string = "";
   newItemObject!: GroceryItems;
   secondTitle: string = "";
+
+  newItemsArray: string[] = [];
 
   constructor(private usersService: UsersService, private router: Router, public dialog2: MatDialog, public dialog: MatDialog, private groceryListService: GroceryListService) { }
 
@@ -122,9 +124,13 @@ export class GroceryListsComponent {
   addItems(title: string, newItem: string) {
     const dialogRef = this.dialog.open(AddItemDialogComponent);
   
-    dialogRef.afterClosed().subscribe((newItem: string) => {
-      if (newItem) {
-        this.groceryListService.addItemsToList(title, newItem).subscribe((response) => {
+    dialogRef.afterClosed().subscribe((newItemTemp: GroceryList[]) => {
+      if (newItemTemp) {
+        for (let i = 0; i < newItemTemp.length; i++) {
+          this.newItemsArray.push(newItemTemp[i].item);
+        }
+        this.newItem = this.newItemsArray.join(',');
+        this.groceryListService.addItemsToList(title, this.newItem).subscribe((response) => {
           console.log(response);
           if (this.listNoItems[title]) {
             this.newItemObject.items = newItem;
