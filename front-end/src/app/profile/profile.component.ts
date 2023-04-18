@@ -15,6 +15,7 @@ import { CreateListDialogComponent } from '../dialogs/create-list-dialog/create-
 import { listParam } from '../services/deleteListparam';
 import { AddItemDialogComponent } from '../dialogs/add-item-dialog/add-item-dialog.component';
 import { GroceryListsComponent } from '../grocery-lists/grocery-lists.component';
+import { FavoriteProductsComponent } from '../favorite-products/favorite-products.component';
 
 @Component({
   selector: 'app-profile',
@@ -279,6 +280,9 @@ export class ProfileComponent implements OnInit {
 
   viewLists() {
     this.router.navigate(['/lists']);
+  }
+  viewFavorites() {
+    this.router.navigate(['/favorites']);
   }
 
 }

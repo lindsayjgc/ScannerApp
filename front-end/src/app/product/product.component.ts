@@ -8,6 +8,8 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { GroceryListService } from '../services/grocery-list.service';
 import { AddProductDialogComponent } from '../dialogs/add-product-dialog/add-product-dialog.component';
 import { DeleteProductDialogComponent } from '../dialogs/delete-product-dialog/delete-product-dialog.component';
+import { FavoritesService } from '../services/favorites.service';
+import { CheckIfFavorite } from '../services/favorites.service.spec';
 
 @Component({
   selector: 'app-product',
@@ -32,11 +34,19 @@ export class ProductComponent implements OnInit {
   nameToSend: string = "";
   noIngredients: boolean = false;
 
-  constructor(private route: ActivatedRoute, private http: HttpClient, private productService: ProductService, public dialog: MatDialog, private groceryListService: GroceryListService, public dialog2: MatDialog) { }
+  itemFavorited: boolean = false;
+
+  constructor(private route: ActivatedRoute, private http: HttpClient, private productService: ProductService, public dialog: MatDialog, private groceryListService: GroceryListService, public dialog2: MatDialog, private favoriteService: FavoritesService) { }
 
   ngOnInit() {
     this.code = this.route.snapshot.paramMap.get('code') ?? '';
     console.log(this.code);
+
+    this.favoriteService.checkFavorite(this.code).subscribe((response: CheckIfFavorite) => {
+      console.log(response);
+      this.itemFavorited = response.isFavorite;
+      console.log(this.itemFavorited);
+    });
 
     const fetchIngredients = async () => {
       this.http.get<any>('https://world.openfoodfacts.org/api/v0/product/' + this.code + '.json')
@@ -116,6 +126,20 @@ export class ProductComponent implements OnInit {
             console.log(response);
           });
       }
+    });
+  }
+
+  favoriteItem() {
+    this.favoriteService.addFavorite(this.name, this.code, this.image).subscribe((response) => {
+      console.log(response);
+      this.itemFavorited = true;
+    });
+  }
+
+  unfavoriteItem() {
+    this.favoriteService.deleteFavorite(this.code).subscribe((response) => {
+      console.log(response);
+      this.itemFavorited = false;
     });
   }
 }

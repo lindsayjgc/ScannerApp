@@ -10,6 +10,7 @@ import { ErrorpageComponent } from './errorpage/errorpage.component';
 import { ProductComponent } from './product/product.component';
 import { ResetComponent } from './reset/reset.component';
 import { GroceryListsComponent } from './grocery-lists/grocery-lists.component';
+import { FavoriteProductsComponent } from './favorite-products/favorite-products.component';
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home' },
@@ -22,6 +23,7 @@ const routes: Routes = [
   { path: 'search/:option/:query/:page', component: SearchComponent },
   { path: 'product/:code', component: ProductComponent },
   { path: 'lists', component: GroceryListsComponent },
+  { path: 'favorites', component: FavoriteProductsComponent },
   { path: '**', pathMatch: 'full', component: ErrorpageComponent },
 ];
 

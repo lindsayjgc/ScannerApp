@@ -42,6 +42,7 @@ import { ResetComponent } from './reset/reset.component';
 import { AddProductDialogComponent } from './dialogs/add-product-dialog/add-product-dialog.component';
 import { DeleteProductDialogComponent } from './dialogs/delete-product-dialog/delete-product-dialog.component';
 import { GroceryListsComponent } from './grocery-lists/grocery-lists.component';
+import { FavoriteProductsComponent } from './favorite-products/favorite-products.component';
 
 @NgModule({
   declarations: [
@@ -62,6 +63,7 @@ import { GroceryListsComponent } from './grocery-lists/grocery-lists.component';
     AddProductDialogComponent,
     DeleteProductDialogComponent,
     GroceryListsComponent,
+    FavoriteProductsComponent,
   ],
   imports: [
     BrowserModule,
