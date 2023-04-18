@@ -88,3 +88,13 @@ func TestCosineSimilarity(t *testing.T) {
 		t.Errorf("Cosine similarity of partially overlapping maps should be 0.99, got %f", similarity)
 	}
 }
+
+func TestGetSimilarFoods(t *testing.T) {
+	// Ensure that GetSimilarFoods returns a non-empty list of similar foods for a known food
+	foodList, _ = GetFoodList()
+	GetAllNutrients()
+	similarFoods := GetSimilarFoods("butter", foodList)
+	if len(similarFoods) == 0 {
+		t.Errorf("Similar foods list is empty")
+	}
+}
