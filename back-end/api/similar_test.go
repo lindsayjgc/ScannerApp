@@ -1,7 +1,12 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
+	"io/ioutil"
 	"math"
+	"net/http"
+	"net/http/httptest"
 	"reflect"
 	"testing"
 )
@@ -133,4 +138,30 @@ func TestChunkNutrientIds(t *testing.T) {
 	if !reflect.DeepEqual(chunks, expectedChunks) {
 		t.Errorf("Expected %v, but got %v", expectedChunks, chunks)
 	}
+}
+
+func TestSimilarFoods(t *testing.T) {
+	InitializeRouter()
+
+	testSearch := RawSearch{
+		Query: "butter",
+	}
+	payload, _ := json.Marshal(testSearch)
+	req, _ := http.NewRequest("POST", "/similar", bytes.NewBuffer(payload))
+	req.Header.Set("Content-Type", "application/json")
+
+	rr := httptest.NewRecorder()
+
+	SimilarFoods(rr, req)
+
+	response := rr.Result()
+	body, _ := ioutil.ReadAll(response.Body)
+
+	resMap := make(map[string]string)
+	json.Unmarshal(body, &resMap)
+
+	if resMap == nil {
+		t.Errorf("Expected a response")
+	}
+
 }
