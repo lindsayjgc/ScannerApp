@@ -1,0 +1,30 @@
+.favs-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4vh;
+    min-height: 82vh;
+  }
+
+img {
+    max-width: 20%;
+    width: auto;
+    height: auto;
+}
+
+table {
+    border-collapse: collapse;
+  }
+  
+  td {
+    padding: 10px;
+    margin: 0;
+    vertical-align: middle;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+  }
+  
+  td:last-child {
+    border-right: none;
+  }

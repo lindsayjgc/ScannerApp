@@ -95,6 +95,14 @@
             <img class="product-image" [src]="image" alt="My Image">
           </ng-container>
         </div>
+        <div class="favorite-button" style="position: absolute; top: 0; right: 0; padding: 10px">
+          <ng-container *ngIf="!itemFavorited">
+            <button mat-raised-button color="primary" (click)="favoriteItem()">Favorite &hearts;</button>
+          </ng-container>
+          <ng-container *ngIf="itemFavorited">
+            <button mat-raised-button color="primary" (click)="unfavoriteItem()">Remove From Favorites &hearts;</button>
+          </ng-container>
+        </div>
         <div class="product-details-container">
           <h1 class="product-name">{{ name }}</h1>
           <div class="product-info">
@@ -108,7 +116,7 @@
               </div>
             </ng-container>
             <ng-container *ngIf="!isAllergic">
-              <h2 class="product-subheader">You are not allergic to anything in this product</h2>
+              <h2 class="product-subheader" style="font-size: 18px">You are not allergic to anything in this product</h2>
             </ng-container>
             <h2 class="ingredients-header">Product ingredients:</h2>
             <ng-container *ngIf="!noIngredients">
