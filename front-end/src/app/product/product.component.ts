@@ -42,9 +42,14 @@ export class ProductComponent implements OnInit {
     this.code = this.route.snapshot.paramMap.get('code') ?? '';
     console.log(this.code);
 
-    this.favoriteService.checkFavorite(this.code).subscribe((response: CheckIfFavorite) => {
+    this.favoriteService.checkFavorite(this.code).subscribe((response: any) => {
       console.log(response);
-      this.itemFavorited = response.isFavorite;
+      if (response.isFavorite == "false") {
+        this.itemFavorited = false;
+      }
+      else {
+        this.itemFavorited = true;
+      }
       console.log(this.itemFavorited);
     });
 

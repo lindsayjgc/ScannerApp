@@ -1,7 +1,11 @@
 <div class="favs-container">
     <div style="display: flex; justify-content: center; align-items: center; padding: 4vh; min-height: 82vh;">
-        <mat-card style="min-width: 35%;">
+        <mat-card style="min-width: 35%; min-height: 100px;">
           <mat-card-title style="text-align: center;">{{ name }}'s Favorites</mat-card-title>
+          <ng-container *ngIf="!hasFavorites">
+            <p class="favorites-subheader" style="font-size: 14px">You have not favorited any products yet</p>
+          </ng-container>
+          <ng-container *ngIf="hasFavorites">
             <mat-card-content>
                 <table>
                     <thead>
@@ -18,6 +22,7 @@
                     </tbody>
                 </table>          
             </mat-card-content>
+          </ng-container>
         </mat-card>
     </div>
 </div>
