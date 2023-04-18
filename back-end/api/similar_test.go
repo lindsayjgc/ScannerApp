@@ -2,6 +2,7 @@ package main
 
 import (
 	"math"
+	"reflect"
 	"testing"
 )
 
@@ -96,5 +97,40 @@ func TestGetSimilarFoods(t *testing.T) {
 	similarFoods := GetSimilarFoods("butter", foodList)
 	if len(similarFoods) == 0 {
 		t.Errorf("Similar foods list is empty")
+	}
+}
+
+func TestChunkNutrientIds(t *testing.T) {
+	// Test case 1: chunk size is less than length of nutrientIds
+	nutrientIds := []int{1, 2, 3, 4, 5}
+	chunkSize := 2
+	expectedChunks := [][]int{{1, 2}, {3, 4}, {5}}
+
+	chunks := chunkNutrientIds(nutrientIds, chunkSize)
+
+	if !reflect.DeepEqual(chunks, expectedChunks) {
+		t.Errorf("Expected %v, but got %v", expectedChunks, chunks)
+	}
+
+	// Test case 2: chunk size is greater than length of nutrientIds
+	nutrientIds = []int{1, 2, 3}
+	chunkSize = 5
+	expectedChunks = [][]int{{1, 2, 3}}
+
+	chunks = chunkNutrientIds(nutrientIds, chunkSize)
+
+	if !(reflect.DeepEqual(chunks, expectedChunks)) {
+		t.Errorf("Expected %v, but got %v", expectedChunks, chunks)
+	}
+
+	// Test case 3: chunk size is equal to length of nutrientIds
+	nutrientIds = []int{1, 2, 3}
+	chunkSize = 3
+	expectedChunks = [][]int{{1, 2, 3}}
+
+	chunks = chunkNutrientIds(nutrientIds, chunkSize)
+
+	if !reflect.DeepEqual(chunks, expectedChunks) {
+		t.Errorf("Expected %v, but got %v", expectedChunks, chunks)
 	}
 }
