@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"testing"
 )
 
@@ -34,5 +35,56 @@ func TestGetAllNutrients(t *testing.T) {
 	}
 	if !found {
 		t.Error("GetAllNutrients() did not populate nutrient data for any food")
+	}
+}
+
+func TestCosineSimilarity(t *testing.T) {
+	// Test the CosineSimilarity function with two identical nutrient maps
+	x := map[string]float64{
+		"protein": 10,
+		"fat":     20,
+		"carb":    30,
+	}
+	y := map[string]float64{
+		"protein": 10,
+		"fat":     20,
+		"carb":    30,
+	}
+	similarity := CosineSimilarity(x, y)
+	similarity = math.Round(similarity)
+	if similarity != 1 {
+		t.Errorf("Cosine similarity of identical maps should be 1, got %f", similarity)
+	}
+
+	// Test the CosineSimilarity function with two completely different nutrient maps
+	x = map[string]float64{
+		"protein": 10,
+		"fat":     20,
+		"carb":    30,
+	}
+	y = map[string]float64{
+		"calories": 100,
+		"sodium":   200,
+	}
+	similarity = CosineSimilarity(x, y)
+	if similarity != 0 {
+		t.Errorf("Cosine similarity of completely different maps should be 0, got %f", similarity)
+	}
+
+	// Test the CosineSimilarity function with two partially overlapping nutrient maps
+	x = map[string]float64{
+		"protein": 10,
+		"fat":     20,
+		"carb":    30,
+	}
+	y = map[string]float64{
+		"protein": 10,
+		"fat":     20,
+		"carb":    40,
+	}
+	similarity = CosineSimilarity(x, y)
+	similarity = math.Trunc(similarity*100) / 100
+	if similarity != 0.99 {
+		t.Errorf("Cosine similarity of partially overlapping maps should be 0.99, got %f", similarity)
 	}
 }
