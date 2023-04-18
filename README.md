@@ -6,7 +6,6 @@ An application that enables users to search common groceries, quickly view ingre
 
 Front-end: Dylan Tallon, Sarah Patel<br>
 Back-end: Lindsay Goldberg-Custer, Jordan Sheehan<br>
-# Scanner App API Documentation
 
 <br/>
 
