@@ -29,4 +29,16 @@ describe('search functionality', () => {
     cy.get('button').contains('New search').click()
     cy.url().should('include', '/home')
   })
+
+  it('searches for a specific product', () => {
+    //Enter barcode number
+    cy.visit('http://localhost:4200/home')
+    cy.contains('Category').click()
+    cy.contains('Barcode').click()
+    cy.get('mat-form-field').contains('Enter search term').click().type('8410000001013')
+    cy.get('button[type="submit"]').click()
+
+    //Should go directly to product page
+    cy.get('div[product-name]').should('contain.text', 'Chips Ahoy Original')
+  })
 })
