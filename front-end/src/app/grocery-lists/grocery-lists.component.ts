@@ -21,9 +21,6 @@ export class GroceryListsComponent {
   
   titlesParam!: listParam;
   listTitles: string = "";
-  // @Input() listTitlesArray: string [] = [];
-  // @Input() listContents: { [title: string]: string[] } = {};
-  // @Input() listNoItems: { [title: string]: boolean } = {};
   listTitlesArray: string [] = [];
   listContents: { [title: string]: string[] } = {};
   listNoItems: { [title: string]: boolean } = {};
@@ -138,7 +135,6 @@ export class GroceryListsComponent {
             this.listNoItems[title] = false;
           }
           else {
-            // this.listContents[title].push(newItem);
             this.listNoItems[title] = false;
           }
 

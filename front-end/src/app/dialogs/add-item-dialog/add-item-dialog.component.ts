@@ -50,14 +50,6 @@ export class AddItemDialogComponent {
     }
   }
 
-  // submitAllergies() {
-  //   const allergyString = this.newItems.map(item => item).join(',');
-  //   this.AllergensService.addAllergy(allergyString).subscribe((response: any) => {
-  //     console.log(response);
-  //     this.router.navigate(['/home']);
-  //   });
-  // }
-
   onCancel(): void {
     this.dialogRef.close();
   }
