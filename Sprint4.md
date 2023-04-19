@@ -6,7 +6,17 @@
 
 **Backend**
 
--   [ ]
+-   [ ] Add database support for saving search history and times searched.
+-   [ ] Route and handler for saving search history.
+-   [ ] Route and handler for sending a list of searches and their frequency to the frontend.
+-   [ ] Route and handler for deleting searches from database.
+-   [ ] Functions for getting a list of foods for finding similar foods.
+-   [ ] Functions for getting protein, fats and carbs for simplifying food list nutrients.
+-   [ ] Functions for calculating the cosine similarity of two products.
+-   [ ] Function for chunking FDCIDs to speed up API calls when getting nutrient data.
+-   [ ] Route and handler for sending the five most similar foods to the search food to the front end.
+-   [ ] Tests for search functions.
+-   [ ] Tests for functions that get similar foods.
 
 ## Frontend Unit Tests
 
