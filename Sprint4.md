@@ -7,7 +7,11 @@
 -   [ ] Page for verifiying email after entering signup information
 -   [ ] Search queries are now recorded and sent to the database
 -   [ ] Blocked login and signup pages while logged in
--   [ ] sarah
+-   [ ] Ability to create and delete grocery lists, and add and delete products from them, through navigation bar tab
+-   [ ] Can add and delete multiple products from a grocery list at once
+-   [ ] Ability to add and delete a product from any grocery list through its product page
+-   [ ] Ability to "favorite" a product and remove it from "favorites" through product page
+-   [ ] Can view all favorites through navigation bar tab and click on a product to be brought to that product's information page
 -   [ ] Tests for new functionality
 
 **Backend**
