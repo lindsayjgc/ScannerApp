@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, NgForm } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, Observable, of, tap } from 'rxjs';
@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   constructor(private usersService: UsersService, private signupMessage: MatSnackBar, private router: Router, private verifyService: VerifyService) { }
 
   signupForm = new FormGroup({
@@ -27,6 +27,14 @@ export class RegisterComponent {
   });
 
   submitted: boolean = false;
+
+  ngOnInit() {
+    this.usersService.loggedIn()
+      .subscribe((response) => {
+        this.router.navigate(['/home']);
+        return of();
+      });
+  }
 
   verifyUser() {
     const { email, firstName, lastName, password } = this.signupForm.value;

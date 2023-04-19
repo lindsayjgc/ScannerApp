@@ -5,9 +5,13 @@ describe('navigation when not logged in', () => {
     cy.url().should('include', '/home')
   })
 
-  //Confirm that profile is inacessible when logged out
+  //Confirm that profile pages are inacessible when logged out
   it('redirects to login from profile', () => {
     cy.visit('http://localhost:4200/profile')
+    cy.url().should('include', '/login')
+    cy.visit('http://localhost:4200/lists')
+    cy.url().should('include', '/login')
+    cy.visit('http://localhost:4200/favorites')
     cy.url().should('include', '/login')
   })
 
