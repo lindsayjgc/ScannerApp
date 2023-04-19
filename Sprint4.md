@@ -21,10 +21,12 @@
 ### Cypress (End to End) Tests
 
 -   [ ] addDeleteAllergies.cy.ts
--   [ ] addItemsToList.cy.ts
--   [ ] createLists.cy.ts
+-   [ ] addDeleteItems.cy.ts
+-   [ ] addDeleteViewFavorites.cy.ts
+-   [ ] createDeleteLists.cy.ts
 -   [ ] deleteAccount.cy.ts
 -   [ ] navigation.cy.ts
+-   [ ] resetPassword.cy.ts
 -   [ ] search.cy.ts
 -   [ ] seeProduct.cy.ts
 -   [ ] setup.cy.ts
