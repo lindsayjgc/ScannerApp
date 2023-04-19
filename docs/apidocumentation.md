@@ -547,9 +547,9 @@
 
 ##### Parameters
 
-> | name    | type     | data type | description        |
-> | ------- | -------- | --------- | ------------------ |
-> | `query` | required | string    | the search string  |
+> | name    | type     | data type | description       |
+> | ------- | -------- | --------- | ----------------- |
+> | `query` | required | string    | the search string |
 
 ##### Responses
 
@@ -568,19 +568,19 @@
 
 ##### Parameters
 
-> | name        | type     | data type | description                   |
-> | ----------- | -------- | --------- | ----------------------------- |
+> | name    | type     | data type | description                       |
+> | ------- | -------- | --------- | --------------------------------- |
 > | `query` | required | string    | query to delete from the database |
 
 ##### Responses
 
-> | http code | content-type       | response                                                                                                 |
-> | --------- | ------------------ | -------------------------------------------------------------------------------------------------------- |
+> | http code | content-type       | response                                    |
+> | --------- | ------------------ | ------------------------------------------- |
 > | `200`     | `application/json` | `{"message": "Query successfully deleted"}` |
-> | `400`     | `application/json` | `{"message":"No user logged in"}`                                                                        |
-> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                                                               |
-> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                                                        |
-> | `500`     | `application/json` | `{"message":"Other JWT-related error"}`                                                                  |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`           |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`  |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`           |
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"}`     |
 
 </details>
 
@@ -608,9 +608,9 @@
 
 ##### Parameters
 
-> | name    | type     | data type | description        |
-> | ------- | -------- | --------- | ------------------ |
-> | `query` | required | string    | the search food    |
+> | name    | type     | data type | description     |
+> | ------- | -------- | --------- | --------------- |
+> | `query` | required | string    | the search food |
 
 ##### Responses
 
@@ -621,5 +621,141 @@
 > | `400`     | `application/json` | `{"message":"Other cookie-related error"}` |
 > | `500`     | `application/json` | `{"message":"Error parsing JWT"}`          |
 > | `500`     | `application/json` | `{"message":"Other JWT-related error"} `   |
+
+</details>
+
+### Recipe Recommendations
+
+---
+
+<details>
+    <summary><code>GET</code> <code><b>/api/label?type=</b></code> <code>Retrieve all labels under a certain label type</code></summary>
+
+##### Parameters
+
+> | name   | type     | data type | description                                                    |
+> | ------ | -------- | --------- | -------------------------------------------------------------- |
+> | `type` | required | string    | one of these options: "health", "mealType", "dishType", "diet" |
+
+##### Responses
+
+> | http code | content-type       | response                                        |
+> | --------- | ------------------ | ----------------------------------------------- |
+> | `200`     | `application/json` | `{"labels":"*all matching labels*}`             |
+> | `400`     | `application/json` | `{"message":"Missing query parameter: type"}`   |
+> | `400`     | `application/json` | `{"message":"Label type is invalid"}`           |
+> | `500`     | `application/json` | `{"message":"Error retrieving labels from DB"}` |
+
+</details>
+
+<details>
+    <summary><code>GET</code> <code><b>/api/preference</b></code> <code>Get all preferences of the logged in user</code></summary>
+
+##### Parameters
+
+> `none`
+
+##### Responses
+
+> | http code | content-type       | response                                   |
+> | --------- | ------------------ | ------------------------------------------ |
+> | `200`     | `application/json` | `{"message":"[*array of preferences]"}`    |
+> | `200`     | `application/json` | `{"message":"No preferences found"}`       |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`          |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}` |
+> | `500`     | `application/json` | `{"message":"Other JWT related error"}`    |
+
+</details>
+
+<details>
+    <summary><code>POST</code> <code><b>/api/preference</b></code> <code>Add a label to user's preferences</code></summary>
+
+##### Parameters
+
+> | name        | type     | data type | description                                                    |
+> | ----------- | -------- | --------- | -------------------------------------------------------------- |
+> | `labelType` | required | string    | one of these options: "health", "mealType", "dishType", "diet" |
+> | `name`      | required | string    | name of the label (e.g. lunch, dinner)                         |
+
+##### Responses
+
+> | http code | content-type       | response                                       |
+> | --------- | ------------------ | ---------------------------------------------- |
+> | `201`     | `application/json` | `{"message":"Preference succcessfully added"}` |
+> | `400`     | `application/json` | `{"message":"Label type is invalid"}`          |
+> | `400`     | `application/json` | `{"message":"Preference already exists"}`      |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`              |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`     |
+> | `500`     | `application/json` | `{"message":"Error decoding JSON body"}`       |
+
+</details>
+
+<details>
+    <summary><code>DELETE</code> <code><b>/api/preference</b></code> <code>Add a label to user's preferences</code></summary>
+
+##### Parameters
+
+> | name        | type     | data type | description                                                    |
+> | ----------- | -------- | --------- | -------------------------------------------------------------- |
+> | `labelType` | required | string    | one of these options: "health", "mealType", "dishType", "diet" |
+> | `name`      | required | string    | name of the label (e.g. lunch, dinner)                         |
+
+##### Responses
+
+> | http code | content-type       | response                                         |
+> | --------- | ------------------ | ------------------------------------------------ |
+> | `200`     | `application/json` | `{"message":"Preference succcessfully deleted"}` |
+> | `400`     | `application/json` | `{"message":"Preference not found"}`             |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`                |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`       |
+> | `500`     | `application/json` | `{"message":"Error decoding JSON body"}`         |
+
+</details>
+
+<details>
+    <summary><code>GET</code> <code><b>/api/recipe/recommendation</b></code> <code>Get five recipe recommendations based on user preferences</code></summary>
+
+##### Parameters
+
+> `none`
+
+##### Responses
+
+> | http code | content-type       | response                                                           |
+> | --------- | ------------------ | ------------------------------------------------------------------ |
+> | `200`     | `application/json` | `{"message":"[*array of recipes]"}`                                |
+> | `204`     | `application/json` | `{"message":"User has not indicated any preferences for recipes"}` |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`                                  |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                         |
+> | `500`     | `application/json` | `{"message":"Other JWT related error"}`                            |
+> | `500`     | `application/json` | `{"message":"Error creating request to API"}`                      |
+> | `500`     | `application/json` | `{"message":"Error sending request to API"}`                       |
+> | `500`     | `application/json` | `{"message":"Error reading response from API"}`                    |
+> | `500`     | `application/json` | `{"message":"Error translating API response into JSON"}`           |
+
+</details>
+
+<details>
+    <summary><code>PUT</code> <code><b>/api/recipe/update</b></code> <code>Update the user's "liked" status for a recommendation</code></summary>
+
+##### Parameters
+
+> | name    | type     | data type | description                                         |
+> | ------- | -------- | --------- | --------------------------------------------------- |
+> | `id`    | required | string    | "RecipeID" returned by /recipe/recommendation route |
+> | `liked` | required | string    | "true" or "false"                                   |
+
+##### Responses
+
+> | http code | content-type       | response                                                 |
+> | --------- | ------------------ | -------------------------------------------------------- |
+> | `200`     | `application/json` | `{"message:"Recommendation status updated"}`             |
+> | `400`     | `application/json` | `{"message":"Like status already set to *true/false*"}`  |
+> | `400`     | `application/json` | `{"message":"Recipe not found in user recommendations"}` |
+> | `400`     | `application/json` | `{"message":"Invalid like status"}`                      |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`                        |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`               |
+> | `500`     | `application/json` | `{"message":"Other JWT related error"}`                  |
+> | `500`     | `application/json` | `{"message":"Error decoding JSON body"}`                 |
 
 </details>
