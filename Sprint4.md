@@ -6,6 +6,7 @@
 -   [ ] Page for resetting and changing a user's password using their email
 -   [ ] Page for verifiying email after entering signup information
 -   [ ] Search queries are now recorded and sent to the database
+-   [ ] Blocked login and signup pages while logged in
 -   [ ] sarah
 -   [ ] Tests for new functionality
 
