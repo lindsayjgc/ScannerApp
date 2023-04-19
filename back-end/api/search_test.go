@@ -83,3 +83,41 @@ func TestGetQueries(t *testing.T) {
 	SearchDB.Where("email = ? AND query = ?", query2.Email, query2.Query).Delete(&query2)
 
 }
+
+func TestDeleteQuery(t *testing.T) {
+	InitialUserMigration()
+	InitialSearchMigration()
+	InitializeRouter()
+
+	query := Search{Email: "unit@test.com", Query: "testQuery", Count: 1}
+	SearchDB.Create(&query)
+
+	testQuery := RawSearch{
+		Query: "testQuery",
+	}
+
+	payload, _ := json.Marshal(testQuery)
+	req, _ := http.NewRequest("DELETE", "/search", bytes.NewBuffer(payload))
+	req.Header.Set("Content-Type", "application/json")
+
+	createTestCookie(req, t)
+
+	rr := httptest.NewRecorder()
+
+	RemoveQuery(rr, req)
+
+	response := rr.Result()
+	body, _ := ioutil.ReadAll(response.Body)
+
+	if http.StatusOK != response.StatusCode {
+		t.Errorf("Expected %v; got %v\n", http.StatusOK, response.StatusCode)
+	}
+
+	resMap := make(map[string]string)
+	json.Unmarshal(body, &resMap)
+
+	expected := "Query successfully deleted"
+	if resMap["message"] != expected {
+		t.Errorf("Expected %s; got %s \n", expected, resMap["message"])
+	}
+}
