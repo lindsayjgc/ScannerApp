@@ -6,7 +6,7 @@
 
 **Backend**
 
--   [ ] 
+-   [ ]
 
 ## Frontend Unit Tests
 
@@ -57,6 +57,15 @@
 -   [ ] TestDeleteListItem
 -   [ ] TestGetLists
 -   [ ] TestGetGroceryList
+-   [ ] TestSaveQuery
+-   [ ] TestGetQueries
+-   [ ] TestDeleteQuery
+-   [ ] TestFetchFoodListPage
+-   [ ] TestGetAllNutrients
+-   [ ] TestCosineSimilarity
+-   [ ] TestGetSimilarFoods
+-   [ ] TestChunkNutrientIds
+-   [ ] TestSimilarFoods
 
 ## Backend API Documentation
 # Scanner App API Documentation
