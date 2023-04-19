@@ -9,7 +9,6 @@
         <mat-selection-list #itemList [(ngModel)]="selectedItems">
           <mat-list>
             <mat-list-item *ngFor="let item of listContents[title]; let i = index">
-              <!-- <mat-checkbox [(ngModel)]="itemChecked[i]" [value]="item">{{ item }}</mat-checkbox> -->
               <mat-checkbox (click)="onItemChecked(item)" [(ngModel)]="itemChecked[item]"> {{ item }} </mat-checkbox>
             </mat-list-item>
           </mat-list>
@@ -22,7 +21,7 @@
       </ng-container>
       <mat-action-row>
         <button mat-button color="warn" (click)="deleteItems(title)">Delete Checked Items</button>
-        <button mat-button color="primary" (click)="addItems(title, newItem)">Add Item</button>
+        <button mat-button color="primary" (click)="addItems(title, newItem)">Add Items</button>
         <button mat-button color="warn" (click)="deleteList(title)">Delete List</button>
       </mat-action-row>
     </mat-expansion-panel>

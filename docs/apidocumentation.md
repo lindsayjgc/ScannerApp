@@ -415,7 +415,7 @@
 
 > | http code | content-type       | response                                   |
 > | --------- | ------------------ | ------------------------------------------ |
-> | `200`     | `application/json` | `"titles":*all titles or NONE*"`           |
+> | `200`     | `application/json` | `{"titles":*all titles or NONE*"}`         |
 > | `400`     | `application/json` | `{"message":"No user logged in"}`          |
 > | `400`     | `application/json` | `{"message":"Other cookie-related error"}` |
 > | `500`     | `application/json` | `{"message":"Error parsing JWT"}`          |
@@ -535,5 +535,91 @@
 > | `500`     | `application/json` | `{"message":"Error decoding JSON body"}`            |
 > | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                   |
 > | `500`     | `application/json` | `{"message":"Other JWT-related error"} `            |
+
+</details>
+
+### Search/Similar
+
+---
+
+<details>
+    <summary><code>POST</code> <code><b>/api/search</b></code> <code>Adds a query to the database for recommendation purposes</code></summary>
+
+##### Parameters
+
+> | name    | type     | data type | description        |
+> | ------- | -------- | --------- | ------------------ |
+> | `query` | required | string    | the search string  |
+
+##### Responses
+
+> | http code | content-type       | response                                   |
+> | --------- | ------------------ | ------------------------------------------ |
+> | `200`     | `application/json` | `{"message":"Query count updated"}`        |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`          |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}` |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`          |
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"} `   |
+
+</details>
+
+<details>
+    <summary><code>DELETE</code> <code><b>/api/search</b></code> <code>Deletes query from user's database information</code></summary>
+
+##### Parameters
+
+> | name        | type     | data type | description                   |
+> | ----------- | -------- | --------- | ----------------------------- |
+> | `query` | required | string    | query to delete from the database |
+
+##### Responses
+
+> | http code | content-type       | response                                                                                                 |
+> | --------- | ------------------ | -------------------------------------------------------------------------------------------------------- |
+> | `200`     | `application/json` | `{"message": "Query successfully deleted"}` |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`                                                                        |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}`                                                               |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`                                                                        |
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"}`                                                                  |
+
+</details>
+
+<details>
+    <summary><code>GET</code> <code><b>/api/search</b></code> <code>Provides user search history and how many times each search has been made</code></summary>
+
+##### Parameters
+
+> `none`
+
+##### Responses
+
+> | http code | content-type       | response                                   |
+> | --------- | ------------------ | ------------------------------------------ |
+> | `200`     | `application/json` | `[{"*query*":*count*}]`                    |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`          |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}` |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`          |
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"}`    |
+
+</details>
+
+<details>
+    <summary><code>POST</code> <code><b>/api/similar</b></code> <code>Gets top five similar foods</code></summary>
+
+##### Parameters
+
+> | name    | type     | data type | description        |
+> | ------- | -------- | --------- | ------------------ |
+> | `query` | required | string    | the search food    |
+
+##### Responses
+
+> | http code | content-type       | response                                   |
+> | --------- | ------------------ | ------------------------------------------ |
+> | `200`     | `application/json` | `{"*similarfood*":"*FDCID*"}`              |
+> | `400`     | `application/json` | `{"message":"No user logged in"}`          |
+> | `400`     | `application/json` | `{"message":"Other cookie-related error"}` |
+> | `500`     | `application/json` | `{"message":"Error parsing JWT"}`          |
+> | `500`     | `application/json` | `{"message":"Other JWT-related error"} `   |
 
 </details>
