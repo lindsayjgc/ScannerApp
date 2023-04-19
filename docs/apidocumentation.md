@@ -20,6 +20,8 @@
     > | ------------ | ------------------------------------ |
     > | `SECRET_KEY` | use key generator to create your own |
     > | `PORT`       | 9000                                 |
+    > | `MAIL`       | cen3031groceryapp@gmail.com          |
+    > | `PW`         | hyvowpezafvisvws                     |
 
     </details>
 
@@ -213,8 +215,8 @@
 > | http code | content-type       | response                                                            |
 > | --------- | ------------------ | ------------------------------------------------------------------- |
 > | `200`     | `application/json` | `{"isVerified": "true","message": "Email successfully verified"}`   |
-> | `200`     | `application/json` | `{"isVerified": "false","message": "*wrong code or expired code*"}` |
 > | `400`     | `application/json` | `{"message":"Email has not been issued a verification code"}`       |
+> | `401`     | `application/json` | `{"isVerified": "false","message": "*wrong code or expired code*"}` |
 > | `500`     | `application/json` | `{"message":"Error decoding JSON body"}`                            |
 > | `500`     | `application/json` | `{"message":"*email sending-related error*"}`                       |
 
@@ -422,7 +424,7 @@
 </details>
 
 <details>
-    <summary><code>GET</code> <code><b>/api/get-list</b></code> <code>Provides the contents of requested list</code></summary>
+    <summary><code>POST</code> <code><b>/api/get-list</b></code> <code>Provides the contents of requested list</code></summary>
 
 ##### Parameters
 

@@ -3,13 +3,14 @@ describe('Add Allergies', () => {
   it('Can add and remove allergies', () => {
 
     cy.visit("http://localhost:4200/register");
-
-    cy.get('input[formControlName="email"]').type('test@gmail.com');
+    cy.get('input[formControlName="email"]').type('test@test.com');
     cy.contains('First Name').click().type('Test');
     cy.contains('Last Name').click().type('Test');
-    cy.get('input[formControlName="password"]').type('test');
+    cy.get('input[formControlName="password"]').type('password123');
+    cy.get('button[type="submit"]').click();
 
-    // Submit the form
+    // Verify email
+    cy.contains('Verification code').click().type('000000');
     cy.get('button[type="submit"]').click();
 
     // Assert that the user is redirected to the setup page
@@ -74,5 +75,11 @@ describe('Add Allergies', () => {
 
     cy.get('button').contains('Remove selected allergies').click()
     cy.get('mat-card').should('contain.text', 'NONE')
+
+    cy.visit('http://localhost:4200/profile')
+    cy.contains('Delete account').click()
+    cy.contains('Yes').click()
+    cy.contains("Password").click().type('password123')
+    cy.contains('Delete my account').click()
   });
 });

@@ -4,6 +4,13 @@ import { ActivatedRoute } from '@angular/router';
 import { ProductService } from '../services/product.service';
 import { Allergen } from '../services/allergenparams';
 
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { GroceryListService } from '../services/grocery-list.service';
+import { AddProductDialogComponent } from '../dialogs/add-product-dialog/add-product-dialog.component';
+import { DeleteProductDialogComponent } from '../dialogs/delete-product-dialog/delete-product-dialog.component';
+import { FavoritesService } from '../services/favorites.service';
+import { CheckIfFavorite } from '../services/favorites.service.spec';
+
 @Component({
   selector: 'app-product',
   templateUrl: './product.component.html',
@@ -23,17 +30,40 @@ export class ProductComponent implements OnInit {
   loading: boolean = true;
   imageFound: boolean = false;
 
-  constructor(private route: ActivatedRoute, private http: HttpClient, private productService: ProductService) { }
+  titlesToSend: string = "";
+  nameToSend: string = "";
+  noIngredients: boolean = false;
+
+  itemFavorited: boolean = false;
+
+  invalidProduct: boolean = false;
+
+  constructor(private route: ActivatedRoute, private http: HttpClient, private productService: ProductService, public dialog: MatDialog, private groceryListService: GroceryListService, public dialog2: MatDialog, private favoriteService: FavoritesService) { }
 
   ngOnInit() {
     this.code = this.route.snapshot.paramMap.get('code') ?? '';
     console.log(this.code);
 
+    this.favoriteService.checkFavorite(this.code).subscribe((response: any) => {
+      console.log(response);
+      if (response.isFavorite == "false") {
+        this.itemFavorited = false;
+      }
+      else {
+        this.itemFavorited = true;
+      }
+      console.log(this.itemFavorited);
+    });
+
     const fetchIngredients = async () => {
       this.http.get<any>('https://world.openfoodfacts.org/api/v0/product/' + this.code + '.json')
         .subscribe(response => {
           console.log(response);
-          this.name = response.product.product_name;
+          if (response.status == 0) {
+            this.invalidProduct = true;
+          }
+          else {
+            this.name = response.product.product_name;
           if (!this.name) {
             this.name = "Unnamed product"
           }
@@ -64,6 +94,8 @@ export class ProductComponent implements OnInit {
             });
           } else {
             this.ingredientsList = ["Unknown"];
+            this.noIngredients = true;
+          }
           }
 
           this.loading = false;
@@ -73,6 +105,53 @@ export class ProductComponent implements OnInit {
 
     fetchIngredients().then((ingredientsList) => {
       console.log(this.ingredientsList);
+    });
+  }
+
+  addItem(name: string) {
+        const dialogRef = this.dialog.open(AddProductDialogComponent);
+
+        dialogRef.afterClosed().subscribe((titles: string []) => {
+          if (titles) {
+              this.titlesToSend = titles.toString();
+              this.nameToSend = name.toLowerCase();
+              console.log(this.titlesToSend);
+              this.groceryListService.addItemsToList(this.titlesToSend, this.nameToSend).subscribe((response) => {
+                console.log(response);
+              });
+          }
+        });
+  }
+
+  deleteItem(name: string) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.data = name;
+
+    const dialogRef = this.dialog2.open(DeleteProductDialogComponent, dialogConfig);
+
+
+    dialogRef.afterClosed().subscribe((titles: string []) => {
+      if (titles) {
+          this.titlesToSend = titles.toString();
+          this.nameToSend = name.toLowerCase();
+          this.groceryListService.deleteItemsInList(this.titlesToSend, this.nameToSend).subscribe((response) => {
+            console.log(response);
+          });
+      }
+    });
+  }
+
+  favoriteItem() {
+    this.favoriteService.addFavorite(this.name, this.code, this.image).subscribe((response) => {
+      console.log(response);
+      this.itemFavorited = true;
+    });
+  }
+
+  unfavoriteItem() {
+    this.favoriteService.deleteFavorite(this.code).subscribe((response) => {
+      console.log(response);
+      this.itemFavorited = false;
     });
   }
 }

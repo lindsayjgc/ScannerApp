@@ -7,7 +7,16 @@
     <mat-menu #menu="matMenu">
       <div *ngIf="this.usersService.isLoggedIn; else notLoggedIn">
         <button mat-menu-item routerLink="/profile">
+          <mat-icon>info</mat-icon>
           <span>Profile</span>
+        </button>
+        <button mat-menu-item routerLink="/lists">
+          <mat-icon>list</mat-icon>
+          <span>Grocery Lists</span>
+        </button>
+        <button mat-menu-item routerLink="/favorites">
+          <mat-icon>favorite</mat-icon>
+          <span>Favorite Products</span>
         </button>
         <button mat-menu-item (click)="logout()">
           <mat-icon>logout</mat-icon>

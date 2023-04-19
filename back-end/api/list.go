@@ -36,6 +36,10 @@ type RawTitles struct {
 	Titles string `json:"titles"`
 }
 
+type RawTitle struct {
+	Title string `json:"title"`
+}
+
 func InitialListMigration() {
 	ListDB, err = gorm.Open(sqlite.Open(DB_PATH), &gorm.Config{})
 
@@ -69,7 +73,7 @@ func CreateList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var listTitle GroceryTitle
+	var listTitle RawTitle
 	err = json.NewDecoder(r.Body).Decode(&listTitle)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -88,8 +92,8 @@ func CreateList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	listTitle.Email = claims.Email
-	ListDB.Create(&listTitle)
+	title := GroceryTitle{Title: listTitle.Title, Email: claims.Email}
+	ListDB.Create(&title)
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(GenerateResponse("List successfully created"))
@@ -187,7 +191,7 @@ func GetGroceryList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var listTitle GroceryTitle
+	var listTitle RawTitle
 	err = json.NewDecoder(r.Body).Decode(&listTitle)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

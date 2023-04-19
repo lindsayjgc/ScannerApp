@@ -1,0 +1,32 @@
+<div style="display: flex; justify-content: center; align-items: center; padding: 4vh; min-height: 82vh;">
+    <mat-card style="min-width: 35%;">
+      <mat-card-title style="text-align: center;">{{ name }}'s Grocery Lists</mat-card-title>
+      <mat-card-content>
+  <div *ngFor="let title of listTitlesArray">
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>{{ title }}</mat-expansion-panel-header>
+      <ng-container *ngIf="!listNoItems[title]">
+        <mat-selection-list #itemList [(ngModel)]="selectedItems">
+          <mat-list>
+            <mat-list-item *ngFor="let item of listContents[title]; let i = index">
+              <!-- <mat-checkbox [(ngModel)]="itemChecked[i]" [value]="item">{{ item }}</mat-checkbox> -->
+              <mat-checkbox (click)="onItemChecked(item)" [(ngModel)]="itemChecked[item]"> {{ item }} </mat-checkbox>
+            </mat-list-item>
+          </mat-list>
+        </mat-selection-list>
+      </ng-container>
+      <ng-container *ngIf="listNoItems[title]">
+        <mat-list>
+          <p>No items in list</p>
+        </mat-list>
+      </ng-container>
+      <mat-action-row>
+        <button mat-button color="warn" (click)="deleteItems(title)">Delete Checked Items</button>
+        <button mat-button color="primary" (click)="addItems(title, newItem)">Add Item</button>
+        <button mat-button color="warn" (click)="deleteList(title)">Delete List</button>
+      </mat-action-row>
+    </mat-expansion-panel>
+  </div>
+  <div class = "newList">
+    <button mat-raised-button color="primary" (click)="createNewList(newTitle)">Create New List</button>
+  </div>

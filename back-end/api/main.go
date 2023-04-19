@@ -37,7 +37,7 @@ func InitializeRouter() {
 	s.HandleFunc("/delete-lists", DeleteList).Methods("DELETE")
 	s.HandleFunc("/delete-list-items", DeleteListItem).Methods("DELETE")
 	s.HandleFunc("/get-lists", GetGroceryTitles).Methods("GET")
-	s.HandleFunc("/get-list", GetGroceryList).Methods("GET")
+	s.HandleFunc("/get-list", GetGroceryList).Methods("POST")
 
 	s.HandleFunc("/favorite", GetFavorites).Methods("GET")
 	s.HandleFunc("/favorite", AddFavorite).Methods("POST")
@@ -47,6 +47,17 @@ func InitializeRouter() {
 	s.HandleFunc("/verify/reset", VerifyEmailReset).Methods("POST")
 	s.HandleFunc("/check-code", CheckCode).Methods("POST")
 	s.HandleFunc("/reset-password", ResetPassword).Methods("POST")
+
+	s.HandleFunc("/label", GetLabels).Methods("GET")
+	s.HandleFunc("/preference", GetPreferences).Methods("GET")
+	s.HandleFunc("/preference", AddPreference).Methods("POST")
+	s.HandleFunc("/preference", DeletePreference).Methods("DELETE")
+	s.HandleFunc("/recipe/recommendation", GetRecipeRecommendations).Methods("GET")
+
+	s.HandleFunc("/search", SaveQuery).Methods("POST")
+	s.HandleFunc("/search", GetQueries).Methods("GET")
+	s.HandleFunc("/search", RemoveQuery).Methods("DELETE")
+	s.HandleFunc("/similar", SimilarFoods).Methods("POST")
 }
 
 func StartServer() {
@@ -83,6 +94,10 @@ func main() {
 	InitialListMigration()
 	InitialFavoriteMigration()
 	InitialCodeMigration()
+	InitialLabelMigration()
+	InitialPreferenceMigration()
+	InitialRecipeMigration()
+	InitialSearchMigration()
 	InitializeRouter()
 	StartServer()
 }
