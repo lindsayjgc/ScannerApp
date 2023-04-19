@@ -16,12 +16,13 @@
 2.  <details>
     <summary>Create/update your local .env file - be sure to include all listed variables:</summary>
 
-    > | name         | value (do not wrap these in quotes)  |
-    > | ------------ | ------------------------------------ |
-    > | `SECRET_KEY` | use key generator to create your own |
-    > | `PORT`       | 9000                                 |
-    > | `MAIL`       | cen3031groceryapp@gmail.com          |
-    > | `PW`         | hyvowpezafvisvws                     |
+    > | name         | value (do not wrap these in quotes)      |
+    > | ------------ | ---------------------------------------- |
+    > | `SECRET_KEY` | use key generator to create your own     |
+    > | `PORT`       | 9000                                     |
+    > | `MAIL`       | cen3031groceryapp@gmail.com              |
+    > | `PW`         | hyvowpezafvisvws                         |
+    > | `API_KEY`    | 3ZUwh4W1oWTjCsqkbe9Del7axRUyKG1XR4Y6KMUN |
 
     </details>
 
