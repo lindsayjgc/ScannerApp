@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"strings"
@@ -22,7 +22,14 @@ type Recipe struct {
 	SourceURL string
 	RecipeID string
 	Label string
-	Liked *bool // Denotes whether a user has liked or disliked a recommendation, can be null
+	Liked string
+}
+
+// Used to decode data from frontend when trying to change 
+// whether a user like/dislikes a recipe
+type LikeStatusData struct {
+	RecipeID string `json:"id"`
+	Liked string `json:"liked"`
 }
 
 type Response struct {
@@ -52,7 +59,6 @@ type Response struct {
 					Source            string    `json:"source"`
 					Url               string    `json:"url"`
 					ShareAs           string    `json:"shareAs"`
-					// Yield             int    		`json:"yield,omitempty"`
 					DietLabels        []string  `json:"dietLabels"`
 					HealthLabels      []string  `json:"healthLabels"`
 					Cautions          []string  `json:"cautions"`
@@ -75,30 +81,7 @@ type Response struct {
 					DishType           []string `json:"dishType"`
 					Instructions       []string `json:"instructions"`
 					Tags               []string `json:"tags"`
-					// ExternalId         string   `json:"externalId"`
-					// TotalNutrients     struct{} `json:"totalNutrients"`
-					// TotalDaily         struct{} `json:"totalDaily"`
-					// Digest             []struct {
-					// 		Label        string  `json:"label"`
-					// 		Tag          string  `json:"tag"`
-					// 		SchemaOrgTag string  `json:"schemaOrgTag"`
-					// 		Total        float64 `json:"total"`
-					// 		HasRDI       bool    `json:"hasRDI"`
-					// 		Daily        float64 `json:"daily"`
-					// 		Unit         string  `json:"unit"`
-							// Sub          struct{} `json:"sub"`
-					// } `json:"digest"`
 			} `json:"recipe"`
-			// Links struct {
-			// 		Self struct {
-			// 				Href  string `json:"href"`
-			// 				Title string `json:"title"`
-			// 		} `json:"self"`
-			// 		Next struct {
-			// 				Href  string `json:"href"`
-			// 				Title string `json:"title"`
-			// 		} `json:"next"`
-			// } `json:"_links"`
 	} `json:"hits"`
 }
 
@@ -136,17 +119,6 @@ func GetRecipeRecommendations(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
 		return
 	}
-
-	// Get the distinct preference label types that the user has
-	// Used for formulating the search URL for the recipe API
-	// var preferenceTypes []string
-	// result := PreferenceDB.Table("preferences").Distinct("label_type").Where("user = ?", claims.Email).Where("deleted_at IS NULL").Pluck("label_type", &preferenceTypes)
-
-	// if result.RowsAffected == 0 {
-	// 	w.WriteHeader(http.StatusNoContent)
-	// 	json.NewEncoder(w).Encode(GenerateResponse("User has not indicated any preferences for recipes"))
-	// 	return
-	// }
 
 	// Get all of the user's preferences for use in the search URL
 	var preferences []Preference
@@ -193,7 +165,7 @@ func GetRecipeRecommendations(w http.ResponseWriter, r *http.Request) {
 		defer resp.Body.Close() // Close body when done
 
 		// Read response body
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -219,7 +191,7 @@ func GetRecipeRecommendations(w http.ResponseWriter, r *http.Request) {
 			// Check if this recipe has already been liked/disliked by the user
 			var recipeSearch Recipe
 			result := RecipeDB.Table("recipes").Where("user = ?", claims.Email).Where("recipe_id = ?", newRecipeID).First(&recipeSearch)
-			if result.RowsAffected != 0 && recipeSearch.Liked != nil {
+			if result.RowsAffected != 0 && recipeSearch.Liked != "none" {
 				continue
 			}
 
@@ -230,7 +202,7 @@ func GetRecipeRecommendations(w http.ResponseWriter, r *http.Request) {
 				SourceURL: rec.Recipe.Url,
 				RecipeID: newRecipeID,
 				Label: rec.Recipe.Label,
-				Liked: nil,
+				Liked: "none",
 			}
 			recipeHits = append(recipeHits, newRecipe)
 
@@ -255,4 +227,57 @@ func GetRecipeRecommendations(w http.ResponseWriter, r *http.Request) {
 	// Respond with the recipes
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(recipeHits)
+}
+
+func UpdateRecipeLikeStatus(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// Check for logged in user and get their email
+	claims, err, resStatus := CheckCookie(w, r)
+
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(resStatus)
+		json.NewEncoder(w).Encode(GenerateResponse(err.Error()))
+		return
+	}
+
+	// Decode the recipe to update
+	var updateStatus LikeStatusData
+	err = json.NewDecoder(r.Body).Decode(&updateStatus)
+
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(GenerateResponse("Error decoding JSON body"))
+		return
+	}
+
+	// Check that the liked status is invalid
+	if updateStatus.Liked != "true" && updateStatus.Liked != "false" {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(GenerateResponse("Invalid like status"))
+		return
+	}
+
+	var recipeSearch Recipe
+	result := RecipeDB.Where("user = ?", claims.Email).Where("recipe_id", updateStatus.RecipeID).First(&recipeSearch)
+
+	if result.RowsAffected == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(GenerateResponse("Recipe not found in user recommendations"))
+		return
+	}
+
+	if recipeSearch.Liked == updateStatus.Liked {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(GenerateResponse("Like status already set to " + recipeSearch.Liked))
+		return		
+	}
+
+	recipeSearch.Liked = updateStatus.Liked
+	RecipeDB.Save(&recipeSearch)
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(GenerateResponse("Recommendation status updated"))
 }
