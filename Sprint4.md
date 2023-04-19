@@ -2,7 +2,12 @@
 
 **Frontend**
 
--   [ ] 
+-   [ ] Ability to search for barcode and be taken to its product page
+-   [ ] Page for resetting and changing a user's password using their email
+-   [ ] Page for verifiying email after entering signup information
+-   [ ] Search queries are now recorded and sent to the database
+-   [ ] sarah
+-   [ ] Tests for new functionality
 
 **Backend**
 
