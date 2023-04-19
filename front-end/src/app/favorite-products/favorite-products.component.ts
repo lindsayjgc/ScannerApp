@@ -25,20 +25,6 @@ export class FavoriteProductsComponent {
   hasFavorites: boolean = false;
 
   
-  // titlesParam!: listParam;
-  // listTitles: string = "";
-  // // @Input() listTitlesArray: string [] = [];
-  // // @Input() listContents: { [title: string]: string[] } = {};
-  // // @Input() listNoItems: { [title: string]: boolean } = {};
-  // listTitlesArray: string [] = [];
-  // listContents: { [title: string]: string[] } = {};
-  // listNoItems: { [title: string]: boolean } = {};
-  // itemChecked: { [itemName: string]: boolean } = {};
-  // newTitle: string = "";
-  // selectedItems: string[] = [];
-  // newItem: string = "";
-  // newItemObject!: GroceryItems;
-  // secondTitle: string = "";
 
   constructor(private usersService: UsersService, private router: Router, private favoriteService: FavoritesService) { }
 

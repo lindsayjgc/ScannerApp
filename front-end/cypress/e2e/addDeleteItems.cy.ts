@@ -54,25 +54,6 @@ describe('Add Delete Items', () => {
       cy.contains("Title").click().type("3");
       cy.contains('Add New List').click();
   
-  
-      // cy.contains('1').click(); // Click on dropdown for list 1
-      // cy.get('button').contains('Add Item').click();
-      // cy.contains('Add Items to List').should('be.visible')
-      // cy.contains("Product").click().type("eggs");
-      // cy.contains("Add To List").click();
-  
-      // cy.contains('2').click(); // Click on dropdown for list 1
-      // cy.get('button').contains('Add Item').click();
-      // cy.contains('Add Items to List').should('be.visible')
-      // cy.contains("Product").click().type("chips");
-      // cy.contains("Add To List").click();
-  
-      // cy.contains('3').click(); // Click on dropdown for list 1
-      // cy.get('button').contains('Add Item').click();
-      // cy.contains('Add Items to List').should('be.visible')
-      // cy.contains("Product").click().type("coffee");
-      // cy.contains("Add To List").click();
-  
       cy.contains('1').click(); // Click on dropdown for list 1
       cy.get('button').contains('Add Items').click();
       cy.contains('Add Items To List').should('be.visible')
