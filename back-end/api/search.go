@@ -30,9 +30,6 @@ type Query struct {
 var SearchDB *gorm.DB
 
 // saves searches
-// if query doesn't return any products,
-// check if it returns anything when searched by nutrition
-// if not, don't add to database
 func InitialSearchMigration() {
 	SearchDB, err = gorm.Open(sqlite.Open(DB_PATH), &gorm.Config{})
 
