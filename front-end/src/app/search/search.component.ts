@@ -42,10 +42,18 @@ export class SearchComponent implements OnInit {
         return of();
       }))
       .subscribe((response) => {
-        console.log(response);
         this.resultCount = response.count;
         this.dataSource.data = response.products;
         this.loading = false;
+
+        this.searchService.recordSearch(this.route.snapshot.paramMap.get('query')!)
+          .pipe(catchError(err => {
+            console.error(err);
+            return of();
+          }))
+          .subscribe((response) => {
+            console.log(response);
+          })
       });
   }
 

@@ -1,0 +1,14 @@
+<h2 mat-dialog-title>Select ONE List To Add This Item To</h2>
+    <div mat-dialog-content>
+      <mat-selection-list #itemList [(ngModel)]="selectedItems">
+        <mat-list>
+          <mat-list-item *ngFor="let item of listTitlesArray">
+            <mat-checkbox (click)="onItemChecked(item)" [(ngModel)]="itemChecked[item]"> {{ item }} </mat-checkbox>
+          </mat-list-item>
+        </mat-list>
+      </mat-selection-list>
+    </div>
+    <div mat-dialog-actions>
+      <button mat-button [mat-dialog-close]="this.selectedItems" cdkFocusInitial>Add To List</button>
+      <button mat-button (click)="onCancel()">Cancel</button>
+    </div>

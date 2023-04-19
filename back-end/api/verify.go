@@ -77,6 +77,17 @@ func IssueCode(w http.ResponseWriter, r *http.Request, emailType string) {
 		return
 	}
 
+	// Check that user already exists
+	if (emailType == "signup") {
+		var userSearch User
+		result := UserDB.Table("users").Where("email = ?", email.Email).First(&userSearch)
+		if result.RowsAffected != 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(GenerateResponse("Email already registered to an account"))
+			return
+		}
+	}
+
 	// Check if the specified frontend testing email has been passed in
 	var randomCode string
 	if (email.Email == "test@test.com") {
