@@ -36,6 +36,8 @@ export class ProductComponent implements OnInit {
 
   itemFavorited: boolean = false;
 
+  invalidProduct: boolean = false;
+
   constructor(private route: ActivatedRoute, private http: HttpClient, private productService: ProductService, public dialog: MatDialog, private groceryListService: GroceryListService, public dialog2: MatDialog, private favoriteService: FavoritesService) { }
 
   ngOnInit() {
@@ -57,7 +59,11 @@ export class ProductComponent implements OnInit {
       this.http.get<any>('https://world.openfoodfacts.org/api/v0/product/' + this.code + '.json')
         .subscribe(response => {
           console.log(response);
-          this.name = response.product.product_name;
+          if (response.status == 0) {
+            this.invalidProduct = true;
+          }
+          else {
+            this.name = response.product.product_name;
           if (!this.name) {
             this.name = "Unnamed product"
           }
@@ -89,6 +95,7 @@ export class ProductComponent implements OnInit {
           } else {
             this.ingredientsList = ["Unknown"];
             this.noIngredients = true;
+          }
           }
 
           this.loading = false;
