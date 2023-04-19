@@ -44,10 +44,10 @@ describe('See Products', () => {
     cy.wait(4000);
     cy.contains('0049000028904').click();
     cy.url().should('eq', 'http://localhost:4200/product/0049000028904');
-    cy.get('.productContainer').should('exist');
 
     // Check if the message is displayed for allergic ingredients
-    cy.get('.product-ingredients').contains('Caution! Ingredients you are allergic to:').should('be.visible');
+    cy.contains('Ingredients you are allergic to (1):').should('be.visible');
+    cy.contains('Product ingredients:').should('be.visible');
 
     cy.visit('http://localhost:4200/profile')
     cy.contains('Delete account').click()

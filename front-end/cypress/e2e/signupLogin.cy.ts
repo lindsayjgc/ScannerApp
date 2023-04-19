@@ -73,7 +73,8 @@ describe("Add User", () => {
     cy.contains('Password').click().type('password123')
     cy.get('.login-container').find('button').contains('Login').click()
 
-    cy.visit('http://localhost:4200/profile')
+    cy.get('.toolbarContainer').find('button').click()
+    cy.contains('Profile').click();
     cy.contains('Delete account').click()
     cy.contains('Yes').click()
     cy.contains("Password").click().type('password123')
