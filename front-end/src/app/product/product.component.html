@@ -89,49 +89,56 @@
   
   <mat-card>
     <div *ngIf="!this.loading">
-      <div class="product-wrapper">
-        <div class="product-image-container">
-          <ng-container *ngIf="imageFound">
-            <img class="product-image" [src]="image" alt="My Image">
-          </ng-container>
-        </div>
-        <div class="favorite-button" style="position: absolute; top: 0; right: 0; padding: 10px">
-          <ng-container *ngIf="!itemFavorited">
-            <button mat-raised-button color="primary" (click)="favoriteItem()">Favorite &hearts;</button>
-          </ng-container>
-          <ng-container *ngIf="itemFavorited">
-            <button mat-raised-button color="primary" (click)="unfavoriteItem()">Remove From Favorites &hearts;</button>
-          </ng-container>
-        </div>
-        <div class="product-details-container">
-          <h1 class="product-name">{{ name }}</h1>
-          <div class="product-info">
-            <ng-container *ngIf="isAllergic">
-              <div class="allergy-info">
-                <p style="font-size: 18px"><span style="font-size: 24px">&#9888;</span> CAUTION <span style="font-size: 24px">&#9888;</span></p>
-              </div>              
-              <h2 class="product-subheader">Ingredients you are allergic to ({{ allergyIngredients.length }}):</h2>
-              <div class="allergies-list">
-                <span *ngFor="let allergy of allergyIngredients">{{ allergy }}</span>
-              </div>
+      <div *ngIf="!this.invalidProduct">
+        <div class="product-wrapper">
+          <div class="product-image-container">
+            <ng-container *ngIf="imageFound">
+              <img class="product-image" [src]="image" alt="My Image">
             </ng-container>
-            <ng-container *ngIf="!isAllergic">
-              <h2 class="product-subheader" style="font-size: 18px">You are not allergic to anything in this product</h2>
+          </div>
+          <div class="favorite-button" style="position: absolute; top: 0; right: 0; padding: 10px">
+            <ng-container *ngIf="!itemFavorited">
+              <button mat-raised-button color="primary" (click)="favoriteItem()">Favorite &hearts;</button>
             </ng-container>
-            <h2 class="ingredients-header">Product ingredients:</h2>
-            <ng-container *ngIf="!noIngredients">
+            <ng-container *ngIf="itemFavorited">
+              <button mat-raised-button color="primary" (click)="unfavoriteItem()">Remove From Favorites &hearts;</button>
+            </ng-container>
+          </div>
+          <div class="product-details-container">
+            <h1 class="product-name">{{ name }}</h1>
+            <div class="product-info">
+              <ng-container *ngIf="isAllergic">
+                <div class="allergy-info">
+                  <p style="font-size: 18px"><span style="font-size: 24px">&#9888;</span> CAUTION <span style="font-size: 24px">&#9888;</span></p>
+                </div>              
+                <h2 class="product-subheader">Ingredients you are allergic to ({{ allergyIngredients.length }}):</h2>
+                <div class="allergies-list">
+                  <span *ngFor="let allergy of allergyIngredients">{{ allergy }}</span>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="!isAllergic">
+               <h2 class="product-subheader" style="font-size: 18px">You are not allergic to anything in this product</h2>
+              </ng-container>
+              <h2 class="ingredients-header">Product ingredients:</h2>
+              <ng-container *ngIf="!noIngredients">
               <p class="ingredients-list">{{ ingredientsList.join(', ').slice(0, -1) }}</p>
-            </ng-container>
-            <ng-container *ngIf="noIngredients">
-              <p class="ingredients-list">{{ ingredientsList }}</p>
-            </ng-container>
-          </div>        
+              </ng-container>
+              <ng-container *ngIf="noIngredients">
+                <p class="ingredients-list">{{ ingredientsList }}</p>
+              </ng-container>
+            </div>        
+          </div>
         </div>
-      </div>
-      <div class="add-item-button" style="display: flex; justify-content: space-around; height: 100%; margin-bottom: 40px; margin-left: 25%">
+        <div class="add-item-button" style="display: flex; justify-content: space-around; height: 100%; margin-bottom: 40px; margin-left: 25%">
         <button mat-raised-button color="primary" (click)="addItem(name)">Add Item</button>
         <button mat-raised-button color="primary" (click)="deleteItem(name)">Remove Item</button>
+        </div>
       </div>  
+      <div *ngIf="this.invalidProduct">
+        <p style = "font-size: 20px; padding-top: 20px; padding-left: 20px; padding-right: 20px;"> No product found </p>
+        <p style = "font-size: 14px; padding-bottom: 20px; padding-left: 20px; padding-right: 20px;"> The barcode you searched is invalid. </p>
+      </div>
     </div>
+
   </mat-card>
 </div>
