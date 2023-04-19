@@ -1,4 +1,4 @@
-describe('See Products', () => {
+describe('Add Delete Items', () => {
     beforeEach(() => {
       cy.visit('http://localhost:4200/register');
     });
