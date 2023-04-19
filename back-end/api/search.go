@@ -83,7 +83,7 @@ func SaveQuery(w http.ResponseWriter, r *http.Request) {
 
 	// TODO: check if there is a response from the query
 	search := Search{Email: claims.Email, Query: query.Query, Count: 1}
-	SearchDB.Create(&search)
+	SearchDB.Create(search)
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(GenerateResponse("Query count updated"))
@@ -132,7 +132,7 @@ func RemoveQuery(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(GenerateResponse("Query not deleted"))
 		return
 	}
-	SearchDB.Delete(&query)
+	SearchDB.Where("email = ? AND query = ?", query.Email, query.Query).Delete(&query)
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(GenerateResponse("Query successfully deleted"))
