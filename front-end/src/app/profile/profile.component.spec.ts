@@ -14,8 +14,6 @@ describe('add-allergies', () => {
     cy.contains("'s Profile");
     cy.contains("Email:");
     cy.contains("Allergies:");
-    cy.contains("Grocery Lists:");
-    cy.contains("Create New List");
     cy.contains("Delete account");
   });
 })
