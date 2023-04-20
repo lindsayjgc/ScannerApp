@@ -13,6 +13,10 @@ Back-end: Lindsay Goldberg-Custer, Jordan Sheehan<br>
 
 ---
 
+1.  Navigate into front-end
+2.  Run <code>$ npm start</code>
+3.  Open <code>http://localhost:4200/</code> in a browser window
+
 **NOTE:** Always run the frontend using <code>$ npm start</code> instead of alternatives like <code>$ ng serve</code>. <code>$ npm start</code> is configured to include the proxy configuration that allows for API requests to be made to the same port that the frontend runs on.
 
 ### Running the Backend Locally
