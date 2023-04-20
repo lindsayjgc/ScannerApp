@@ -125,13 +125,14 @@
 2.  <details>
     <summary>Create/update your local .env file - be sure to include all listed variables:</summary>
 
-    > | name         | value (do not wrap these in quotes)      |
-    > | ------------ | ---------------------------------------- |
-    > | `SECRET_KEY` | use key generator to create your own     |
-    > | `PORT`       | 9000                                     |
-    > | `MAIL`       | cen3031groceryapp@gmail.com              |
-    > | `PW`         | hyvowpezafvisvws                         |
-    > | `API_KEY`    | 3ZUwh4W1oWTjCsqkbe9Del7axRUyKG1XR4Y6KMUN |
+    > | name                  | value (do not wrap these in quotes)                                                                        |
+    > | --------------------- | ---------------------------------------------------------------------------------------------------------- |
+    > | `SECRET_KEY`          | use key generator to create your own                                                                       |
+    > | `PORT`                | 9000                                                                                                       |
+    > | `MAIL`                | cen3031groceryapp@gmail.com                                                                                |
+    > | `PW`                  | hyvowpezafvisvws                                                                                           |
+    > | `API_KEY`             | 3ZUwh4W1oWTjCsqkbe9Del7axRUyKG1XR4Y6KMUN                                                                   |
+    > | `RECIPE_API_BASE_URL` | https://api.edamam.com/api/recipes/v2?type=public&app_id=fba7cec1&app_key=c25a3700d1ed1dd6026d19bc0939be30 |
 
     </details>
 
